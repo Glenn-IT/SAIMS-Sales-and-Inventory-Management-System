@@ -1,6 +1,6 @@
 # SAIMS System Audit Report
 
-**Date:** 2026-06-09
+**Date:** 2026-06-20 *(updated from 2026-06-09)*
 **Auditor:** Claude Code (Automated)
 **Project:** Sales and Inventory Management System (SAIMS)
 **Stack:** VB.NET / .NET 8.0 / Windows Forms
@@ -11,6 +11,8 @@
 ## Executive Summary
 
 SAIMS is a Windows desktop Point-of-Sale and Inventory Management prototype built with VB.NET WinForms. The frontend UI is fully scaffolded with sample data, barcode scanner integration, and multi-module navigation. However, the system currently lacks a database backend, authentication logic, business logic layer, tests, error handling, and CI/CD infrastructure. It is suitable for demonstration but **cannot be deployed in production in its current state.**
+
+This audit (June 2026) adds code-level bug findings from a full source file review across all 10 form modules.
 
 ---
 
@@ -49,9 +51,9 @@ SAIMS is a Windows desktop Point-of-Sale and Inventory Management prototype buil
 ### Transactions Module
 | Form | File | Status | Issues |
 |---|---|---|---|
-| Sales / POS | `Forms/Transactions/SalesForm.vb` | Implemented | Data hardcoded in dictionary |
-| Stock In | `Forms/Transactions/StockInForm.vb` | Implemented | No stock level updates |
-| Stock Out | `Forms/Transactions/StockOutForm.vb` | Implemented | No stock level updates |
+| Sales / POS | `Forms/Transactions/SalesForm.vb` | Implemented | 4 validation bugs (see Section 3) |
+| Stock In | `Forms/Transactions/StockInForm.vb` | Implemented | 1 validation bug; no stock level updates |
+| Stock Out | `Forms/Transactions/StockOutForm.vb` | Implemented | 1 validation bug; no stock level updates |
 | Receipts | `Forms/Transactions/ReceiptsForm.vb` | Implemented | Hardcoded receipt samples |
 
 ### Reports Module
@@ -61,9 +63,156 @@ SAIMS is a Windows desktop Point-of-Sale and Inventory Management prototype buil
 
 ---
 
-## 3. What Is Lacking (Critical Gaps)
+## 3. Code-Level Bugs Found (June 2026 Audit)
 
-### 3.1 Database Layer — **MISSING**
+These are specific bugs identified from reading the source files directly. All are fixable now without needing a database.
+
+---
+
+### BUG-01 — Missing Negative Quantity Validation
+**File:** `Forms/Transactions/SalesForm.vb` ~Line 190
+**Severity:** Medium
+
+**Problem:** When a user manually edits a quantity in the cart DataGridView, there is no check preventing zero or negative values. Entering `-5` produces a negative line total and inflates the change amount.
+
+**Current code:**
+```vb
+Dim qty As Integer = CInt(row.Cells("colQuantity").Value)
+row.Cells("colTotal").Value = FormatCurrency(qty * price)
+```
+
+**Fix:**
+```vb
+Dim qty As Integer = CInt(row.Cells("colQuantity").Value)
+If qty <= 0 Then
+    MessageBox.Show("Quantity must be greater than zero.", "Invalid Quantity", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+    row.Cells("colQuantity").Value = 1
+    Return
+End If
+row.Cells("colTotal").Value = FormatCurrency(qty * price)
+```
+
+---
+
+### BUG-02 — Missing Discount Range Validation
+**File:** `Forms/Transactions/SalesForm.vb` ~Line 103
+**Severity:** Medium
+
+**Problem:** The discount field accepts negative values (which adds to the total instead of subtracting) and accepts values larger than the cart total (which produces a negative final amount). Neither case is caught.
+
+**Current code:**
+```vb
+Dim finalTotal As Decimal = cartTotal - discount
+txtTotalAmount.Text = FormatCurrency(finalTotal)
+```
+
+**Fix:**
+```vb
+If discount < 0 Then
+    discount = 0
+    txtDiscount.Text = "0"
+ElseIf discount > cartTotal Then
+    discount = cartTotal
+    txtDiscount.Text = cartTotal.ToString()
+End If
+Dim finalTotal As Decimal = cartTotal - discount
+txtTotalAmount.Text = FormatCurrency(finalTotal)
+```
+
+---
+
+### BUG-03 — No Visual Warning for Underpayment
+**File:** `Forms/Transactions/SalesForm.vb` ~Line 127
+**Severity:** Low
+
+**Problem:** If the amount tendered is less than the total, the change displays as a negative number with no visual distinction. A cashier may not notice without looking carefully.
+
+**Current code:**
+```vb
+Dim change As Decimal = tendered - total
+txtChange.Text = FormatCurrency(change)
+```
+
+**Fix:**
+```vb
+Dim change As Decimal = tendered - total
+txtChange.Text = FormatCurrency(change)
+txtChange.ForeColor = If(change < 0, Color.Red, Color.Black)
+```
+
+---
+
+### BUG-04 — Unsafe Type Conversion (CInt / CDec)
+**File:** `Forms/Transactions/SalesForm.vb` — Lines 63, 90, 124, 190
+**Severity:** Low
+
+**Problem:** `CInt()` and `CDec()` throw `InvalidCastException` or `FormatException` if a cell contains an unexpected non-numeric string. There are no `Try/Catch` guards around these calls, so a bad value can crash the form.
+
+**Fix (example):**
+```vb
+' Instead of:
+Dim qty As Integer = CInt(row.Cells("colQuantity").Value)
+
+' Use:
+Dim qty As Integer = 1
+If Not Integer.TryParse(row.Cells("colQuantity").Value?.ToString(), qty) Then
+    MessageBox.Show("Invalid quantity format.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+    Return
+End If
+```
+
+Apply the same pattern to all `CDec()` calls reading from grid cells or text boxes.
+
+---
+
+### BUG-05 — No Numeric Validation in Stock In Quantity
+**File:** `Forms/Transactions/StockInForm.vb` ~Line 29
+**Severity:** Medium
+
+**Problem:** The form only checks whether the quantity field is empty. It does not validate that the value is a positive integer. Non-numeric input (e.g. `"abc"`, `"-10"`, `"1.5"`) passes the check and produces a misleading success message.
+
+**Current code:**
+```vb
+If String.IsNullOrWhiteSpace(txtQuantity.Text) Then
+    ' Only checks for empty
+    Return
+End If
+```
+
+**Fix:**
+```vb
+Dim quantity As Integer
+If Not Integer.TryParse(txtQuantity.Text, quantity) OrElse quantity <= 0 Then
+    MessageBox.Show("Please enter a valid positive quantity.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+    Return
+End If
+```
+
+---
+
+### BUG-06 — No Numeric Validation in Stock Out Quantity
+**File:** `Forms/Transactions/StockOutForm.vb` ~Line 40
+**Severity:** Medium
+
+**Problem:** Same issue as BUG-05. The Stock Out quantity field is not validated for numeric type or positive value.
+
+**Fix:** Apply the same `Integer.TryParse` pattern as BUG-05.
+
+---
+
+### BUG-07 — Dead Code: Unused Form1 Files
+**Files:** `Form1.vb`, `Form1.Designer.vb`, `Form1.resx`
+**Severity:** Low
+
+**Problem:** These are the default Visual Studio template files. They contain an empty form class that is never referenced anywhere in the project. They add noise to the project and will appear in searches.
+
+**Fix:** Delete all three files.
+
+---
+
+## 4. What Is Lacking (Critical Gaps)
+
+### 4.1 Database Layer — **MISSING**
 
 This is the most critical gap. There is no database, no ORM, and no persistence layer of any kind.
 
@@ -78,7 +227,7 @@ This is the most critical gap. There is no database, no ORM, and no persistence 
 
 ---
 
-### 3.2 Authentication — **STUB ONLY**
+### 4.2 Authentication — **STUB ONLY**
 
 `LoginForm.vb` navigates to the dashboard without any credential validation. There is no password hashing, session management, or role-based access control.
 
@@ -91,7 +240,7 @@ This is the most critical gap. There is no database, no ORM, and no persistence 
 
 ---
 
-### 3.3 Business Logic Layer — **MISSING**
+### 4.3 Business Logic Layer — **MISSING**
 
 All logic is currently written directly inside form event handlers. There is no separation between UI, business rules, and data access.
 
@@ -103,7 +252,7 @@ All logic is currently written directly inside form event handlers. There is no 
 
 ---
 
-### 3.4 Inventory Management Logic — **NON-FUNCTIONAL**
+### 4.4 Inventory Management Logic — **NON-FUNCTIONAL**
 
 Stock In and Stock Out forms exist but do not actually update any stock levels. The Products form shows quantities that are hardcoded and never change.
 
@@ -116,7 +265,7 @@ Stock In and Stock Out forms exist but do not actually update any stock levels. 
 
 ---
 
-### 3.5 Sales Persistence — **NON-FUNCTIONAL**
+### 4.5 Sales Persistence — **NON-FUNCTIONAL**
 
 Sales are processed in SalesForm with cart totals computed correctly, but no transaction record is saved anywhere.
 
@@ -128,7 +277,7 @@ Sales are processed in SalesForm with cart totals computed correctly, but no tra
 
 ---
 
-### 3.6 Error Handling — **MINIMAL**
+### 4.6 Error Handling — **MINIMAL**
 
 Only basic `MessageBox.Show()` calls exist. No structured exception handling, no user-friendly error messages for edge cases, and no recovery paths.
 
@@ -140,7 +289,7 @@ Only basic `MessageBox.Show()` calls exist. No structured exception handling, no
 
 ---
 
-### 3.7 Logging — **MISSING**
+### 4.7 Logging — **MISSING**
 
 There is no application logging. Errors, user actions, and system events are not recorded anywhere.
 
@@ -152,7 +301,7 @@ There is no application logging. Errors, user actions, and system events are not
 
 ---
 
-### 3.8 Unit Tests — **MISSING**
+### 4.8 Unit Tests — **MISSING**
 
 No test project exists. There is a `BARCODE_TESTING_GUIDE.md` for manual testing only.
 
@@ -164,9 +313,9 @@ No test project exists. There is a `BARCODE_TESTING_GUIDE.md` for manual testing
 
 ---
 
-### 3.9 Reports — **STATIC / NON-FUNCTIONAL**
+### 4.9 Reports — **STATIC / NON-FUNCTIONAL**
 
-`InventoryReportForm.vb` is the largest file in the project (3,628 lines) but displays only hardcoded sample data. No real reporting is implemented.
+`InventoryReportForm.vb` displays only hardcoded sample data. No real reporting is implemented.
 
 **What needs to be added:**
 - Query the database to populate report DataGridViews
@@ -177,7 +326,7 @@ No test project exists. There is a `BARCODE_TESTING_GUIDE.md` for manual testing
 
 ---
 
-### 3.10 CI/CD Pipeline — **MISSING**
+### 4.10 CI/CD Pipeline — **MISSING**
 
 No automated build, test, or deployment pipeline exists.
 
@@ -191,7 +340,7 @@ No automated build, test, or deployment pipeline exists.
 
 ---
 
-### 3.11 Configuration Management — **MISSING**
+### 4.11 Configuration Management — **MISSING**
 
 No `app.config` or `appsettings.json` exists. Database connection strings, environment-specific settings, and feature flags have no home.
 
@@ -202,31 +351,27 @@ No `app.config` or `appsettings.json` exists. Database connection strings, envir
 
 ---
 
-### 3.12 Form1.vb — **DEAD CODE**
+## 5. Full Code Quality Issue Table
 
-`Form1.vb` and `Form1.Designer.vb` are the default Visual Studio starter files. They contain no logic and are never used.
-
-**Action needed:** Delete `Form1.vb`, `Form1.Designer.vb`, and `Form1.resx` to keep the project clean.
-
----
-
-## 4. Code Quality Observations
-
-| Issue | Location | Severity |
-|---|---|---|
-| Login has no credential validation | `LoginForm.vb` | Critical |
-| All product data hardcoded in dictionary | `SalesForm.vb` | High |
-| No stock level updates on sale | `SalesForm.vb` | High |
-| Business logic inside form event handlers | All forms | High |
-| No input validation on forms | All forms | High |
-| No `Try/Catch` around operations | All forms | Medium |
-| `Form1.vb` dead code never removed | Root | Low |
-| Progress.md committed to repo | Root | Low |
-| No `.editorconfig` for consistent formatting | Root | Low |
+| # | Issue | Location | Severity | Status |
+|---|---|---|---|---|
+| BUG-01 | Negative/zero quantity allowed in cart edit | `SalesForm.vb` ~L190 | Medium | Open |
+| BUG-02 | Discount can be negative or exceed total | `SalesForm.vb` ~L103 | Medium | Open |
+| BUG-03 | No visual indicator for underpayment | `SalesForm.vb` ~L127 | Low | Open |
+| BUG-04 | Unsafe CInt/CDec conversions (no try-parse) | `SalesForm.vb` L63,90,124,190 | Low | Open |
+| BUG-05 | Non-numeric quantity accepted in Stock In | `StockInForm.vb` ~L29 | Medium | Open |
+| BUG-06 | Non-numeric quantity accepted in Stock Out | `StockOutForm.vb` ~L40 | Medium | Open |
+| BUG-07 | Dead Form1 files never removed | `Form1.vb/.Designer.vb/.resx` | Low | Open |
+| GAP-01 | Login has no credential validation | `LoginForm.vb` | Critical | Open |
+| GAP-02 | All product data hardcoded in dictionary | `SalesForm.vb` | High | Open |
+| GAP-03 | No stock level updates on sale | `SalesForm.vb` | High | Open |
+| GAP-04 | Business logic inside form event handlers | All forms | High | Open |
+| GAP-05 | No `Try/Catch` around operations | All forms | Medium | Open |
+| GAP-06 | No `.editorconfig` for consistent formatting | Root | Low | Open |
 
 ---
 
-## 5. Documentation Gaps
+## 6. Documentation Gaps
 
 | Document | Status |
 |---|---|
@@ -242,7 +387,7 @@ No `app.config` or `appsettings.json` exists. Database connection strings, envir
 
 ---
 
-## 6. Recommended Implementation Priority
+## 7. Recommended Implementation Priority
 
 | Priority | Task |
 |---|---|
@@ -251,17 +396,18 @@ No `app.config` or `appsettings.json` exists. Database connection strings, envir
 | 3 (High) | Create service/business logic layer (separate from forms) |
 | 4 (High) | Connect SalesForm to DB — persist transactions and deduct stock |
 | 5 (High) | Connect StockIn/StockOut to DB — update product quantities |
-| 6 (Medium) | Add `Try/Catch` and input validation across all forms |
-| 7 (Medium) | Add logging (Serilog to file) |
-| 8 (Medium) | Connect Reports module to live database queries |
-| 9 (Medium) | Create unit test project and write tests for service layer |
-| 10 (Low) | Set up GitHub Actions CI pipeline |
-| 11 (Low) | Export to PDF/Excel in Reports |
-| 12 (Low) | Delete dead Form1 files |
+| 6 (Medium) | Fix BUG-01 through BUG-06 — input validation across SalesForm, StockIn, StockOut |
+| 7 (Medium) | Add `Try/Catch` and structured error handling across all forms |
+| 8 (Medium) | Add logging (Serilog to file) |
+| 9 (Medium) | Connect Reports module to live database queries |
+| 10 (Medium) | Create unit test project and write tests for service layer |
+| 11 (Low) | Set up GitHub Actions CI pipeline |
+| 12 (Low) | Export to PDF/Excel in Reports |
+| 13 (Low) | Delete dead Form1 files (BUG-07) |
 
 ---
 
-## 7. Suggested Project Structure (After Refactor)
+## 8. Suggested Project Structure (After Refactor)
 
 ```
 SAIMS/
@@ -298,4 +444,243 @@ SAIMS/
 
 ---
 
+---
+
+## 9. Database Implementation Plan (Next Step)
+
+> Follows the pattern defined in `docs/Database-Connection-Pattern.md`.
+> This is the first major implementation milestone before any bug fixes or backend logic.
+
+---
+
+### 9.1 NuGet Package
+
+Install `Microsoft.Data.SqlClient` v5.x before writing any database code.
+
+```
+Install-Package Microsoft.Data.SqlClient
+```
+
+Add to `.vbproj`:
+```xml
+<PackageReference Include="Microsoft.Data.SqlClient" Version="5.*" />
+```
+
+---
+
+### 9.2 Connection String Setup
+
+**Files to create:**
+
+| File | Location | Git |
+|---|---|---|
+| `config.txt` | `bin\Debug\net8.0-windows\` (next to the `.exe`) | **Excluded** — in `.gitignore` |
+| `config.txt.example` | Project root | **Committed** — template only |
+| `dbconstring.vb` | Project root | **Committed** |
+
+**`config.txt` format (local dev — SQL Express):**
+```
+Data Source=Glenn\SQLEXPRESS;Initial Catalog=SAIMS_DB;Integrated Security=True;TrustServerCertificate=True;Encrypt=False;
+```
+
+**`.gitignore` entry to add:**
+```
+config.txt
+```
+
+---
+
+### 9.3 Database Schema — Tables to Create
+
+All tables follow the `tbl_` prefix convention.
+
+#### `tbl_Categories`
+```sql
+CREATE TABLE tbl_Categories (
+    CategoryID   INT IDENTITY(1,1) PRIMARY KEY,
+    CategoryName NVARCHAR(100) NOT NULL,
+    Description  NVARCHAR(255),
+    Status       NVARCHAR(20) NOT NULL DEFAULT 'Active',
+    CreatedAt    DATETIME     NOT NULL DEFAULT GETDATE()
+)
+```
+
+#### `tbl_Products`
+```sql
+CREATE TABLE tbl_Products (
+    ProductID    INT IDENTITY(1,1) PRIMARY KEY,
+    Barcode      NVARCHAR(50)   NOT NULL UNIQUE,
+    ProductName  NVARCHAR(150)  NOT NULL,
+    CategoryID   INT            NOT NULL REFERENCES tbl_Categories(CategoryID),
+    Price        DECIMAL(10,2)  NOT NULL,
+    Stock        INT            NOT NULL DEFAULT 0,
+    LowStockQty  INT            NOT NULL DEFAULT 10,
+    Status       NVARCHAR(20)   NOT NULL DEFAULT 'Active',
+    CreatedAt    DATETIME       NOT NULL DEFAULT GETDATE()
+)
+```
+
+#### `tbl_Users`
+```sql
+CREATE TABLE tbl_Users (
+    UserID       INT IDENTITY(1,1) PRIMARY KEY,
+    Username     NVARCHAR(100)  NOT NULL UNIQUE,
+    PasswordHash NVARCHAR(255)  NOT NULL,
+    FullName     NVARCHAR(150),
+    UserType     NVARCHAR(50)   NOT NULL DEFAULT 'Cashier',
+    Status       NVARCHAR(20)   NOT NULL DEFAULT 'Active',
+    CreatedAt    DATETIME       NOT NULL DEFAULT GETDATE()
+)
+```
+
+#### `tbl_Sales`
+```sql
+CREATE TABLE tbl_Sales (
+    SaleID         INT IDENTITY(1,1) PRIMARY KEY,
+    ReceiptNo      NVARCHAR(50)   NOT NULL UNIQUE,
+    CashierID      INT            NOT NULL REFERENCES tbl_Users(UserID),
+    SaleDate       DATETIME       NOT NULL DEFAULT GETDATE(),
+    SubTotal       DECIMAL(10,2)  NOT NULL,
+    Discount       DECIMAL(10,2)  NOT NULL DEFAULT 0,
+    TotalAmount    DECIMAL(10,2)  NOT NULL,
+    AmountTendered DECIMAL(10,2)  NOT NULL,
+    Change         DECIMAL(10,2)  NOT NULL,
+    PaymentMethod  NVARCHAR(50)   NOT NULL,
+    Status         NVARCHAR(20)   NOT NULL DEFAULT 'Completed'
+)
+```
+
+#### `tbl_SaleItems`
+```sql
+CREATE TABLE tbl_SaleItems (
+    SaleItemID  INT IDENTITY(1,1) PRIMARY KEY,
+    SaleID      INT            NOT NULL REFERENCES tbl_Sales(SaleID),
+    ProductID   INT            NOT NULL REFERENCES tbl_Products(ProductID),
+    Quantity    INT            NOT NULL,
+    UnitPrice   DECIMAL(10,2)  NOT NULL,
+    LineTotal   DECIMAL(10,2)  NOT NULL
+)
+```
+
+#### `tbl_StockMovements`
+```sql
+CREATE TABLE tbl_StockMovements (
+    MovementID   INT IDENTITY(1,1) PRIMARY KEY,
+    ProductID    INT            NOT NULL REFERENCES tbl_Products(ProductID),
+    MovementType NVARCHAR(20)   NOT NULL,  -- 'StockIn', 'StockOut', 'Sale'
+    Quantity     INT            NOT NULL,
+    Reason       NVARCHAR(255),
+    MovementDate DATETIME       NOT NULL DEFAULT GETDATE(),
+    CreatedBy    INT            NOT NULL REFERENCES tbl_Users(UserID)
+)
+```
+
+#### `tbl_ActivityLogs`
+```sql
+CREATE TABLE tbl_ActivityLogs (
+    LogID       INT IDENTITY(1,1) PRIMARY KEY,
+    Username    NVARCHAR(100)  NOT NULL,
+    LogDate     DATETIME       NOT NULL DEFAULT GETDATE(),
+    Result      NVARCHAR(50)   NOT NULL,  -- 'Success', 'Failed', 'Warning'
+    Description NVARCHAR(500)  NOT NULL
+)
+```
+
+---
+
+### 9.4 Project Files to Create
+
+```
+SAIMS/
+├── dbconstring.vb                          ← reads config.txt
+├── SessionManager.vb                       ← holds logged-in user info
+├── ActivityLogger.vb                       ← wraps ActivityLogRepository
+├── Helpers/
+│   ├── InputHelper.vb                      ← SanitizeInput()
+│   ├── PasswordHelper.vb                   ← HashPassword() / VerifyPassword()
+│   └── Constants.vb                        ← UserType, Status, PaymentMethod strings
+└── DataAccess/
+    ├── CategoryRepository.vb
+    ├── ProductRepository.vb
+    ├── UserRepository.vb
+    ├── SalesRepository.vb
+    ├── SaleItemRepository.vb
+    ├── StockMovementRepository.vb
+    └── ActivityLogRepository.vb
+```
+
+---
+
+### 9.5 Session Pattern
+
+```vb
+' SessionManager.vb
+Public Module SessionManager
+    Public Username As String = ""
+    Public FullName As String = ""
+    Public UserType As String = ""
+    Public UserID   As Integer = 0
+
+    Public Sub Clear()
+        Username = ""
+        FullName = ""
+        UserType = ""
+        UserID   = 0
+    End Sub
+End Module
+```
+
+---
+
+### 9.6 Implementation Order
+
+Do these steps in sequence — each one depends on the previous.
+
+| Step | Task | Files Affected |
+|---|---|---|
+| 1 | Install `Microsoft.Data.SqlClient` NuGet | `.vbproj` |
+| 2 | Create `dbconstring.vb` | Project root |
+| 3 | Create `config.txt.example`, add `config.txt` to `.gitignore` | Root, `.gitignore` |
+| 4 | Create `config.txt` next to `.exe` with real connection string | `bin\Debug\...` |
+| 5 | Run SQL script to create all 7 tables in SQL Server | SQL Server |
+| 6 | Seed initial data (1 Admin user, sample categories) | SQL Server |
+| 7 | Create `SessionManager.vb` | Project root |
+| 8 | Create `Helpers/` — `Constants.vb`, `InputHelper.vb`, `PasswordHelper.vb` | Helpers/ |
+| 9 | Create `DataAccess/` repositories — one per table | DataAccess/ |
+| 10 | Create `ActivityLogger.vb` + `ActivityLogRepository.vb` | Project root + DataAccess/ |
+| 11 | Wire up `LoginForm.vb` to `UserRepository` (real auth) | Forms/ |
+| 12 | Wire up `ProductsForm.vb` to `ProductRepository` | Forms/Setup/ |
+| 13 | Wire up `CategoriesForm.vb` to `CategoryRepository` | Forms/Setup/ |
+| 14 | Wire up `UsersForm.vb` to `UserRepository` | Forms/Setup/ |
+| 15 | Wire up `SalesForm.vb` — lookup products, save sale, deduct stock | Forms/Transactions/ |
+| 16 | Wire up `StockInForm.vb` / `StockOutForm.vb` to `StockMovementRepository` | Forms/Transactions/ |
+| 17 | Wire up `ReceiptsForm.vb` to `SalesRepository` | Forms/Transactions/ |
+| 18 | Wire up `InventoryReportForm.vb` to live queries | Forms/Reports/ |
+
+---
+
+### 9.7 Password Hashing
+
+Uses `BCrypt.Net-Next`. Install:
+```
+Install-Package BCrypt.Net-Next
+```
+
+```vb
+' Helpers/PasswordHelper.vb
+Public Module PasswordHelper
+    Public Function HashPassword(plain As String) As String
+        Return BCrypt.Net.BCrypt.HashPassword(plain)
+    End Function
+
+    Public Function VerifyPassword(plain As String, hash As String) As Boolean
+        Return BCrypt.Net.BCrypt.Verify(plain, hash)
+    End Function
+End Module
+```
+
+---
+
 *Generated by Claude Code automated audit — 2026-06-09*
+*Updated by Claude Code full source audit — 2026-06-20*
+*Database plan added — 2026-06-20 (follows docs/Database-Connection-Pattern.md)*

@@ -1,59 +1,124 @@
 Public Class StockOutForm
+
+    Private _products As DataTable
+
     Private Sub StockOutForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        cmbProduct.Items.AddRange(New String() {
-            "Coca Cola 1.5L",
-            "Lucky Me Pancit Canton",
-            "Argentina Corned Beef",
-            "Red Horse Beer",
-            "Payless White Sugar 1kg"
-        })
+        LoadProducts()
 
-        cmbReason.Items.AddRange(New String() {
-            "Damaged",
-            "Expired",
-            "Returns",
-            "Wastage",
-            "Other"
-        })
-
-        If cmbProduct.Items.Count > 0 Then
-            cmbProduct.SelectedIndex = 0
-        End If
-
-        If cmbReason.Items.Count > 0 Then
-            cmbReason.SelectedIndex = 0
-        End If
+        cmbReason.Items.Clear()
+        cmbReason.Items.AddRange(New String() {"Damaged", "Expired", "Returns", "Wastage", "Other"})
+        cmbReason.SelectedIndex = 0
 
         dtpDate.Value = DateTime.Now
         LoadStockOutHistory()
     End Sub
 
-    Private Sub LoadStockOutHistory()
-        dgvStockOut.Rows.Clear()
+    Private Sub LoadProducts()
+        Try
+            _products = ProductRepository.GetAll()
+            cmbProduct.DataSource    = _products
+            cmbProduct.DisplayMember = "ProductName"
+            cmbProduct.ValueMember   = "ProductID"
+        Catch ex As Exception
+            MessageBox.Show("Failed to load products." & Environment.NewLine & ex.Message,
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
 
-        dgvStockOut.Rows.Add("SO001", "Coca Cola 1.5L", "5", "Damaged", "2024-01-15", "Broken bottles")
-        dgvStockOut.Rows.Add("SO002", "Lucky Me Pancit Canton", "10", "Expired", "2024-01-16", "Past expiry date")
-        dgvStockOut.Rows.Add("SO003", "Red Horse Beer", "3", "Damaged", "2024-01-16", "Dented cans")
+    Private Sub LoadStockOutHistory()
+        Try
+            Dim dt As DataTable = StockMovementRepository.GetAll()
+            dgvStockOut.Rows.Clear()
+
+            For Each row As DataRow In dt.Rows
+                If row("MovementType").ToString() = Constants.MOVEMENT_STOCKOUT Then
+                    Dim reasonFull As String = row("Reason").ToString()
+                    Dim reason     As String = reasonFull
+                    Dim remarks    As String = ""
+
+                    Dim sepIdx As Integer = reasonFull.IndexOf(": ")
+                    If sepIdx >= 0 Then
+                        reason  = reasonFull.Substring(0, sepIdx)
+                        remarks = reasonFull.Substring(sepIdx + 2)
+                    End If
+
+                    dgvStockOut.Rows.Add(
+                        row("MovementID").ToString(),
+                        row("ProductName").ToString(),
+                        row("Quantity").ToString(),
+                        reason,
+                        CDate(row("MovementDate")).ToString("yyyy-MM-dd HH:mm"),
+                        remarks)
+                End If
+            Next
+
+        Catch ex As Exception
+            MessageBox.Show("Failed to load stock out history." & Environment.NewLine & ex.Message,
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
-        If String.IsNullOrWhiteSpace(txtQuantity.Text) Then
-            MessageBox.Show("Please enter quantity!", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        If cmbProduct.SelectedValue Is Nothing Then
+            MessageBox.Show("Please select a product.", "Validation",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
 
-        MessageBox.Show($"Stock Out Recorded!" & vbCrLf &
-                       $"Product: {cmbProduct.Text}" & vbCrLf &
-                       $"Quantity: {txtQuantity.Text}" & vbCrLf &
-                       $"Reason: {cmbReason.Text}" & vbCrLf &
-                       $"Date: {dtpDate.Value.ToShortDateString()}" & vbCrLf &
-                       $"Remarks: {txtRemarks.Text}" & vbCrLf & vbCrLf &
-                       "UI Only - No Database",
-                       "Stock Out Success",
-                       MessageBoxButtons.OK,
-                       MessageBoxIcon.Information)
+        Dim qty As Integer
+        If Not Integer.TryParse(txtQuantity.Text, qty) OrElse qty <= 0 Then
+            MessageBox.Show("Please enter a valid quantity (must be greater than 0).", "Validation",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
 
-        ClearFields()
+        Dim productID   As Integer = CInt(cmbProduct.SelectedValue)
+        Dim productName As String  = cmbProduct.Text
+        Dim reason      As String  = cmbReason.SelectedItem.ToString()
+        Dim remarks     As String  = InputHelper.SanitizeInput(txtRemarks.Text)
+
+        ' Validate against current stock
+        Dim currentStock As Integer = 0
+        If _products IsNot Nothing Then
+            For Each r As DataRow In _products.Rows
+                If CInt(r("ProductID")) = productID Then
+                    currentStock = CInt(r("Stock"))
+                    Exit For
+                End If
+            Next
+        End If
+
+        If qty > currentStock Then
+            MessageBox.Show($"Cannot remove {qty} units — only {currentStock} currently in stock.",
+                            "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim fullReason As String = reason & If(String.IsNullOrWhiteSpace(remarks), "", ": " & remarks)
+
+        Try
+            ProductRepository.DeductStock(productID, qty)
+            StockMovementRepository.Insert(productID, Constants.MOVEMENT_STOCKOUT, qty,
+                                           fullReason, SessionManager.UserID)
+            ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
+                               $"Stock Out: {productName} -{qty} units ({reason})")
+
+            MessageBox.Show($"Stock out recorded successfully!" &
+                            Environment.NewLine & Environment.NewLine &
+                            $"Product:  {productName}" &
+                            Environment.NewLine &
+                            $"Quantity: -{qty}" &
+                            Environment.NewLine &
+                            $"Reason:   {reason}",
+                            "Stock Out Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+            ClearFields()
+            LoadStockOutHistory()
+
+        Catch ex As Exception
+            MessageBox.Show("Failed to record stock out." & Environment.NewLine & ex.Message,
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub btnClear_Click(sender As Object, e As EventArgs) Handles btnClear.Click
@@ -61,12 +126,8 @@ Public Class StockOutForm
     End Sub
 
     Private Sub ClearFields()
-        If cmbProduct.Items.Count > 0 Then
-            cmbProduct.SelectedIndex = 0
-        End If
-        If cmbReason.Items.Count > 0 Then
-            cmbReason.SelectedIndex = 0
-        End If
+        If cmbProduct.Items.Count > 0 Then cmbProduct.SelectedIndex = 0
+        If cmbReason.Items.Count > 0 Then cmbReason.SelectedIndex = 0
         txtQuantity.Clear()
         txtRemarks.Clear()
         dtpDate.Value = DateTime.Now
@@ -75,4 +136,5 @@ Public Class StockOutForm
     Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click
         LoadStockOutHistory()
     End Sub
+
 End Class

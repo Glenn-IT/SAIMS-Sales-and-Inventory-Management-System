@@ -30,4 +30,9 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="BCrypt.Net-Next" Version="4.2.0" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.*" />
+  </ItemGroup>
+
 </Project>

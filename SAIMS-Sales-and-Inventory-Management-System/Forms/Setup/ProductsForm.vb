@@ -108,6 +108,10 @@ Public Class ProductsForm
                             MessageBoxButtons.OK, MessageBoxIcon.Information)
             LoadProducts()
 
+        Catch ex As Microsoft.Data.SqlClient.SqlException
+            Dim msg As String = InputHelper.GetConstraintMessage(ex)
+            MessageBox.Show(If(msg, "Failed to add product." & Environment.NewLine & ex.Message),
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         Catch ex As Exception
             MessageBox.Show("Failed to add product." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

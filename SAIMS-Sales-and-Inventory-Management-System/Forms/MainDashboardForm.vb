@@ -2,7 +2,15 @@ Public Class MainDashboardForm
     Private currentForm As Form = Nothing
 
     Private Sub MainDashboardForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        lblUserInfo.Text = "Admin"
+        lblUserInfo.Text = $"{SessionManager.FullName} ({SessionManager.UserType})"
+        ApplyRoleAccess()
+    End Sub
+
+    Private Sub ApplyRoleAccess()
+        Dim isAdmin As Boolean = (SessionManager.UserType = Constants.USERTYPE_ADMIN OrElse
+                                  SessionManager.UserType = Constants.USERTYPE_MANAGER)
+        btnSetup.Visible          = isAdmin
+        panelSetupSubmenu.Visible = False
     End Sub
 
     Private Sub LoadFormInPanel(formToLoad As Form)
@@ -71,8 +79,8 @@ Public Class MainDashboardForm
         MessageBox.Show("Sales and Inventory Management System (SAIMS)" & vbCrLf &
                        "Version 1.0" & vbCrLf &
                        "UI Prototype for Presentation" & vbCrLf & vbCrLf &
-                       "Technology: VB.NET WinForms · .NET 8.0" & vbCrLf &
-                       "© 2024 SAIMS Development Team",
+                       "Technology: VB.NET WinForms ï¿½ .NET 8.0" & vbCrLf &
+                       "ï¿½ 2024 SAIMS Development Team",
                        "About SAIMS",
                        MessageBoxButtons.OK,
                        MessageBoxIcon.Information)
@@ -81,6 +89,8 @@ Public Class MainDashboardForm
     Private Sub btnLogout_Click(sender As Object, e As EventArgs) Handles btnLogout.Click
         Dim result = MessageBox.Show("Are you sure you want to logout?", "Logout", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
         If result = DialogResult.Yes Then
+            ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS, "User logged out.")
+            SessionManager.Clear()
             Dim loginForm As New LoginForm()
             loginForm.Show()
             Me.Close()

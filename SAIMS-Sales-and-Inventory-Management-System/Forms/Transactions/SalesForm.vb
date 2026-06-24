@@ -133,7 +133,12 @@ Public Class SalesForm
 
     ' ─── Transaction summary ────────────────────────────────────────────────────
 
+    Private _updatingSummary As Boolean = False
+
     Private Sub UpdateTransactionSummary()
+        If _updatingSummary Then Return
+        _updatingSummary = True
+
         Dim subTotal  As Decimal = 0
         Dim itemCount As Integer = 0
 
@@ -151,11 +156,18 @@ Public Class SalesForm
 
         Dim discount As Decimal = 0
         Decimal.TryParse(txtDiscount.Text, discount)
-        If discount < 0 Then discount = 0
+        If discount < 0 Then
+            discount = 0
+            txtDiscount.Text = "0"
+        ElseIf discount > subTotal Then
+            discount = subTotal
+            txtDiscount.Text = subTotal.ToString("F2")
+        End If
 
-        Dim finalTotal As Decimal = Math.Max(0, subTotal - discount)
+        Dim finalTotal As Decimal = subTotal - discount
         txtTotalAmount.Text = FormatCurrency(finalTotal)
 
+        _updatingSummary = False
         CalculateChange()
     End Sub
 
@@ -174,7 +186,9 @@ Public Class SalesForm
         Dim total As Decimal = 0
         Decimal.TryParse(txtTotalAmount.Text.Replace("₱", "").Replace(",", ""), total)
 
-        txtChange.Text = FormatCurrency(tendered - total)
+        Dim change As Decimal = tendered - total
+        txtChange.Text      = FormatCurrency(change)
+        txtChange.ForeColor = If(change < 0, Color.Red, Color.Black)
     End Sub
 
     Private Function FormatCurrency(amount As Decimal) As String

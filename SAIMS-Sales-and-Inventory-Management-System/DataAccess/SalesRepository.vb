@@ -57,6 +57,49 @@ Public Module SalesRepository
         Return dt
     End Function
 
+    Public Function GetSalesSummary(dateFrom As DateTime, dateTo As DateTime) As DataTable
+        Dim dt As New DataTable()
+        Using con As New SqlConnection(dbconstring.Connection)
+            con.Open()
+            Dim cmd As New SqlCommand(
+                "SELECT COUNT(*)          AS TotalTransactions,
+                        ISNULL(SUM(TotalAmount), 0) AS TotalRevenue,
+                        ISNULL(AVG(TotalAmount), 0) AS AverageSale
+                 FROM tbl_Sales
+                 WHERE CAST(SaleDate AS DATE) BETWEEN @from AND @to
+                   AND Status = 'Completed'", con)
+            cmd.Parameters.AddWithValue("@from", dateFrom.Date)
+            cmd.Parameters.AddWithValue("@to",   dateTo.Date)
+            Dim adapter As New SqlDataAdapter(cmd)
+            adapter.Fill(dt)
+        End Using
+        Return dt
+    End Function
+
+    Public Function GetTopSelling(dateFrom As DateTime, dateTo As DateTime,
+                                  Optional topN As Integer = 5) As DataTable
+        Dim dt As New DataTable()
+        Using con As New SqlConnection(dbconstring.Connection)
+            con.Open()
+            Dim cmd As New SqlCommand(
+               $"SELECT TOP {topN} p.ProductName,
+                        SUM(si.Quantity) AS TotalSold,
+                        SUM(si.LineTotal) AS TotalRevenue
+                 FROM tbl_SaleItems si
+                 INNER JOIN tbl_Products p ON si.ProductID = p.ProductID
+                 INNER JOIN tbl_Sales    s ON si.SaleID    = s.SaleID
+                 WHERE CAST(s.SaleDate AS DATE) BETWEEN @from AND @to
+                   AND s.Status = 'Completed'
+                 GROUP BY p.ProductName
+                 ORDER BY TotalSold DESC", con)
+            cmd.Parameters.AddWithValue("@from", dateFrom.Date)
+            cmd.Parameters.AddWithValue("@to",   dateTo.Date)
+            Dim adapter As New SqlDataAdapter(cmd)
+            adapter.Fill(dt)
+        End Using
+        Return dt
+    End Function
+
     Public Function GenerateReceiptNo() As String
         Return "RCP-" & DateTime.Now.ToString("yyyyMMdd-HHmmss")
     End Function

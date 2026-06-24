@@ -2,6 +2,59 @@ Public Class UsersForm
 
     Private Sub UsersForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LoadUsers()
+
+        ' Reset Password button — Admin only
+        If SessionManager.UserType = Constants.USERTYPE_ADMIN Then
+            Dim btnReset As New Button() With {
+                .Text          = "Reset Password",
+                .BackColor     = Color.FromArgb(142, 68, 173),
+                .ForeColor     = Color.White,
+                .FlatStyle     = FlatStyle.Flat,
+                .Font          = New Font("Segoe UI", 9, FontStyle.Bold),
+                .Location      = New Point(570, 50),
+                .Size          = New Size(140, 35),
+                .UseVisualStyleBackColor = False
+            }
+            AddHandler btnReset.Click, AddressOf btnResetPassword_Click
+            panelTop.Controls.Add(btnReset)
+        End If
+    End Sub
+
+    Private Sub btnResetPassword_Click(sender As Object, e As EventArgs)
+        If dgvUsers.SelectedRows.Count = 0 Then
+            MessageBox.Show("Please select a user to reset the password for.", "Reset Password",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim selectedRow As DataGridViewRow = dgvUsers.SelectedRows(0)
+        Dim userID   As Integer = CInt(selectedRow.Cells(0).Value)
+        Dim username As String  = selectedRow.Cells(1).Value.ToString()
+
+        Dim newPassword As String = InputBox($"Enter new password for ""{username}"":", "Reset Password")
+        If String.IsNullOrWhiteSpace(newPassword) Then Return
+
+        If newPassword.Length < 6 Then
+            MessageBox.Show("Password must be at least 6 characters.", "Validation",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+
+        Dim confirm = MessageBox.Show($"Reset password for ""{username}""?",
+                                      "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+        If confirm <> DialogResult.Yes Then Return
+
+        Try
+            Dim hash As String = PasswordHelper.HashPassword(newPassword)
+            UserRepository.UpdatePassword(userID, hash)
+            ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
+                               $"Password reset for user: {username} (ID: {userID})")
+            MessageBox.Show("Password reset successfully.", "Success",
+                            MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            MessageBox.Show("Failed to reset password." & Environment.NewLine & ex.Message,
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub LoadUsers()
@@ -36,6 +89,11 @@ Public Class UsersForm
                             MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
+        If password.Length < 6 Then
+            MessageBox.Show("Password must be at least 6 characters.", "Validation",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
 
         Dim userType As String = InputHelper.SanitizeInput(
             InputBox("Role (Admin / Cashier / Manager / Staff):", "Add User"))
@@ -63,6 +121,10 @@ Public Class UsersForm
                             MessageBoxButtons.OK, MessageBoxIcon.Information)
             LoadUsers()
 
+        Catch ex As Microsoft.Data.SqlClient.SqlException
+            Dim msg As String = InputHelper.GetConstraintMessage(ex)
+            MessageBox.Show(If(msg, "Failed to add user." & Environment.NewLine & ex.Message),
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         Catch ex As Exception
             MessageBox.Show("Failed to add user." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

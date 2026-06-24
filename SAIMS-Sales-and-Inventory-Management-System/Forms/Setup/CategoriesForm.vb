@@ -48,6 +48,10 @@ Public Class CategoriesForm
                             MessageBoxButtons.OK, MessageBoxIcon.Information)
             LoadCategories()
 
+        Catch ex As Microsoft.Data.SqlClient.SqlException
+            Dim msg As String = InputHelper.GetConstraintMessage(ex)
+            MessageBox.Show(If(msg, "Failed to add category." & Environment.NewLine & ex.Message),
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         Catch ex As Exception
             MessageBox.Show("Failed to add category." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

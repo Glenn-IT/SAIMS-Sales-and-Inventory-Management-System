@@ -1,29 +1,108 @@
 Public Class ReceiptsForm
 
     Private _sales As DataTable
+    Private _dtpFrom As DateTimePicker
+    Private _dtpTo   As DateTimePicker
 
     Private Sub ReceiptsForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        AddFilterControls()
+        LoadReceipts()
+    End Sub
+
+    Private Sub AddFilterControls()
+        panelTop.Height = 140
+
+        Dim lblFrom As New Label() With {
+            .Text = "From:", .AutoSize = True,
+            .Font = New Font("Segoe UI", 9),
+            .Location = New Point(15, 95)}
+
+        _dtpFrom = New DateTimePicker() With {
+            .Format   = DateTimePickerFormat.Short,
+            .Location = New Point(60, 90),
+            .Size     = New Size(130, 25),
+            .Value    = DateTime.Today.AddDays(-30)}
+
+        Dim lblTo As New Label() With {
+            .Text = "To:", .AutoSize = True,
+            .Font = New Font("Segoe UI", 9),
+            .Location = New Point(200, 95)}
+
+        _dtpTo = New DateTimePicker() With {
+            .Format   = DateTimePickerFormat.Short,
+            .Location = New Point(225, 90),
+            .Size     = New Size(130, 25),
+            .Value    = DateTime.Today}
+
+        Dim btnFilter As New Button() With {
+            .Text      = "Filter",
+            .BackColor = Color.FromArgb(46, 204, 113),
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Font      = New Font("Segoe UI", 9, FontStyle.Bold),
+            .Location  = New Point(365, 87),
+            .Size      = New Size(80, 28),
+            .UseVisualStyleBackColor = False}
+
+        Dim btnShowAll As New Button() With {
+            .Text      = "Show All",
+            .BackColor = Color.FromArgb(52, 152, 219),
+            .ForeColor = Color.White,
+            .FlatStyle = FlatStyle.Flat,
+            .Font      = New Font("Segoe UI", 9, FontStyle.Bold),
+            .Location  = New Point(455, 87),
+            .Size      = New Size(80, 28),
+            .UseVisualStyleBackColor = False}
+
+        AddHandler btnFilter.Click,  AddressOf btnFilter_Click
+        AddHandler btnShowAll.Click, AddressOf btnShowAll_Click
+
+        panelTop.Controls.AddRange({lblFrom, _dtpFrom, lblTo, _dtpTo, btnFilter, btnShowAll})
+    End Sub
+
+    Private Sub btnFilter_Click(sender As Object, e As EventArgs)
+        If _dtpFrom.Value.Date > _dtpTo.Value.Date Then
+            MessageBox.Show("'From' date cannot be after 'To' date.", "Invalid Range",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            Return
+        End If
+        LoadReceiptsByDateRange(_dtpFrom.Value, _dtpTo.Value)
+    End Sub
+
+    Private Sub btnShowAll_Click(sender As Object, e As EventArgs)
         LoadReceipts()
     End Sub
 
     Private Sub LoadReceipts()
         Try
             _sales = SalesRepository.GetAll()
-            dgvReceipts.Rows.Clear()
-
-            For Each row As DataRow In _sales.Rows
-                dgvReceipts.Rows.Add(
-                    row("ReceiptNo").ToString(),
-                    CDate(row("SaleDate")).ToString("yyyy-MM-dd HH:mm"),
-                    "₱" & CDec(row("TotalAmount")).ToString("N2"),
-                    row("PaymentMethod").ToString(),
-                    row("Status").ToString())
-            Next
-
+            PopulateGrid(_sales)
         Catch ex As Exception
             MessageBox.Show("Failed to load receipts." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub LoadReceiptsByDateRange(dateFrom As DateTime, dateTo As DateTime)
+        Try
+            _sales = SalesRepository.GetByDateRange(dateFrom, dateTo)
+            PopulateGrid(_sales)
+        Catch ex As Exception
+            MessageBox.Show("Failed to filter receipts." & Environment.NewLine & ex.Message,
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
+    End Sub
+
+    Private Sub PopulateGrid(dt As DataTable)
+        dgvReceipts.Rows.Clear()
+        For Each row As DataRow In dt.Rows
+            dgvReceipts.Rows.Add(
+                row("ReceiptNo").ToString(),
+                CDate(row("SaleDate")).ToString("yyyy-MM-dd HH:mm"),
+                "₱" & CDec(row("TotalAmount")).ToString("N2"),
+                row("PaymentMethod").ToString(),
+                row("Status").ToString())
+        Next
     End Sub
 
     Private Sub btnViewReceipt_Click(sender As Object, e As EventArgs) Handles btnViewReceipt.Click

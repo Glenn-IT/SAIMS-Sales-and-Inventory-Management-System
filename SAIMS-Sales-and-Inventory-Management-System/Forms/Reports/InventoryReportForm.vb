@@ -11,8 +11,21 @@ Public Class InventoryReportForm
         LoadProductList()
     End Sub
 
+    Private Function GetReportDateRange() As (DateFrom As DateTime, DateTo As DateTime)
+        Dim dateTo   As DateTime = DateTime.Today
+        Dim dateFrom As DateTime
+        Select Case cmbReportType.Text
+            Case "Daily"   : dateFrom = dateTo
+            Case "Weekly"  : dateFrom = dateTo.AddDays(-6)
+            Case "Yearly"  : dateFrom = New DateTime(dateTo.Year, 1, 1)
+            Case Else      : dateFrom = New DateTime(dateTo.Year, dateTo.Month, 1) ' Monthly default
+        End Select
+        Return (dateFrom, dateTo)
+    End Function
+
     Private Sub LoadInventorySummary()
         Try
+            ' Current stock stats are always live (not date-filtered)
             Dim products As DataTable = ProductRepository.GetAll()
 
             Dim totalItems    As Integer = 0
@@ -34,10 +47,12 @@ Public Class InventoryReportForm
             txtLowStock.Text   = lowStockCount.ToString()
             txtOutOfStock.Text = outOfStockCnt.ToString()
 
-            ' All-time movement totals
-            Dim movements As DataTable = StockMovementRepository.GetAll()
-            Dim totalIn   As Integer   = 0
-            Dim totalOut  As Integer   = 0
+            ' Stock movements filtered to the selected report period
+            Dim range     As (DateFrom As DateTime, DateTo As DateTime) = GetReportDateRange()
+            Dim movements As DataTable = StockMovementRepository.GetByDateRange(range.DateFrom, range.DateTo)
+
+            Dim totalIn  As Integer = 0
+            Dim totalOut As Integer = 0
 
             For Each row As DataRow In movements.Rows
                 Dim qty   As Integer = CInt(row("Quantity"))
@@ -49,13 +64,14 @@ Public Class InventoryReportForm
                 End If
             Next
 
-            ' Opening = Closing - In + Out  (derived from current stock and all movements)
             Dim opening As Integer = Math.Max(0, totalStock - totalIn + totalOut)
 
             txtOpeningStock.Text = opening.ToString()
             txtStockIn.Text      = totalIn.ToString()
             txtStockOut.Text     = totalOut.ToString()
             txtClosingStock.Text = totalStock.ToString()
+
+            lblReportPeriod.Text = $"Period: {range.DateFrom:MMM dd, yyyy}  —  {range.DateTo:MMM dd, yyyy}"
 
         Catch ex As Exception
             MessageBox.Show("Failed to load inventory summary." & Environment.NewLine & ex.Message,
@@ -85,20 +101,50 @@ Public Class InventoryReportForm
 
     Private Sub btnGenerateReport_Click(sender As Object, e As EventArgs) Handles btnGenerateReport.Click
         RefreshAll()
-        MessageBox.Show($"{cmbReportType.Text} Inventory Report" &
-                        Environment.NewLine & Environment.NewLine &
-                        $"Total Products:  {txtTotalItems.Text}" &
-                        Environment.NewLine &
-                        $"Total Stock:     {txtTotalStock.Text} units" &
-                        Environment.NewLine &
-                        $"Low Stock:       {txtLowStock.Text}" &
-                        Environment.NewLine &
-                        $"Out of Stock:    {txtOutOfStock.Text}" &
-                        Environment.NewLine & Environment.NewLine &
-                        $"Stock In:        +{txtStockIn.Text}" &
-                        Environment.NewLine &
-                        $"Stock Out/Sold:  -{txtStockOut.Text}",
-                        "Report Summary", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+        Try
+            Dim range    As (DateFrom As DateTime, DateTo As DateTime) = GetReportDateRange()
+            Dim summary  As DataTable = SalesRepository.GetSalesSummary(range.DateFrom, range.DateTo)
+            Dim topItems As DataTable = SalesRepository.GetTopSelling(range.DateFrom, range.DateTo, 5)
+
+            Dim sb As New System.Text.StringBuilder()
+            sb.AppendLine($"  {cmbReportType.Text} Report  —  {range.DateFrom:MMM dd} to {range.DateTo:MMM dd, yyyy}")
+            sb.AppendLine()
+            sb.AppendLine("── INVENTORY ──────────────────────")
+            sb.AppendLine($"  Total Products : {txtTotalItems.Text}")
+            sb.AppendLine($"  Total Stock    : {txtTotalStock.Text} units")
+            sb.AppendLine($"  Low Stock      : {txtLowStock.Text}")
+            sb.AppendLine($"  Out of Stock   : {txtOutOfStock.Text}")
+            sb.AppendLine()
+            sb.AppendLine("── STOCK MOVEMENT ─────────────────")
+            sb.AppendLine($"  Stock In       : +{txtStockIn.Text}")
+            sb.AppendLine($"  Stock Out/Sold : -{txtStockOut.Text}")
+
+            If summary.Rows.Count > 0 Then
+                Dim row As DataRow = summary.Rows(0)
+                sb.AppendLine()
+                sb.AppendLine("── SALES ──────────────────────────")
+                sb.AppendLine($"  Transactions   : {row("TotalTransactions")}")
+                sb.AppendLine($"  Total Revenue  : ₱{CDec(row("TotalRevenue")):N2}")
+                sb.AppendLine($"  Average Sale   : ₱{CDec(row("AverageSale")):N2}")
+            End If
+
+            If topItems.Rows.Count > 0 Then
+                sb.AppendLine()
+                sb.AppendLine("── TOP SELLING PRODUCTS ───────────")
+                Dim rank As Integer = 1
+                For Each item As DataRow In topItems.Rows
+                    sb.AppendLine($"  {rank}. {item("ProductName")} — {item("TotalSold")} units  (₱{CDec(item("TotalRevenue")):N2})")
+                    rank += 1
+                Next
+            End If
+
+            MessageBox.Show(sb.ToString(), "Report Summary", MessageBoxButtons.OK, MessageBoxIcon.Information)
+
+        Catch ex As Exception
+            MessageBox.Show("Failed to generate sales summary." & Environment.NewLine & ex.Message,
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub btnExportPDF_Click(sender As Object, e As EventArgs) Handles btnExportPDF.Click
@@ -107,8 +153,48 @@ Public Class InventoryReportForm
     End Sub
 
     Private Sub btnExportExcel_Click(sender As Object, e As EventArgs) Handles btnExportExcel.Click
-        MessageBox.Show("Excel export is not yet implemented.", "Export Excel",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Try
+            Using dlg As New SaveFileDialog()
+                dlg.Title            = "Export Inventory Report"
+                dlg.Filter           = "Excel Workbook (*.xlsx)|*.xlsx"
+                dlg.FileName         = $"InventoryReport_{DateTime.Today:yyyyMMdd}.xlsx"
+                If dlg.ShowDialog() <> DialogResult.OK Then Return
+
+                Using wb As New ClosedXML.Excel.XLWorkbook()
+                    Dim ws = wb.Worksheets.Add("Inventory")
+
+                    ' Header row
+                    Dim headers As String() = {"Product Name", "Category", "Price", "Stock", "Status"}
+                    For i As Integer = 0 To headers.Length - 1
+                        ws.Cell(1, i + 1).Value = headers(i)
+                        ws.Cell(1, i + 1).Style.Font.Bold = True
+                        ws.Cell(1, i + 1).Style.Fill.BackgroundColor =
+                            ClosedXML.Excel.XLColor.FromArgb(52, 73, 94)
+                        ws.Cell(1, i + 1).Style.Font.FontColor = ClosedXML.Excel.XLColor.White
+                    Next
+
+                    ' Data rows
+                    Dim rowNum As Integer = 2
+                    For Each gridRow As DataGridViewRow In dgvInventory.Rows
+                        If gridRow.IsNewRow Then Continue For
+                        For col As Integer = 0 To 4
+                            ws.Cell(rowNum, col + 1).Value =
+                                gridRow.Cells(col).Value?.ToString()
+                        Next
+                        rowNum += 1
+                    Next
+
+                    ws.Columns().AdjustToContents()
+                    wb.SaveAs(dlg.FileName)
+                End Using
+
+                MessageBox.Show($"Report exported to:{Environment.NewLine}{dlg.FileName}",
+                                "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            End Using
+        Catch ex As Exception
+            MessageBox.Show("Failed to export Excel file." & Environment.NewLine & ex.Message,
+                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub btnPrint_Click(sender As Object, e As EventArgs) Handles btnPrint.Click
@@ -121,7 +207,7 @@ Public Class InventoryReportForm
     End Sub
 
     Private Sub cmbReportType_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cmbReportType.SelectedIndexChanged
-        lblReportPeriod.Text = $"Report Period: {cmbReportType.Text}"
+        RefreshAll()
     End Sub
 
 End Class

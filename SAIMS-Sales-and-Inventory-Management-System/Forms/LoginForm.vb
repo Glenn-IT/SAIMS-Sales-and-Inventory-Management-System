@@ -1,7 +1,31 @@
+Imports Microsoft.Data.SqlClient
+
 Public Class LoginForm
 
+    Private Const MAX_ATTEMPTS   As Integer = 5
+    Private Const LOCKOUT_SECONDS As Integer = 30
+
+    Private _failedAttempts As Integer = 0
+    Private _lockoutSeconds As Integer = 0
+    Private WithEvents _lockTimer As New Timer() With {.Interval = 1000}
+
     Private Sub LoginForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        CheckDatabaseConnection()
         txtUsername.Focus()
+    End Sub
+
+    Private Sub CheckDatabaseConnection()
+        Try
+            Using conn As New SqlConnection(dbconstring.Connection)
+                conn.Open()
+            End Using
+        Catch ex As Exception
+            MessageBox.Show("Cannot connect to the database." &
+                            Environment.NewLine & Environment.NewLine &
+                            ex.Message & Environment.NewLine & Environment.NewLine &
+                            "Please check config.txt and ensure SQL Server is running.",
+                            "Database Connection Failed", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub btnLogin_Click(sender As Object, e As EventArgs) Handles btnLogin.Click
@@ -24,6 +48,7 @@ Public Class LoginForm
                 ActivityLogger.Log(username, Constants.LOG_FAILED, "Login failed - username not found.")
                 txtPassword.Clear()
                 txtUsername.Focus()
+                RecordFailedAttempt(username)
                 Return
             End If
 
@@ -44,10 +69,13 @@ Public Class LoginForm
                 ActivityLogger.Log(username, Constants.LOG_FAILED, "Login failed - wrong password.")
                 txtPassword.Clear()
                 txtPassword.Focus()
+                RecordFailedAttempt(username)
                 Return
             End If
 
-            ' Populate session
+            ' Reset lockout on successful login
+            _failedAttempts = 0
+
             SessionManager.UserID   = CInt(row("UserID"))
             SessionManager.Username = row("Username").ToString()
             SessionManager.FullName = row("FullName").ToString()
@@ -64,6 +92,30 @@ Public Class LoginForm
                             Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub RecordFailedAttempt(username As String)
+        _failedAttempts += 1
+        If _failedAttempts >= MAX_ATTEMPTS Then
+            _lockoutSeconds  = LOCKOUT_SECONDS
+            btnLogin.Enabled = False
+            btnLogin.Text    = $"Try again in {_lockoutSeconds}s"
+            _lockTimer.Start()
+            ActivityLogger.Log(username, Constants.LOG_WARNING,
+                               $"Account locked out after {MAX_ATTEMPTS} failed attempts.")
+        End If
+    End Sub
+
+    Private Sub _lockTimer_Tick(sender As Object, e As EventArgs) Handles _lockTimer.Tick
+        _lockoutSeconds -= 1
+        If _lockoutSeconds <= 0 Then
+            _lockTimer.Stop()
+            _failedAttempts  = 0
+            btnLogin.Enabled = True
+            btnLogin.Text    = "Login"
+        Else
+            btnLogin.Text = $"Try again in {_lockoutSeconds}s"
+        End If
     End Sub
 
     Private Sub btnCancel_Click(sender As Object, e As EventArgs) Handles btnCancel.Click

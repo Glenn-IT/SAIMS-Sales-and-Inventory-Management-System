@@ -1,9 +1,9 @@
 Public Class UnderConstructionForm
 
-    Public Const CURRENT_VERSION As String = "v1.05"
+    Public Const CURRENT_VERSION As String = "v1.06"
     ' Numeric twin of CURRENT_VERSION for "is this feature unlocked yet?" comparisons.
     ' Bump both constants together when moving to the next presentation version.
-    Public Const CURRENT_VERSION_NUMBER As Integer = 5
+    Public Const CURRENT_VERSION_NUMBER As Integer = 6
 
     Private Sub UnderConstructionForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         lblVersion.Text = "Current Version: " & CURRENT_VERSION

@@ -106,15 +106,19 @@ git tag | sort | xargs -I{} git log -1 --format="{} %H" {}
 
 | Version | Tag | Commit Hash |
 |---|---|---|
-| v1.00 | `v1.00` | `62e67dddcd8740af6a3ca78223e81e045c5d4fc3` |
-| v1.01 | `v1.01` | `1f6b473221afc2c6d720991e385e6fa84d04be7f` |
-| v1.02 | `v1.02` | `763c131528d53ea6d9582c943c52aed76c13eb26` |
-| v1.03 | `v1.03` | `f52dd8c2a7920a6ed0473ccf443a2c6de6443d3a` |
-| v1.04 | `v1.04` | `65622e568c2656f60df0b95489c268b5788e2b5e` |
-| v1.05 | `v1.05` | `fcca957246e9c72446782a1b14d534833c46e62b` |
-| v1.06 | `v1.06` | `6861b4016c34261c9e82937ec4a0009888c8c065` |
-| v1.07 | `v1.07` | `3565934bff7e958e06ed548b570a3d506a8912a9` |
-| v1.08 | `v1.08` | `fe56f9428b30423638aa2b8433b3549fa537acdb` |
+| v1.00 | `v1.00` | `3ac75937de3c7d451b010bba0ef052a218850535` |
+| v1.01 | `v1.01` | `fe7feed9475422082ec7c28d5983cccee573a754` |
+| v1.02 | `v1.02` | `c7c7dd1c61198ea92e3f115dbb41490dd2667bc6` |
+| v1.03 | `v1.03` | `06d86b7805eb9f8d765b86c20180b91bac561be3` |
+| v1.04 | `v1.04` | `da80bf8a3ef3e4947ad272ea32d7f085cbb0aa42` |
+| v1.05 | `v1.05` | `1c8aeb0ae2c76242b33bbdb0cc288c84f8e47467` |
+| v1.06 | `v1.06` | `af40a1e521633b5f635fc2b32b07fca67eff93af` |
+| v1.07 | `v1.07` | `c7d664522e6fb0816b94689aa1ea3d86580c8b21` |
+| v1.08 | `v1.08` | `4b1ce2f6c991a5f58cf3971063f65d53804798a6` |
+
+Note: these tags were moved on 2026-07-06 to point at the corrected embedded-gate
+implementation, per the "prof requests changes" procedure below — the original
+v1.00–v1.08 commits used a popup-dialog gate that has been superseded.
 
 ## When a Prof or Client Requests Changes After a Presentation
 

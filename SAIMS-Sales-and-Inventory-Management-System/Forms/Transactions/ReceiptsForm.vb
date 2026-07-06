@@ -5,13 +5,6 @@ Public Class ReceiptsForm
     Private _dtpTo   As DateTimePicker
 
     Private Sub ReceiptsForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' GATE — remove this block when unlocking for v1.08
-        Dim gate As New UnderConstructionForm()
-        gate.ShowDialog()
-        Me.Close()
-        Return
-        ' END GATE
-
         AddFilterControls()
         LoadReceipts()
     End Sub

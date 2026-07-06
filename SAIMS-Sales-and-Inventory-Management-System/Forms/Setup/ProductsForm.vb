@@ -3,13 +3,6 @@ Public Class ProductsForm
     Private _allProducts As DataTable
 
     Private Sub ProductsForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' GATE — remove this block when unlocking for v1.02
-        Dim gate As New UnderConstructionForm()
-        gate.ShowDialog()
-        Me.Close()
-        Return
-        ' END GATE
-
         LoadProducts()
     End Sub
 

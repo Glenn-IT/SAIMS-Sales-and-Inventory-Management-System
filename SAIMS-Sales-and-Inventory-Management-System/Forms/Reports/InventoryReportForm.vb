@@ -1,6 +1,13 @@
 Public Class InventoryReportForm
 
     Private Sub InventoryReportForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' GATE — remove this block when unlocking for v1.06
+        Dim gate As New UnderConstructionForm()
+        gate.ShowDialog()
+        Me.Close()
+        Return
+        ' END GATE
+
         cmbReportType.Items.AddRange(New String() {"Daily", "Weekly", "Monthly", "Yearly"})
         cmbReportType.SelectedIndex = 2
         RefreshAll()

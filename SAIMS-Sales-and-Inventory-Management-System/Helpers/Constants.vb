@@ -33,4 +33,13 @@ Public Module Constants
     ' Low stock threshold default
     Public Const DEFAULT_LOW_STOCK_QTY As Integer = 10
 
+    ' Security questions offered for the forgot-password flow
+    Public ReadOnly SecurityQuestions As String() = {
+        "What was the name of your first pet?",
+        "What is your mother's maiden name?",
+        "What city were you born in?",
+        "What was the name of your elementary school?",
+        "What is your favorite book?"
+    }
+
 End Module

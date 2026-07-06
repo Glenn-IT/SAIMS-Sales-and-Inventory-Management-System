@@ -29,6 +29,8 @@ Partial Class LoginForm
         Me.btnCancel = New System.Windows.Forms.Button()
         Me.lblUsername = New System.Windows.Forms.Label()
         Me.lblPassword = New System.Windows.Forms.Label()
+        Me.chkShowPassword = New System.Windows.Forms.CheckBox()
+        Me.lnkForgotPassword = New System.Windows.Forms.LinkLabel()
         Me.panelMain = New System.Windows.Forms.Panel()
         Me.panelMain.SuspendLayout()
         Me.SuspendLayout()
@@ -78,8 +80,31 @@ Partial Class LoginForm
         Me.txtPassword.Location = New System.Drawing.Point(30, 120)
         Me.txtPassword.Name = "txtPassword"
         Me.txtPassword.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
-        Me.txtPassword.Size = New System.Drawing.Size(300, 25)
+        Me.txtPassword.Size = New System.Drawing.Size(220, 25)
         Me.txtPassword.TabIndex = 4
+        '
+        'chkShowPassword
+        '
+        Me.chkShowPassword.AutoSize = True
+        Me.chkShowPassword.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.chkShowPassword.Location = New System.Drawing.Point(258, 123)
+        Me.chkShowPassword.Name = "chkShowPassword"
+        Me.chkShowPassword.Size = New System.Drawing.Size(72, 21)
+        Me.chkShowPassword.TabIndex = 8
+        Me.chkShowPassword.Text = "Show"
+        Me.chkShowPassword.UseVisualStyleBackColor = True
+        '
+        'lnkForgotPassword
+        '
+        Me.lnkForgotPassword.AutoSize = True
+        Me.lnkForgotPassword.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.lnkForgotPassword.LinkColor = System.Drawing.Color.FromArgb(CType(CType(41, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(185, Byte), Integer))
+        Me.lnkForgotPassword.Location = New System.Drawing.Point(217, 149)
+        Me.lnkForgotPassword.Name = "lnkForgotPassword"
+        Me.lnkForgotPassword.Size = New System.Drawing.Size(113, 15)
+        Me.lnkForgotPassword.TabIndex = 9
+        Me.lnkForgotPassword.TabStop = True
+        Me.lnkForgotPassword.Text = "Forgot password?"
         '
         'btnLogin
         '
@@ -87,7 +112,7 @@ Partial Class LoginForm
         Me.btnLogin.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnLogin.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.btnLogin.ForeColor = System.Drawing.Color.White
-        Me.btnLogin.Location = New System.Drawing.Point(30, 165)
+        Me.btnLogin.Location = New System.Drawing.Point(30, 185)
         Me.btnLogin.Name = "btnLogin"
         Me.btnLogin.Size = New System.Drawing.Size(145, 40)
         Me.btnLogin.TabIndex = 5
@@ -100,7 +125,7 @@ Partial Class LoginForm
         Me.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnCancel.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.btnCancel.ForeColor = System.Drawing.Color.White
-        Me.btnCancel.Location = New System.Drawing.Point(185, 165)
+        Me.btnCancel.Location = New System.Drawing.Point(185, 185)
         Me.btnCancel.Name = "btnCancel"
         Me.btnCancel.Size = New System.Drawing.Size(145, 40)
         Me.btnCancel.TabIndex = 6
@@ -117,9 +142,11 @@ Partial Class LoginForm
         Me.panelMain.Controls.Add(Me.btnLogin)
         Me.panelMain.Controls.Add(Me.lblPassword)
         Me.panelMain.Controls.Add(Me.txtPassword)
+        Me.panelMain.Controls.Add(Me.chkShowPassword)
+        Me.panelMain.Controls.Add(Me.lnkForgotPassword)
         Me.panelMain.Location = New System.Drawing.Point(120, 80)
         Me.panelMain.Name = "panelMain"
-        Me.panelMain.Size = New System.Drawing.Size(360, 230)
+        Me.panelMain.Size = New System.Drawing.Size(360, 250)
         Me.panelMain.TabIndex = 7
         '
         'LoginForm
@@ -149,4 +176,6 @@ Partial Class LoginForm
     Friend WithEvents lblUsername As Label
     Friend WithEvents lblPassword As Label
     Friend WithEvents panelMain As Panel
+    Friend WithEvents chkShowPassword As CheckBox
+    Friend WithEvents lnkForgotPassword As LinkLabel
 End Class

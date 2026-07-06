@@ -4,6 +4,13 @@ Public Class SalesForm
     Private _cartItems As New Dictionary(Of String, (ProductID As Integer, UnitPrice As Decimal))
 
     Private Sub SalesForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        ' GATE — remove this block when unlocking for v1.07
+        Dim gate As New UnderConstructionForm()
+        gate.ShowDialog()
+        Me.Close()
+        Return
+        ' END GATE
+
         cmbPaymentMethod.SelectedIndex = 0
         txtBarcodeScanner.Focus()
         UpdateTransactionSummary()

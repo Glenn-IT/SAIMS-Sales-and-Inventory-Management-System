@@ -73,6 +73,21 @@ END
 GO
 
 -- ------------------------------------------------------------
+-- STEP 4b: tbl_Users — security question columns (forgot-password flow)
+-- ------------------------------------------------------------
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE Name = 'SecurityQuestion' AND Object_ID = Object_ID('tbl_Users'))
+BEGIN
+    ALTER TABLE tbl_Users ADD SecurityQuestion NVARCHAR(200) NULL;
+END
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE Name = 'SecurityAnswerHash' AND Object_ID = Object_ID('tbl_Users'))
+BEGIN
+    ALTER TABLE tbl_Users ADD SecurityAnswerHash NVARCHAR(255) NULL;
+END
+GO
+
+-- ------------------------------------------------------------
 -- STEP 5: tbl_Sales
 -- ------------------------------------------------------------
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name = 'tbl_Sales' AND xtype = 'U')

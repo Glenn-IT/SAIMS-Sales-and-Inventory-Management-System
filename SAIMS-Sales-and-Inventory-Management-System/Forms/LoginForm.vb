@@ -130,4 +130,14 @@ Public Class LoginForm
         If e.KeyCode = Keys.Enter Then txtPassword.Focus()
     End Sub
 
+    Private Sub chkShowPassword_CheckedChanged(sender As Object, e As EventArgs) Handles chkShowPassword.CheckedChanged
+        txtPassword.UseSystemPasswordChar = Not chkShowPassword.Checked
+    End Sub
+
+    Private Sub lnkForgotPassword_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lnkForgotPassword.LinkClicked
+        Using forgotForm As New ForgotPasswordForm()
+            forgotForm.ShowDialog()
+        End Using
+    End Sub
+
 End Class

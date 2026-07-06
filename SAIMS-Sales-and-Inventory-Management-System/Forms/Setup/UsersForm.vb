@@ -1,13 +1,6 @@
 Public Class UsersForm
 
     Private Sub UsersForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        ' GATE — remove this block when unlocking for v1.01
-        Dim gate As New UnderConstructionForm()
-        gate.ShowDialog()
-        Me.Close()
-        Return
-        ' END GATE
-
         LoadUsers()
 
         ' Reset Password button — Admin only

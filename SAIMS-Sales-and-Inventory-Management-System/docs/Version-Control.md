@@ -83,15 +83,15 @@ git tag | sort | xargs -I{} git log -1 --format="{} %H" {}
 
 | Version | Tag | Commit Hash |
 |---|---|---|
-| v1.00 | `v1.00` | *(fill in)* |
-| v1.01 | `v1.01` | *(fill in)* |
-| v1.02 | `v1.02` | *(fill in)* |
-| v1.03 | `v1.03` | *(fill in)* |
-| v1.04 | `v1.04` | *(fill in)* |
-| v1.05 | `v1.05` | *(fill in)* |
-| v1.06 | `v1.06` | *(fill in)* |
-| v1.07 | `v1.07` | *(fill in)* |
-| v1.08 | `v1.08` | *(fill in)* |
+| v1.00 | `v1.00` | `62e67dddcd8740af6a3ca78223e81e045c5d4fc3` |
+| v1.01 | `v1.01` | `1f6b473221afc2c6d720991e385e6fa84d04be7f` |
+| v1.02 | `v1.02` | `763c131528d53ea6d9582c943c52aed76c13eb26` |
+| v1.03 | `v1.03` | `f52dd8c2a7920a6ed0473ccf443a2c6de6443d3a` |
+| v1.04 | `v1.04` | `65622e568c2656f60df0b95489c268b5788e2b5e` |
+| v1.05 | `v1.05` | `fcca957246e9c72446782a1b14d534833c46e62b` |
+| v1.06 | `v1.06` | `6861b4016c34261c9e82937ec4a0009888c8c065` |
+| v1.07 | `v1.07` | `3565934bff7e958e06ed548b570a3d506a8912a9` |
+| v1.08 | `v1.08` | `fe56f9428b30423638aa2b8433b3549fa537acdb` |
 
 ## When a Prof or Client Requests Changes After a Presentation
 

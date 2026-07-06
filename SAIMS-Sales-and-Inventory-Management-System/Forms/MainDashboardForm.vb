@@ -27,6 +27,16 @@ Public Class MainDashboardForm
         formToLoad.Show()
     End Sub
 
+    ''' Loads the requested feature if it's unlocked for the current presentation version,
+    ''' otherwise shows the "Under Construction" placeholder maximized in panelContent instead.
+    Private Sub LoadGatedForm(requiredVersion As Integer, formFactory As Func(Of Form))
+        If requiredVersion <= UnderConstructionForm.CURRENT_VERSION_NUMBER Then
+            LoadFormInPanel(formFactory())
+        Else
+            LoadFormInPanel(New UnderConstructionForm())
+        End If
+    End Sub
+
     Private Sub btnSetup_Click(sender As Object, e As EventArgs) Handles btnSetup.Click
         ShowSetupSubmenu()
     End Sub
@@ -36,15 +46,15 @@ Public Class MainDashboardForm
     End Sub
 
     Private Sub btnProducts_Click(sender As Object, e As EventArgs) Handles btnProducts.Click
-        LoadFormInPanel(New ProductsForm())
+        LoadGatedForm(2, Function() New ProductsForm())
     End Sub
 
     Private Sub btnCategories_Click(sender As Object, e As EventArgs) Handles btnCategories.Click
-        LoadFormInPanel(New CategoriesForm())
+        LoadGatedForm(3, Function() New CategoriesForm())
     End Sub
 
     Private Sub btnUsers_Click(sender As Object, e As EventArgs) Handles btnUsers.Click
-        LoadFormInPanel(New UsersForm())
+        LoadGatedForm(1, Function() New UsersForm())
     End Sub
 
     Private Sub btnTransactions_Click(sender As Object, e As EventArgs) Handles btnTransactions.Click
@@ -56,23 +66,23 @@ Public Class MainDashboardForm
     End Sub
 
     Private Sub btnSales_Click(sender As Object, e As EventArgs) Handles btnSales.Click
-        LoadFormInPanel(New SalesForm())
+        LoadGatedForm(7, Function() New SalesForm())
     End Sub
 
     Private Sub btnStockIn_Click(sender As Object, e As EventArgs) Handles btnStockIn.Click
-        LoadFormInPanel(New StockInForm())
+        LoadGatedForm(4, Function() New StockInForm())
     End Sub
 
     Private Sub btnStockOut_Click(sender As Object, e As EventArgs) Handles btnStockOut.Click
-        LoadFormInPanel(New StockOutForm())
+        LoadGatedForm(5, Function() New StockOutForm())
     End Sub
 
     Private Sub btnReceipts_Click(sender As Object, e As EventArgs) Handles btnReceipts.Click
-        LoadFormInPanel(New ReceiptsForm())
+        LoadGatedForm(8, Function() New ReceiptsForm())
     End Sub
 
     Private Sub btnReports_Click(sender As Object, e As EventArgs) Handles btnReports.Click
-        LoadFormInPanel(New InventoryReportForm())
+        LoadGatedForm(6, Function() New InventoryReportForm())
     End Sub
 
     Private Sub btnAbout_Click(sender As Object, e As EventArgs) Handles btnAbout.Click

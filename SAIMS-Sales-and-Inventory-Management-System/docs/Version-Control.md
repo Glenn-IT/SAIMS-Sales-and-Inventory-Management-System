@@ -25,37 +25,60 @@ rows are the Transactions forms available to all roles.
 
 ## The Under Construction Strategy
 
-`Forms/UnderConstructionForm.vb` is the gate:
-
-- `Public Const CURRENT_VERSION As String = "v1.00"` at the top — bumped once per version.
-- Dark blue background (`#1A237E`), 🚧 emoji, orange "Current Version" label, white
-  "Under Construction" title, and a "← Go Back" button that only calls `Me.Close()`
-  (never `Application.Exit`, so the caller form can also close itself).
-
-Every gated form has this block at the very top of its `Form_Load`:
+Gating is centralized in `MainDashboardForm.vb`, not scattered across each form.
+Every Setup/Transactions/Reports menu button routes through one helper:
 
 ```vb
-Private Sub SomeForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-    ' GATE — remove this block when unlocking for vX.XX
-    Dim gate As New UnderConstructionForm()
-    gate.ShowDialog()
-    Me.Close()
-    Return
-    ' END GATE
-
-    ' ... real form code below (unchanged) ...
+Private Sub LoadGatedForm(requiredVersion As Integer, formFactory As Func(Of Form))
+    If requiredVersion <= UnderConstructionForm.CURRENT_VERSION_NUMBER Then
+        LoadFormInPanel(formFactory())
+    Else
+        LoadFormInPanel(New UnderConstructionForm())
+    End If
 End Sub
 ```
 
-Showing the gate as a modal dialog, then closing the calling form once it returns,
-means the real form body below the gate never executes while locked — no other
-changes to the form's logic are needed.
+Each menu click passes its own required version, e.g. `btnUsers_Click` calls
+`LoadGatedForm(1, Function() New UsersForm())`. `LoadFormInPanel` is the existing
+helper that docks whatever form it's given (`Dock = Fill`) into `panelContent` —
+so `UnderConstructionForm` is shown the exact same way as any real form: maximized
+inside the dashboard's content area, not as a popup dialog. This also means a
+locked form's own code (and its DB queries) never even runs — `LoadGatedForm`
+simply never constructs it.
+
+`Forms/UnderConstructionForm.vb` is the placeholder shown when locked:
+
+- `Public Const CURRENT_VERSION As String = "v1.08"` and
+  `Public Const CURRENT_VERSION_NUMBER As Integer = 8` — bumped together once per
+  version. The string drives the on-screen "Current Version" label; the integer
+  drives the `<=` comparison in `LoadGatedForm`.
+- Dark blue background (`#1A237E`) fills the whole content panel, with a centered
+  box (🚧 emoji, orange "Current Version" label, white "Under Construction" title,
+  description) that re-centers itself on resize (`UnderConstructionForm_Resize`),
+  since `panelContent` is maximized and can be different sizes on different screens.
+
+### Per-form required versions
+
+| Form | Required Version |
+|---|---|
+| `UsersForm` | 1 |
+| `ProductsForm` | 2 |
+| `CategoriesForm` | 3 |
+| `StockInForm` | 4 |
+| `StockOutForm` | 5 |
+| `InventoryReportForm` | 6 |
+| `SalesForm` | 7 |
+| `ReceiptsForm` | 8 |
+
+To unlock a version, bump **both** constants in `UnderConstructionForm.vb` — no
+per-form edits are needed anymore.
 
 ## Git Commands Per Version
 
 ```bash
-# Stage and commit only the files touched by this version's unlock
-git add <UnlockedForm.vb> Forms/UnderConstructionForm.vb
+# Unlocking a version only requires bumping CURRENT_VERSION / CURRENT_VERSION_NUMBER
+# in Forms/UnderConstructionForm.vb — stage and commit just that file
+git add Forms/UnderConstructionForm.vb
 git commit -m "feat: implement vX.XX - unlock [Feature Name]"
 
 # Tag the commit and push both

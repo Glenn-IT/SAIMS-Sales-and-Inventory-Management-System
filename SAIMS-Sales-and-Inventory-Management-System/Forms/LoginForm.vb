@@ -131,7 +131,11 @@ Public Class LoginForm
     End Sub
 
     Private Sub chkShowPassword_CheckedChanged(sender As Object, e As EventArgs) Handles chkShowPassword.CheckedChanged
-        txtPassword.UseSystemPasswordChar = Not chkShowPassword.Checked
+        If chkShowPassword.Checked Then
+            txtPassword.PasswordChar = ChrW(0)
+        Else
+            txtPassword.PasswordChar = "*"c
+        End If
     End Sub
 
     Private Sub lnkForgotPassword_LinkClicked(sender As Object, e As LinkLabelLinkClickedEventArgs) Handles lnkForgotPassword.LinkClicked

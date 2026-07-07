@@ -18,6 +18,32 @@ presented show an "Under Construction" placeholder instead of their real content
 | v1.07 | Cashier: Sales Transaction (POS) | + `SalesForm` | `ReceiptsForm` |
 | v1.08 | Cashier: Receipts (Full System) | + `ReceiptsForm` | *(none — full system unlocked)* |
 
+## Round 2 Rollout (v2.00+)
+
+Once the v1.xx series reached full unlock, the gate was reset to start a second
+presentation round under the `v2.xx` tag series. This mirrors the v1.xx schedule
+form-for-form, but v2.00 also carries the Login "Show Password" checkbox fix
+(`chkShowPassword_CheckedChanged` now toggles `txtPassword.PasswordChar` directly,
+since `UseSystemPasswordChar` alone has no effect once `PasswordChar` is explicitly
+set on the control).
+
+| Version | Feature Unlocked | Forms Unlocked | Forms Still Gated |
+|---|---|---|---|
+| v2.00 | Login / Forgot Password / Dashboard shell (+ show-password fix) | `LoginForm`, `ForgotPasswordForm`, `MainDashboardForm` | `UsersForm`, `ProductsForm`, `CategoriesForm`, `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
+| v2.01 | Admin: Users Management | + `UsersForm` | `ProductsForm`, `CategoriesForm`, `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
+| v2.02 | Admin: Products Management | + `ProductsForm` | `CategoriesForm`, `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
+| v2.03 | Admin: Categories Management | + `CategoriesForm` | `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
+| v2.04 | Admin: Stock In | + `StockInForm` | `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
+| v2.05 | Admin: Stock Out | + `StockOutForm` | `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
+| v2.06 | Admin: Inventory Report | + `InventoryReportForm` | `SalesForm`, `ReceiptsForm` |
+| v2.07 | Cashier: Sales Transaction (POS) | + `SalesForm` | `ReceiptsForm` |
+| v2.08 | Cashier: Receipts (Full System) | + `ReceiptsForm` | *(none — full system unlocked)* |
+
+`CURRENT_VERSION_NUMBER` was reset to `0` (from `8`) in `UnderConstructionForm.vb`
+to re-lock every gated form; `CURRENT_VERSION` was bumped to `"v2.00"`. The
+per-form required versions (1–8) in `MainDashboardForm.vb`'s `LoadGatedForm` calls
+did not change — only the baseline they're compared against did.
+
 Note: unlike a two-portal (admin/patient) app, SAIMS has a single `MainDashboardForm`
 shell whose Setup menu is hidden for non-admin roles (`ApplyRoleAccess` in
 `MainDashboardForm.vb`). "Admin" rows above are the Setup/Reports forms; "Cashier"

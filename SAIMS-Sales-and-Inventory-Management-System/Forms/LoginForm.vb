@@ -2,7 +2,7 @@ Imports Microsoft.Data.SqlClient
 
 Public Class LoginForm
 
-    Private Const MAX_ATTEMPTS   As Integer = 5
+    Private Const MAX_ATTEMPTS   As Integer = 3
     Private Const LOCKOUT_SECONDS As Integer = 30
 
     Private _failedAttempts As Integer = 0
@@ -10,6 +10,7 @@ Public Class LoginForm
     Private WithEvents _lockTimer As New Timer() With {.Interval = 1000}
 
     Private Sub LoginForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        lblBrandFooter.Text = "SAIMS " & UnderConstructionForm.CURRENT_VERSION
         CheckDatabaseConnection()
         txtUsername.Focus()
     End Sub
@@ -29,6 +30,8 @@ Public Class LoginForm
     End Sub
 
     Private Sub btnLogin_Click(sender As Object, e As EventArgs) Handles btnLogin.Click
+        If _lockTimer.Enabled Then Return
+
         Dim username As String = InputHelper.SanitizeInput(txtUsername.Text)
         Dim password As String = txtPassword.Text
 
@@ -43,8 +46,6 @@ Public Class LoginForm
             Dim dt As DataTable = UserRepository.GetByUsername(username)
 
             If dt.Rows.Count = 0 Then
-                MessageBox.Show("Invalid username or password.",
-                                "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 ActivityLogger.Log(username, Constants.LOG_FAILED, "Login failed - username not found.")
                 txtPassword.Clear()
                 txtUsername.Focus()
@@ -64,8 +65,6 @@ Public Class LoginForm
             Dim storedHash As String = row("PasswordHash").ToString()
 
             If Not PasswordHelper.VerifyPassword(password, storedHash) Then
-                MessageBox.Show("Invalid username or password.",
-                                "Login Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 ActivityLogger.Log(username, Constants.LOG_FAILED, "Login failed - wrong password.")
                 txtPassword.Clear()
                 txtPassword.Focus()
@@ -75,6 +74,7 @@ Public Class LoginForm
 
             ' Reset lockout on successful login
             _failedAttempts = 0
+            lblStatus.Text = ""
 
             SessionManager.UserID   = CInt(row("UserID"))
             SessionManager.Username = row("Username").ToString()
@@ -96,13 +96,22 @@ Public Class LoginForm
 
     Private Sub RecordFailedAttempt(username As String)
         _failedAttempts += 1
+
         If _failedAttempts >= MAX_ATTEMPTS Then
-            _lockoutSeconds  = LOCKOUT_SECONDS
-            btnLogin.Enabled = False
-            btnLogin.Text    = $"Try again in {_lockoutSeconds}s"
+            _lockoutSeconds     = LOCKOUT_SECONDS
+            txtUsername.Enabled = False
+            txtPassword.Enabled = False
+            btnLogin.Enabled    = False
+            lblStatus.ForeColor = Color.FromArgb(231, 76, 60)
+            lblStatus.Text      = $"Too many failed attempts. Try again in {_lockoutSeconds}s."
+            btnLogin.Text       = $"Locked ({_lockoutSeconds}s)"
             _lockTimer.Start()
             ActivityLogger.Log(username, Constants.LOG_WARNING,
                                $"Account locked out after {MAX_ATTEMPTS} failed attempts.")
+        Else
+            Dim remaining As Integer = MAX_ATTEMPTS - _failedAttempts
+            lblStatus.ForeColor = Color.FromArgb(230, 126, 34)
+            lblStatus.Text      = $"Invalid username or password. {remaining} attempt{If(remaining = 1, "", "s")} remaining."
         End If
     End Sub
 
@@ -110,11 +119,16 @@ Public Class LoginForm
         _lockoutSeconds -= 1
         If _lockoutSeconds <= 0 Then
             _lockTimer.Stop()
-            _failedAttempts  = 0
-            btnLogin.Enabled = True
-            btnLogin.Text    = "Login"
+            _failedAttempts     = 0
+            txtUsername.Enabled = True
+            txtPassword.Enabled = True
+            btnLogin.Enabled    = True
+            btnLogin.Text       = "Login"
+            lblStatus.Text      = ""
+            txtUsername.Focus()
         Else
-            btnLogin.Text = $"Try again in {_lockoutSeconds}s"
+            lblStatus.Text = $"Too many failed attempts. Try again in {_lockoutSeconds}s."
+            btnLogin.Text  = $"Locked ({_lockoutSeconds}s)"
         End If
     End Sub
 

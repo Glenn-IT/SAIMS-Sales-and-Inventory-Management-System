@@ -46,15 +46,15 @@ Public Class MainDashboardForm
     End Sub
 
     Private Sub btnProducts_Click(sender As Object, e As EventArgs) Handles btnProducts.Click
-        LoadGatedForm(2, Function() New ProductsForm())
+        LoadGatedForm(3, Function() New ProductsForm())
     End Sub
 
     Private Sub btnCategories_Click(sender As Object, e As EventArgs) Handles btnCategories.Click
-        LoadGatedForm(3, Function() New CategoriesForm())
+        LoadGatedForm(1, Function() New CategoriesForm())
     End Sub
 
     Private Sub btnUsers_Click(sender As Object, e As EventArgs) Handles btnUsers.Click
-        LoadGatedForm(1, Function() New UsersForm())
+        LoadGatedForm(2, Function() New UsersForm())
     End Sub
 
     Private Sub btnTransactions_Click(sender As Object, e As EventArgs) Handles btnTransactions.Click

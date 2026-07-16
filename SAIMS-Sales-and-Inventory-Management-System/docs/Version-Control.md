@@ -49,6 +49,27 @@ shell whose Setup menu is hidden for non-admin roles (`ApplyRoleAccess` in
 `MainDashboardForm.vb`). "Admin" rows above are the Setup/Reports forms; "Cashier"
 rows are the Transactions forms available to all roles.
 
+## Round 3 Rollout (v3.00+)
+
+Once the v2.xx series reached full unlock, the gate was reset again to start a
+third presentation round under the `v3.xx` tag series. Unlike v1/v2, this round
+does **not** unlock forms in the same order: `CategoriesForm` moves ahead of
+`UsersForm`/`ProductsForm`, so v3.00 unlocks Login *and* Categories together
+while Users/Products (and everything after) stay gated.
+
+| Version | Feature Unlocked | Forms Unlocked | Forms Still Gated |
+|---|---|---|---|
+| v3.00 | Login / Forgot Password / Dashboard shell + Admin: Categories Management | `LoginForm`, `ForgotPasswordForm`, `MainDashboardForm`, `CategoriesForm` | `UsersForm`, `ProductsForm`, `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
+
+`CURRENT_VERSION_NUMBER` was reset to `1` (from `8`) in `UnderConstructionForm.vb`
+to re-lock every form except `CategoriesForm`; `CURRENT_VERSION` was bumped to
+`"v3.00"`. Because Categories now unlocks first, the per-form required versions
+in `MainDashboardForm.vb`'s `LoadGatedForm` calls were renumbered (see updated
+table below) — `CategoriesForm` is now `1`, `UsersForm`/`ProductsForm` shifted to
+`2`/`3`, and `StockInForm`/`StockOutForm`/`InventoryReportForm`/`SalesForm`/
+`ReceiptsForm` keep their prior slots (`4`–`8`) since Categories/Users/Products
+still only occupy 3 slots total.
+
 ## The Under Construction Strategy
 
 Gating is centralized in `MainDashboardForm.vb`, not scattered across each form.
@@ -85,11 +106,13 @@ simply never constructs it.
 
 ### Per-form required versions
 
+As of the v3.xx round:
+
 | Form | Required Version |
 |---|---|
-| `UsersForm` | 1 |
-| `ProductsForm` | 2 |
-| `CategoriesForm` | 3 |
+| `CategoriesForm` | 1 |
+| `UsersForm` | 2 |
+| `ProductsForm` | 3 |
 | `StockInForm` | 4 |
 | `StockOutForm` | 5 |
 | `InventoryReportForm` | 6 |

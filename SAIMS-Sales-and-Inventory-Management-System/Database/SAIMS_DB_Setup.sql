@@ -45,7 +45,7 @@ BEGIN
         ProductID   INT IDENTITY(1,1) PRIMARY KEY,
         Barcode     NVARCHAR(50)  NOT NULL UNIQUE,
         ProductName NVARCHAR(150) NOT NULL,
-        CategoryID  INT           NOT NULL REFERENCES tbl_Categories(CategoryID),
+        CategoryID  INT           NOT NULL,
         Price       DECIMAL(10,2) NOT NULL,
         Stock       INT           NOT NULL DEFAULT 0,
         LowStockQty INT           NOT NULL DEFAULT 10,

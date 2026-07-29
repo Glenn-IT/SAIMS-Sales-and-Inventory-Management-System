@@ -60,6 +60,7 @@ while Users/Products (and everything after) stay gated.
 | Version | Feature Unlocked | Forms Unlocked | Forms Still Gated |
 |---|---|---|---|
 | v3.00 | Login / Forgot Password / Dashboard shell + Admin: Categories Management | `LoginForm`, `ForgotPasswordForm`, `MainDashboardForm`, `CategoriesForm` | `UsersForm`, `ProductsForm`, `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
+| v3.02 | Admin: Users Management + Admin: Products Management | + `UsersForm`, `ProductsForm` | `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
 
 `CURRENT_VERSION_NUMBER` was reset to `1` (from `8`) in `UnderConstructionForm.vb`
 to re-lock every form except `CategoriesForm`; `CURRENT_VERSION` was bumped to
@@ -69,6 +70,11 @@ table below) — `CategoriesForm` is now `1`, `UsersForm`/`ProductsForm` shifted
 `2`/`3`, and `StockInForm`/`StockOutForm`/`InventoryReportForm`/`SalesForm`/
 `ReceiptsForm` keep their prior slots (`4`–`8`) since Categories/Users/Products
 still only occupy 3 slots total.
+
+For v3.02, `CURRENT_VERSION_NUMBER` jumped straight from `1` to `3` in one step
+(no separate `v3.01` entry) since `UsersForm` (required version 2) and
+`ProductsForm` (required version 3) were unlocked together in the same commit;
+`CURRENT_VERSION` was bumped to `"v3.02"`.
 
 ## The Under Construction Strategy
 

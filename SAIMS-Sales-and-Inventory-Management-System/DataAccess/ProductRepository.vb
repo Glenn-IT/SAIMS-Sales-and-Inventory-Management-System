@@ -9,7 +9,7 @@ Public Module ProductRepository
             con.Open()
             Dim cmd As New SqlCommand(
                 "SELECT p.ProductID, p.Barcode, p.ProductName,
-                        c.CategoryName, p.Price, p.Stock, p.LowStockQty, p.Status,
+                        p.CategoryID, c.CategoryName, p.Price, p.Stock, p.LowStockQty, p.Status,
                         CASE
                             WHEN p.Stock = 0             THEN 'Out of Stock'
                             WHEN p.Stock <= p.LowStockQty THEN 'Low Stock'

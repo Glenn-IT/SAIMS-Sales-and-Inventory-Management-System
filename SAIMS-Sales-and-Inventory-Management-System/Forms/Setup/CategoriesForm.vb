@@ -24,38 +24,37 @@ Public Class CategoriesForm
     End Sub
 
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
-        Dim name As String = InputHelper.SanitizeInput(InputBox("Enter Category Name:", "Add Category"))
-        Dim desc As String = InputHelper.SanitizeInput(InputBox("Enter Description:", "Add Category"))
+        Using dlg As New CategoryDialogForm()
+            dlg.IsEditMode = False
+            If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
 
-        If String.IsNullOrWhiteSpace(name) Then
-            MessageBox.Show("Category name is required.", "Validation",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
+            Dim name As String = dlg.CategoryNameInput
+            Dim desc As String = dlg.DescriptionInput
 
-        Try
-            If CategoryRepository.Exists(name) Then
-                MessageBox.Show("A category with that name already exists.", "Duplicate",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return
-            End If
+            Try
+                If CategoryRepository.Exists(name) Then
+                    MessageBox.Show("A category with that name already exists.", "Duplicate",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Return
+                End If
 
-            CategoryRepository.Insert(name, desc)
-            ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
-                               $"Added category: {name}")
+                CategoryRepository.Insert(name, desc)
+                ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
+                                   $"Added category: {name}")
 
-            MessageBox.Show("Category added successfully.", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information)
-            LoadCategories()
+                MessageBox.Show("Category added successfully.", "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information)
+                LoadCategories()
 
-        Catch ex As Microsoft.Data.SqlClient.SqlException
-            Dim msg As String = InputHelper.GetConstraintMessage(ex)
-            MessageBox.Show(If(msg, "Failed to add category." & Environment.NewLine & ex.Message),
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        Catch ex As Exception
-            MessageBox.Show("Failed to add category." & Environment.NewLine & ex.Message,
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
+            Catch ex As Microsoft.Data.SqlClient.SqlException
+                Dim msg As String = InputHelper.GetConstraintMessage(ex)
+                MessageBox.Show(If(msg, "Failed to add category." & Environment.NewLine & ex.Message),
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Catch ex As Exception
+                MessageBox.Show("Failed to add category." & Environment.NewLine & ex.Message,
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Using
     End Sub
 
     Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click
@@ -71,32 +70,39 @@ Public Class CategoriesForm
         Dim currentDesc As String  = selectedRow.Cells(2).Value.ToString()
         Dim currentStatus As String = selectedRow.Cells(3).Value.ToString()
 
-        Dim newName As String = InputHelper.SanitizeInput(
-                                 InputBox("Category Name:", "Edit Category", currentName))
-        Dim newDesc As String = InputHelper.SanitizeInput(
-                                 InputBox("Description:", "Edit Category", currentDesc))
+        Using dlg As New CategoryDialogForm()
+            dlg.IsEditMode = True
+            dlg.CategoryID = categoryID
+            dlg.CategoryNameInput = currentName
+            dlg.DescriptionInput = currentDesc
+            dlg.StatusInput = currentStatus
 
-        If String.IsNullOrWhiteSpace(newName) Then Return
+            If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
 
-        Try
-            If CategoryRepository.Exists(newName, categoryID) Then
-                MessageBox.Show("A category with that name already exists.", "Duplicate",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return
-            End If
+            Dim newName As String = dlg.CategoryNameInput
+            Dim newDesc As String = dlg.DescriptionInput
+            Dim newStatus As String = dlg.StatusInput
 
-            CategoryRepository.Update(categoryID, newName, newDesc, currentStatus)
-            ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
-                               $"Updated category: {newName} (ID: {categoryID})")
+            Try
+                If CategoryRepository.Exists(newName, categoryID) Then
+                    MessageBox.Show("A category with that name already exists.", "Duplicate",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Return
+                End If
 
-            MessageBox.Show("Category updated successfully.", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information)
-            LoadCategories()
+                CategoryRepository.Update(categoryID, newName, newDesc, newStatus)
+                ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
+                                   $"Updated category: {newName} (ID: {categoryID})")
 
-        Catch ex As Exception
-            MessageBox.Show("Failed to update category." & Environment.NewLine & ex.Message,
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
+                MessageBox.Show("Category updated successfully.", "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information)
+                LoadCategories()
+
+            Catch ex As Exception
+                MessageBox.Show("Failed to update category." & Environment.NewLine & ex.Message,
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Using
     End Sub
 
     Private Sub btnDelete_Click(sender As Object, e As EventArgs) Handles btnDelete.Click

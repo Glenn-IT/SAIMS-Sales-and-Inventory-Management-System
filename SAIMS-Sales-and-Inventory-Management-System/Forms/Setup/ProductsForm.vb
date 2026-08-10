@@ -59,63 +59,36 @@ Public Class ProductsForm
     End Sub
 
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click
-        Dim barcode   As String = InputHelper.SanitizeInput(InputBox("Enter Barcode:", "Add Product"))
-        Dim name      As String = InputHelper.SanitizeInput(InputBox("Enter Product Name:", "Add Product"))
-        Dim priceText As String = InputBox("Enter Price:", "Add Product")
-        Dim stockText As String = InputBox("Enter Initial Stock:", "Add Product")
+        Using dlg As New ProductDialogForm()
+            dlg.IsEditMode = False
 
-        If String.IsNullOrWhiteSpace(barcode) OrElse String.IsNullOrWhiteSpace(name) Then
-            MessageBox.Show("Barcode and Product Name are required.", "Validation",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
+            If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
 
-        Dim price As Decimal
-        Dim stock As Integer
-        If Not Decimal.TryParse(priceText, price) OrElse price <= 0 Then
-            MessageBox.Show("Please enter a valid price.", "Validation",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
-        If Not Integer.TryParse(stockText, stock) OrElse stock < 0 Then
-            MessageBox.Show("Please enter a valid stock quantity.", "Validation",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
+            Try
+                If ProductRepository.BarcodeExists(dlg.BarcodeInput) Then
+                    MessageBox.Show("A product with that barcode already exists.", "Duplicate Barcode",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Return
+                End If
 
-        Try
-            If ProductRepository.BarcodeExists(barcode) Then
-                MessageBox.Show("A product with that barcode already exists.", "Duplicate Barcode",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return
-            End If
+                ProductRepository.Insert(dlg.BarcodeInput, dlg.ProductNameInput, dlg.CategoryIDInput,
+                                         dlg.PriceInput, dlg.StockInput, dlg.LowStockQtyInput)
+                ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
+                                   $"Added product: {dlg.ProductNameInput} (Barcode: {dlg.BarcodeInput})")
 
-            Dim categories As DataTable = CategoryRepository.GetActive()
-            If categories.Rows.Count = 0 Then
-                MessageBox.Show("No active categories found. Please add a category first.", "Error",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return
-            End If
+                MessageBox.Show("Product added successfully.", "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information)
+                LoadProducts()
 
-            ' Use first active category as default — improve with a dialog later
-            Dim categoryID As Integer = CInt(categories.Rows(0)("CategoryID"))
-
-            ProductRepository.Insert(barcode, name, categoryID, price, stock, Constants.DEFAULT_LOW_STOCK_QTY)
-            ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
-                               $"Added product: {name} (Barcode: {barcode})")
-
-            MessageBox.Show("Product added successfully.", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information)
-            LoadProducts()
-
-        Catch ex As Microsoft.Data.SqlClient.SqlException
-            Dim msg As String = InputHelper.GetConstraintMessage(ex)
-            MessageBox.Show(If(msg, "Failed to add product." & Environment.NewLine & ex.Message),
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        Catch ex As Exception
-            MessageBox.Show("Failed to add product." & Environment.NewLine & ex.Message,
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
+            Catch ex As Microsoft.Data.SqlClient.SqlException
+                Dim msg As String = InputHelper.GetConstraintMessage(ex)
+                MessageBox.Show(If(msg, "Failed to add product." & Environment.NewLine & ex.Message),
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Catch ex As Exception
+                MessageBox.Show("Failed to add product." & Environment.NewLine & ex.Message,
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Using
     End Sub
 
     Private Sub btnEdit_Click(sender As Object, e As EventArgs) Handles btnEdit.Click
@@ -140,28 +113,37 @@ Public Class ProductsForm
             If productRow Is Nothing Then Return
 
             Dim productID As Integer = CInt(productRow("ProductID"))
-            Dim newName   As String  = InputHelper.SanitizeInput(
-                                        InputBox("Product Name:", "Edit Product", productRow("ProductName").ToString()))
-            Dim newPrice  As String  = InputBox("Price:", "Edit Product", productRow("Price").ToString())
 
-            If String.IsNullOrWhiteSpace(newName) Then Return
+            Using dlg As New ProductDialogForm()
+                dlg.IsEditMode = True
+                dlg.ProductID = productID
+                dlg.BarcodeInput = productRow("Barcode").ToString()
+                dlg.ProductNameInput = productRow("ProductName").ToString()
+                dlg.CategoryIDInput = CInt(productRow("CategoryID"))
+                dlg.PriceInput = CDec(productRow("Price"))
+                dlg.StockInput = CInt(productRow("Stock"))
+                dlg.LowStockQtyInput = CInt(productRow("LowStockQty"))
+                dlg.StatusInput = productRow("Status").ToString()
 
-            Dim price As Decimal
-            If Not Decimal.TryParse(newPrice, price) OrElse price <= 0 Then
-                MessageBox.Show("Please enter a valid price.", "Validation",
-                                MessageBoxButtons.OK, MessageBoxIcon.Warning)
-                Return
-            End If
+                If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
 
-            ProductRepository.Update(productID, selectedBarcode, newName,
-                                     CInt(productRow("CategoryID")), price,
-                                     CInt(productRow("LowStockQty")), productRow("Status").ToString())
-            ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
-                               $"Updated product: {newName} (ID: {productID})")
+                If ProductRepository.BarcodeExists(dlg.BarcodeInput, productID) Then
+                    MessageBox.Show("A product with that barcode already exists.", "Duplicate Barcode",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    Return
+                End If
 
-            MessageBox.Show("Product updated successfully.", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information)
-            LoadProducts()
+                ProductRepository.Update(productID, dlg.BarcodeInput, dlg.ProductNameInput,
+                                         dlg.CategoryIDInput, dlg.PriceInput,
+                                         dlg.LowStockQtyInput, dlg.StatusInput)
+
+                ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
+                                   $"Updated product: {dlg.ProductNameInput} (ID: {productID})")
+
+                MessageBox.Show("Product updated successfully.", "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information)
+                LoadProducts()
+            End Using
 
         Catch ex As Exception
             MessageBox.Show("Failed to update product." & Environment.NewLine & ex.Message,

@@ -135,30 +135,25 @@ Public Class UsersForm
         Dim userID   As Integer = CInt(selectedRow.Cells(0).Value)
         Dim username As String  = selectedRow.Cells(1).Value.ToString()
 
-        Dim newPassword As String = InputBox($"Enter new password for ""{username}"":", "Reset Password")
-        If String.IsNullOrWhiteSpace(newPassword) Then Return
+        Using dlg As New ResetPasswordDialogForm()
+            dlg.TargetUsername = username
+            If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
 
-        If newPassword.Length < 6 Then
-            MessageBox.Show("Password must be at least 6 characters.", "Validation",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning)
-            Return
-        End If
+            Dim newPassword As String = dlg.NewPasswordInput
+            If String.IsNullOrWhiteSpace(newPassword) Then Return
 
-        Dim confirm = MessageBox.Show($"Reset password for ""{username}""?",
-                                      "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
-        If confirm <> DialogResult.Yes Then Return
-
-        Try
-            Dim newHash As String = PasswordHelper.HashPassword(newPassword)
-            UserRepository.UpdatePassword(userID, newHash)
-            ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
-                               $"Reset password for user: {username} (ID: {userID})")
-            MessageBox.Show("Password reset successfully.", "Success",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information)
-        Catch ex As Exception
-            MessageBox.Show("Failed to reset password." & Environment.NewLine & ex.Message,
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
+            Try
+                Dim newHash As String = PasswordHelper.HashPassword(newPassword)
+                UserRepository.UpdatePassword(userID, newHash)
+                ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
+                                   $"Reset password for user: {username} (ID: {userID})")
+                MessageBox.Show("Password reset successfully.", "Success",
+                                MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Catch ex As Exception
+                MessageBox.Show("Failed to reset password." & Environment.NewLine & ex.Message,
+                                "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+            End Try
+        End Using
     End Sub
 
     Private Sub LoadUsers()

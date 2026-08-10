@@ -27,13 +27,14 @@ Public Class SalesForm
     End Sub
 
     Private Sub btnAddItem_Click(sender As Object, e As EventArgs) Handles btnAddItem.Click
-        Dim barcode As String = InputHelper.SanitizeInput(
-            InputBox("Enter barcode or product code:", "Add Item Manually")).ToUpper()
-        If String.IsNullOrWhiteSpace(barcode) Then Return
-        LookupAndAddProduct(barcode)
+        Using dlg As New SalesItemDialogForm()
+            If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
+            If String.IsNullOrWhiteSpace(dlg.SelectedBarcode) Then Return
+            LookupAndAddProduct(dlg.SelectedBarcode, dlg.SelectedQuantity)
+        End Using
     End Sub
 
-    Private Sub LookupAndAddProduct(barcode As String)
+    Private Sub LookupAndAddProduct(barcode As String, Optional quantityToAdd As Integer = 1)
         Try
             Dim dt As DataTable = ProductRepository.GetByBarcode(barcode)
 
@@ -59,13 +60,13 @@ Public Class SalesForm
                 End If
             Next
 
-            If stock - alreadyInCart <= 0 Then
-                MessageBox.Show($"Not enough stock for '{productName}'.",
+            If stock - (alreadyInCart + quantityToAdd) < 0 Then
+                MessageBox.Show($"Not enough stock for '{productName}'. Available: {stock - alreadyInCart}",
                                 "Out of Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return
             End If
 
-            AddItemToCart(barcode, productID, productName, price)
+            AddItemToCart(barcode, productID, productName, price, quantityToAdd)
 
         Catch ex As Exception
             MessageBox.Show("Failed to look up product." & Environment.NewLine & ex.Message,
@@ -74,7 +75,8 @@ Public Class SalesForm
     End Sub
 
     Private Sub AddItemToCart(barcode As String, productID As Integer,
-                               productName As String, price As Decimal)
+                               productName As String, price As Decimal,
+                               Optional quantityToAdd As Integer = 1)
         If Not _cartItems.ContainsKey(barcode) Then
             _cartItems(barcode) = (productID, price)
         End If
@@ -82,7 +84,7 @@ Public Class SalesForm
         For Each row As DataGridViewRow In dgvCart.Rows
             If row.IsNewRow Then Continue For
             If row.Cells("colBarcode").Value.ToString() = barcode Then
-                Dim newQty As Integer = CInt(row.Cells("colQuantity").Value) + 1
+                Dim newQty As Integer = CInt(row.Cells("colQuantity").Value) + quantityToAdd
                 row.Cells("colQuantity").Value = newQty
                 row.Cells("colTotal").Value    = FormatCurrency(newQty * price)
                 UpdateTransactionSummary()
@@ -90,7 +92,7 @@ Public Class SalesForm
             End If
         Next
 
-        dgvCart.Rows.Add(barcode, productName, FormatCurrency(price), 1, FormatCurrency(price))
+        dgvCart.Rows.Add(barcode, productName, FormatCurrency(price), quantityToAdd, FormatCurrency(quantityToAdd * price))
         UpdateTransactionSummary()
     End Sub
 

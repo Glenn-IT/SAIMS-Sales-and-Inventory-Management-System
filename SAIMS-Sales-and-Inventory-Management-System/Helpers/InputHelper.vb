@@ -25,6 +25,15 @@ Public Module InputHelper
             Else
                 Return "A duplicate record already exists."
             End If
+        ElseIf ex.Number = 547 Then
+            If ex.Message.Contains("tbl_SaleItems") OrElse ex.Message.Contains("FK_tbl_Salel_Produ") Then
+                Return "Cannot delete this product because it has associated sales records." & Environment.NewLine &
+                       "To disable this product, edit it and set its Status to 'Inactive'."
+            ElseIf ex.Message.Contains("tbl_Products") Then
+                Return "Cannot delete this item because it is referenced by existing products."
+            Else
+                Return "Cannot delete this record because it is referenced elsewhere in the system."
+            End If
         End If
         Return Nothing
     End Function

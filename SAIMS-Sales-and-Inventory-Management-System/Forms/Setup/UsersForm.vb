@@ -169,10 +169,17 @@ Public Class UsersForm
                     row("Status").ToString())
             Next
 
+            UpdateRecordCount()
+
         Catch ex As Exception
             MessageBox.Show("Failed to load users." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub UpdateRecordCount()
+        Dim visible = dgvUsers.Rows.Cast(Of DataGridViewRow)().Count(Function(r) Not r.IsNewRow AndAlso r.Visible)
+        lblTotalRecords.Text = "Total Record: " & visible & " users"
     End Sub
 
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click

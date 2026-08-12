@@ -17,6 +17,8 @@ Public Class CategoriesForm
                     row("Status").ToString())
             Next
 
+            UpdateRecordCount()
+
         Catch ex As Exception
             MessageBox.Show("Failed to load categories." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -152,6 +154,13 @@ Public Class CategoriesForm
             Dim categoryName As String = If(row.Cells(1).Value?.ToString(), "")
             row.Visible = categoryName.ToLower().Contains(searchText)
         Next
+
+        UpdateRecordCount()
+    End Sub
+
+    Private Sub UpdateRecordCount()
+        Dim visible = dgvCategories.Rows.Cast(Of DataGridViewRow)().Count(Function(r) Not r.IsNewRow AndAlso r.Visible)
+        lblTotalRecords.Text = "Total Record: " & visible & " categories"
     End Sub
 
     Private Sub btnToggleStatus_Click(sender As Object, e As EventArgs) Handles btnToggleStatus.Click

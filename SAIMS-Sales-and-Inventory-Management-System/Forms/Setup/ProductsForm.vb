@@ -33,7 +33,7 @@ Public Class ProductsForm
 
     Private Sub UpdateRecordCount()
         Dim visible = dgvProducts.Rows.Cast(Of DataGridViewRow)().Count(Function(r) Not r.IsNewRow AndAlso r.Visible)
-        lblTotalRecords.Text = "Total: " & visible & " products"
+        lblTotalRecords.Text = "Total Record: " & visible & " products"
     End Sub
 
     Private Sub txtSearch_TextChanged(sender As Object, e As EventArgs) Handles txtSearch.TextChanged
@@ -185,6 +185,10 @@ Public Class ProductsForm
                             MessageBoxButtons.OK, MessageBoxIcon.Information)
             LoadProducts()
 
+        Catch ex As Microsoft.Data.SqlClient.SqlException
+            Dim msg As String = InputHelper.GetConstraintMessage(ex)
+            MessageBox.Show(If(msg, "Failed to delete product." & Environment.NewLine & ex.Message),
+                            "Cannot Delete Product", MessageBoxButtons.OK, MessageBoxIcon.Warning)
         Catch ex As Exception
             MessageBox.Show("Failed to delete product." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)

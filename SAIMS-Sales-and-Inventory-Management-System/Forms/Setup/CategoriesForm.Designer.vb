@@ -31,8 +31,11 @@ Partial Class CategoriesForm
         colCategoryName = New DataGridViewTextBoxColumn()
         colDescription = New DataGridViewTextBoxColumn()
         colStatus = New DataGridViewTextBoxColumn()
+        panelBottom = New Panel()
+        lblTotalRecords = New Label()
         panelTop.SuspendLayout()
         CType(dgvCategories, ComponentModel.ISupportInitialize).BeginInit()
+        panelBottom.SuspendLayout()
         SuspendLayout()
         ' 
         ' panelTop
@@ -194,6 +197,26 @@ Partial Class CategoriesForm
         colStatus.Name = "colStatus"
         colStatus.ReadOnly = True
         ' 
+        ' panelBottom
+        ' 
+        panelBottom.BackColor = Color.White
+        panelBottom.Controls.Add(lblTotalRecords)
+        panelBottom.Dock = DockStyle.Bottom
+        panelBottom.Location = New Point(0, 630)
+        panelBottom.Name = "panelBottom"
+        panelBottom.Size = New Size(1000, 50)
+        panelBottom.TabIndex = 2
+        ' 
+        ' lblTotalRecords
+        ' 
+        lblTotalRecords.AutoSize = True
+        lblTotalRecords.Font = New Font("Segoe UI", 10.0!, FontStyle.Bold)
+        lblTotalRecords.Location = New Point(15, 15)
+        lblTotalRecords.Name = "lblTotalRecords"
+        lblTotalRecords.Size = New Size(170, 20)
+        lblTotalRecords.TabIndex = 0
+        lblTotalRecords.Text = "Total Record: 0 categories"
+        ' 
         ' CategoriesForm
         ' 
         AutoScaleDimensions = New SizeF(7F, 17F)
@@ -201,12 +224,15 @@ Partial Class CategoriesForm
         BackColor = Color.FromArgb(CByte(236), CByte(240), CByte(241))
         ClientSize = New Size(1000, 680)
         Controls.Add(dgvCategories)
+        Controls.Add(panelBottom)
         Controls.Add(panelTop)
         Name = "CategoriesForm"
         Text = "Categories Management"
         panelTop.ResumeLayout(False)
         panelTop.PerformLayout()
         CType(dgvCategories, ComponentModel.ISupportInitialize).EndInit()
+        panelBottom.ResumeLayout(False)
+        panelBottom.PerformLayout()
         ResumeLayout(False)
 
     End Sub
@@ -225,4 +251,6 @@ Partial Class CategoriesForm
     Friend WithEvents colCategoryName As DataGridViewTextBoxColumn
     Friend WithEvents colDescription As DataGridViewTextBoxColumn
     Friend WithEvents colStatus As DataGridViewTextBoxColumn
+    Friend WithEvents panelBottom As Panel
+    Friend WithEvents lblTotalRecords As Label
 End Class

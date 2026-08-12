@@ -30,8 +30,11 @@ Partial Class UsersForm
         colUsername = New DataGridViewTextBoxColumn()
         colRole = New DataGridViewTextBoxColumn()
         colStatus = New DataGridViewTextBoxColumn()
+        panelBottom = New Panel()
+        lblTotalRecords = New Label()
         panelTop.SuspendLayout()
         CType(dgvUsers, ComponentModel.ISupportInitialize).BeginInit()
+        panelBottom.SuspendLayout()
         SuspendLayout()
         ' 
         ' panelTop
@@ -186,6 +189,26 @@ Partial Class UsersForm
         colStatus.Name = "colStatus"
         colStatus.ReadOnly = True
         ' 
+        ' panelBottom
+        ' 
+        panelBottom.BackColor = Color.White
+        panelBottom.Controls.Add(lblTotalRecords)
+        panelBottom.Dock = DockStyle.Bottom
+        panelBottom.Location = New Point(0, 630)
+        panelBottom.Name = "panelBottom"
+        panelBottom.Size = New Size(1044, 50)
+        panelBottom.TabIndex = 2
+        ' 
+        ' lblTotalRecords
+        ' 
+        lblTotalRecords.AutoSize = True
+        lblTotalRecords.Font = New Font("Segoe UI", 10.0!, FontStyle.Bold)
+        lblTotalRecords.Location = New Point(15, 15)
+        lblTotalRecords.Name = "lblTotalRecords"
+        lblTotalRecords.Size = New Size(136, 20)
+        lblTotalRecords.TabIndex = 0
+        lblTotalRecords.Text = "Total Record: 0 users"
+        ' 
         ' UsersForm
         ' 
         AutoScaleDimensions = New SizeF(7F, 17F)
@@ -193,12 +216,15 @@ Partial Class UsersForm
         BackColor = Color.FromArgb(CByte(236), CByte(240), CByte(241))
         ClientSize = New Size(1044, 680)
         Controls.Add(dgvUsers)
+        Controls.Add(panelBottom)
         Controls.Add(panelTop)
         Name = "UsersForm"
         Text = "Users Management"
         panelTop.ResumeLayout(False)
         panelTop.PerformLayout()
         CType(dgvUsers, ComponentModel.ISupportInitialize).EndInit()
+        panelBottom.ResumeLayout(False)
+        panelBottom.PerformLayout()
         ResumeLayout(False)
 
     End Sub
@@ -216,4 +242,6 @@ Partial Class UsersForm
     Friend WithEvents colUsername As DataGridViewTextBoxColumn
     Friend WithEvents colRole As DataGridViewTextBoxColumn
     Friend WithEvents colStatus As DataGridViewTextBoxColumn
+    Friend WithEvents panelBottom As Panel
+    Friend WithEvents lblTotalRecords As Label
 End Class

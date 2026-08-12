@@ -216,7 +216,7 @@ Partial Class ProductsForm
         Me.lblTotalRecords.Name = "lblTotalRecords"
         Me.lblTotalRecords.Size = New System.Drawing.Size(133, 19)
         Me.lblTotalRecords.TabIndex = 0
-        Me.lblTotalRecords.Text = "Total: 0 products"
+        Me.lblTotalRecords.Text = "Total Record: 0 products"
         '
         'ProductsForm
         '

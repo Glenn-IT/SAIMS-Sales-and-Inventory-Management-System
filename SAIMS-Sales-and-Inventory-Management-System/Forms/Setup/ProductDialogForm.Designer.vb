@@ -35,6 +35,8 @@ Partial Class ProductDialogForm
         numLowStock = New NumericUpDown()
         lblStatus = New Label()
         cboStatus = New ComboBox()
+        lblDate = New Label()
+        dtpDate = New DateTimePicker()
         btnSave = New Button()
         btnCancel = New Button()
         panelHeader.SuspendLayout()
@@ -218,13 +220,32 @@ Partial Class ProductDialogForm
         cboStatus.Size = New Size(200, 25)
         cboStatus.TabIndex = 14
         ' 
+        ' lblDate
+        ' 
+        lblDate.AutoSize = True
+        lblDate.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
+        lblDate.Location = New Point(25, 343)
+        lblDate.Name = "lblDate"
+        lblDate.Size = New Size(83, 17)
+        lblDate.TabIndex = 19
+        lblDate.Text = "Date Added:"
+        ' 
+        ' dtpDate
+        ' 
+        dtpDate.Font = New Font("Segoe UI", 10F)
+        dtpDate.Format = DateTimePickerFormat.Short
+        dtpDate.Location = New Point(25, 363)
+        dtpDate.Name = "dtpDate"
+        dtpDate.Size = New Size(430, 25)
+        dtpDate.TabIndex = 20
+        ' 
         ' btnSave
         ' 
         btnSave.BackColor = Color.FromArgb(CByte(46), CByte(204), CByte(113))
         btnSave.FlatStyle = FlatStyle.Flat
         btnSave.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
         btnSave.ForeColor = Color.White
-        btnSave.Location = New Point(245, 360)
+        btnSave.Location = New Point(245, 410)
         btnSave.Name = "btnSave"
         btnSave.Size = New Size(100, 35)
         btnSave.TabIndex = 15
@@ -237,7 +258,7 @@ Partial Class ProductDialogForm
         btnCancel.FlatStyle = FlatStyle.Flat
         btnCancel.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
         btnCancel.ForeColor = Color.White
-        btnCancel.Location = New Point(355, 360)
+        btnCancel.Location = New Point(355, 410)
         btnCancel.Name = "btnCancel"
         btnCancel.Size = New Size(100, 35)
         btnCancel.TabIndex = 16
@@ -249,7 +270,9 @@ Partial Class ProductDialogForm
         AutoScaleDimensions = New SizeF(7F, 17F)
         AutoScaleMode = AutoScaleMode.Font
         BackColor = Color.FromArgb(CByte(245), CByte(247), CByte(250))
-        ClientSize = New Size(480, 415)
+        ClientSize = New Size(480, 465)
+        Controls.Add(dtpDate)
+        Controls.Add(lblDate)
         Controls.Add(btnCancel)
         Controls.Add(btnSave)
         Controls.Add(cboStatus)
@@ -301,6 +324,8 @@ Partial Class ProductDialogForm
     Friend WithEvents numLowStock As NumericUpDown
     Friend WithEvents lblStatus As Label
     Friend WithEvents cboStatus As ComboBox
+    Friend WithEvents lblDate As Label
+    Friend WithEvents dtpDate As DateTimePicker
     Friend WithEvents btnSave As Button
     Friend WithEvents btnCancel As Button
 End Class

@@ -33,6 +33,7 @@ Partial Class ProductsForm
         colPrice = New DataGridViewTextBoxColumn()
         colStockQty = New DataGridViewTextBoxColumn()
         colStatus = New DataGridViewTextBoxColumn()
+        colDateAdded = New DataGridViewTextBoxColumn()
         panelBottom = New Panel()
         lblTotalRecords = New Label()
         panelTop.SuspendLayout()
@@ -147,7 +148,7 @@ Partial Class ProductsForm
         dgvProducts.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
         dgvProducts.BackgroundColor = Color.White
         dgvProducts.ColumnHeadersHeight = 40
-        dgvProducts.Columns.AddRange(New DataGridViewColumn() {colBarcode, colProductName, colCategory, colUnit, colPrice, colStockQty, colStatus})
+        dgvProducts.Columns.AddRange(New DataGridViewColumn() {colBarcode, colProductName, colCategory, colUnit, colPrice, colStockQty, colStatus, colDateAdded})
         dgvProducts.Dock = DockStyle.Fill
         dgvProducts.Location = New Point(0, 136)
         dgvProducts.Name = "dgvProducts"
@@ -207,6 +208,13 @@ Partial Class ProductsForm
         colStatus.Name = "colStatus"
         colStatus.ReadOnly = True
         ' 
+        ' colDateAdded
+        ' 
+        colDateAdded.HeaderText = "Date Added"
+        colDateAdded.MinimumWidth = 6
+        colDateAdded.Name = "colDateAdded"
+        colDateAdded.ReadOnly = True
+        ' 
         ' panelBottom
         ' 
         panelBottom.BackColor = Color.White
@@ -265,4 +273,5 @@ Partial Class ProductsForm
     Friend WithEvents colPrice As DataGridViewTextBoxColumn
     Friend WithEvents colStockQty As DataGridViewTextBoxColumn
     Friend WithEvents colStatus As DataGridViewTextBoxColumn
+    Friend WithEvents colDateAdded As DataGridViewTextBoxColumn
 End Class

@@ -15,6 +15,7 @@ Public Class ProductsForm
             For Each row As DataRow In _allProducts.Rows
                 Dim stockStatus As String = row("StockStatus").ToString()
                 Dim unitVal As String = If(row.Table.Columns.Contains("Unit") AndAlso Not IsDBNull(row("Unit")), row("Unit").ToString(), "pcs")
+                Dim dateAddedStr As String = If(row.Table.Columns.Contains("CreatedAt") AndAlso Not IsDBNull(row("CreatedAt")), CDate(row("CreatedAt")).ToString("yyyy-MM-dd"), "")
                 dgvProducts.Rows.Add(
                     row("Barcode").ToString(),
                     row("ProductName").ToString(),
@@ -22,7 +23,8 @@ Public Class ProductsForm
                     unitVal,
                     FormatCurrency(CDec(row("Price"))),
                     row("Stock").ToString(),
-                    stockStatus)
+                    stockStatus,
+                    dateAddedStr)
             Next
 
             UpdateRecordCount()
@@ -74,7 +76,7 @@ Public Class ProductsForm
                 End If
 
                 ProductRepository.Insert(dlg.BarcodeInput, dlg.ProductNameInput, dlg.CategoryIDInput,
-                                         dlg.UnitInput, dlg.PriceInput, dlg.StockInput, dlg.LowStockQtyInput)
+                                         dlg.UnitInput, dlg.PriceInput, dlg.StockInput, dlg.LowStockQtyInput, dlg.DateAddedInput)
                 ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
                                    $"Added product: {dlg.ProductNameInput} (Barcode: {dlg.BarcodeInput})")
 
@@ -127,6 +129,9 @@ Public Class ProductsForm
                 dlg.StockInput = CInt(productRow("Stock"))
                 dlg.LowStockQtyInput = CInt(productRow("LowStockQty"))
                 dlg.StatusInput = productRow("Status").ToString()
+                If productRow.Table.Columns.Contains("CreatedAt") AndAlso Not IsDBNull(productRow("CreatedAt")) Then
+                    dlg.DateAddedInput = CDate(productRow("CreatedAt"))
+                End If
 
                 If dlg.ShowDialog(Me) <> DialogResult.OK Then Return
 
@@ -138,7 +143,7 @@ Public Class ProductsForm
 
                 ProductRepository.Update(productID, dlg.BarcodeInput, dlg.ProductNameInput,
                                          dlg.CategoryIDInput, dlg.UnitInput, dlg.PriceInput,
-                                         dlg.LowStockQtyInput, dlg.StatusInput)
+                                         dlg.LowStockQtyInput, dlg.StatusInput, dlg.DateAddedInput)
 
                 ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
                                    $"Updated product: {dlg.ProductNameInput} (ID: {productID})")

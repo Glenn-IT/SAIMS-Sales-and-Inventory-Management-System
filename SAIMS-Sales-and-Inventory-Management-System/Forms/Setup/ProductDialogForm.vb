@@ -20,6 +20,7 @@ Public Class ProductDialogForm
     Public Property StockInput As Integer = 0
     Public Property LowStockQtyInput As Integer = Constants.DEFAULT_LOW_STOCK_QTY
     Public Property StatusInput As String = Constants.STATUS_ACTIVE
+    Public Property DateAddedInput As DateTime = DateTime.Now
 
     Private Sub ProductDialogForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LoadCategories()
@@ -34,6 +35,11 @@ Public Class ProductDialogForm
             numStock.Value = Math.Max(0, StockInput)
             numStock.Enabled = False ' Stock modified via Stock In / Out
             numLowStock.Value = Math.Max(0, LowStockQtyInput)
+            If DateAddedInput <> DateTime.MinValue Then
+                dtpDate.Value = DateAddedInput
+            Else
+                dtpDate.Value = DateTime.Now
+            End If
 
             If Not String.IsNullOrEmpty(StatusInput) AndAlso cboStatus.Items.Contains(StatusInput) Then
                 cboStatus.SelectedItem = StatusInput
@@ -70,6 +76,7 @@ Public Class ProductDialogForm
             cboStatus.SelectedItem = Constants.STATUS_ACTIVE
             If cboCategory.Items.Count > 0 Then cboCategory.SelectedIndex = 0
             cboUnit.SelectedItem = "pcs"
+            dtpDate.Value = DateTime.Now
         End If
     End Sub
 
@@ -134,6 +141,7 @@ Public Class ProductDialogForm
         StockInput = CInt(numStock.Value)
         LowStockQtyInput = CInt(numLowStock.Value)
         StatusInput = If(cboStatus.SelectedItem IsNot Nothing, cboStatus.SelectedItem.ToString(), Constants.STATUS_ACTIVE)
+        DateAddedInput = dtpDate.Value
 
         Me.DialogResult = DialogResult.OK
         Me.Close()

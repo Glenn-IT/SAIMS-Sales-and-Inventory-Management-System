@@ -9,7 +9,7 @@ Public Module ProductRepository
             con.Open()
             Dim cmd As New SqlCommand(
                 "SELECT p.ProductID, p.Barcode, p.ProductName,
-                        p.CategoryID, c.CategoryName, p.Unit, p.Price, p.Stock, p.LowStockQty, p.Status,
+                        p.CategoryID, c.CategoryName, p.Unit, p.Price, p.Stock, p.LowStockQty, p.Status, p.CreatedAt,
                         CASE
                             WHEN p.Stock = 0             THEN 'Out of Stock'
                             WHEN p.Stock <= p.LowStockQty THEN 'Low Stock'
@@ -30,7 +30,7 @@ Public Module ProductRepository
             con.Open()
             Dim cmd As New SqlCommand(
                 "SELECT p.ProductID, p.Barcode, p.ProductName, p.Unit,
-                        p.Price, p.Stock, p.Status
+                        p.Price, p.Stock, p.Status, p.CreatedAt
                  FROM tbl_Products p
                  WHERE p.Barcode = @barcode AND p.Status = @status", con)
             cmd.Parameters.AddWithValue("@barcode", barcode)
@@ -47,7 +47,7 @@ Public Module ProductRepository
             con.Open()
             Dim cmd As New SqlCommand(
                 "SELECT p.ProductID, p.Barcode, p.ProductName,
-                        p.CategoryID, p.Unit, p.Price, p.Stock, p.LowStockQty, p.Status
+                        p.CategoryID, p.Unit, p.Price, p.Stock, p.LowStockQty, p.Status, p.CreatedAt
                  FROM tbl_Products p
                  WHERE p.ProductID = @id", con)
             cmd.Parameters.AddWithValue("@id", productID)
@@ -87,34 +87,38 @@ Public Module ProductRepository
     End Function
 
     Public Sub Insert(barcode As String, productName As String, categoryID As Integer, unit As String,
-                      price As Decimal, stock As Integer, lowStockQty As Integer)
+                      price As Decimal, stock As Integer, lowStockQty As Integer, Optional dateAdded As Nullable(Of DateTime) = Nothing)
         Using con As New SqlConnection(dbconstring.Connection)
             con.Open()
             Using cmd As New SqlCommand(
-                "INSERT INTO tbl_Products (Barcode, ProductName, CategoryID, Unit, Price, Stock, LowStockQty, Status)
-                 VALUES (@barcode, @name, @catID, @unit, @price, @stock, @lowStock, @status)", con)
-                cmd.Parameters.AddWithValue("@barcode",  barcode)
-                cmd.Parameters.AddWithValue("@name",     productName)
-                cmd.Parameters.AddWithValue("@catID",    categoryID)
-                cmd.Parameters.AddWithValue("@unit",     If(String.IsNullOrWhiteSpace(unit), "pcs", unit))
-                cmd.Parameters.AddWithValue("@price",    price)
-                cmd.Parameters.AddWithValue("@stock",    stock)
-                cmd.Parameters.AddWithValue("@lowStock", lowStockQty)
-                cmd.Parameters.AddWithValue("@status",   Constants.STATUS_ACTIVE)
+                "INSERT INTO tbl_Products (Barcode, ProductName, CategoryID, Unit, Price, Stock, LowStockQty, Status, CreatedAt)
+                 VALUES (@barcode, @name, @catID, @unit, @price, @stock, @lowStock, @status, @createdAt)", con)
+                cmd.Parameters.AddWithValue("@barcode",   barcode)
+                cmd.Parameters.AddWithValue("@name",      productName)
+                cmd.Parameters.AddWithValue("@catID",     categoryID)
+                cmd.Parameters.AddWithValue("@unit",      If(String.IsNullOrWhiteSpace(unit), "pcs", unit))
+                cmd.Parameters.AddWithValue("@price",     price)
+                cmd.Parameters.AddWithValue("@stock",     stock)
+                cmd.Parameters.AddWithValue("@lowStock",  lowStockQty)
+                cmd.Parameters.AddWithValue("@status",    Constants.STATUS_ACTIVE)
+                cmd.Parameters.AddWithValue("@createdAt", If(dateAdded.HasValue, dateAdded.Value, DateTime.Now))
                 cmd.ExecuteNonQuery()
             End Using
         End Using
     End Sub
 
     Public Sub Update(productID As Integer, barcode As String, productName As String,
-                      categoryID As Integer, unit As String, price As Decimal, lowStockQty As Integer, status As String)
+                      categoryID As Integer, unit As String, price As Decimal, lowStockQty As Integer, status As String,
+                      Optional dateAdded As Nullable(Of DateTime) = Nothing)
         Using con As New SqlConnection(dbconstring.Connection)
             con.Open()
-            Using cmd As New SqlCommand(
-                "UPDATE tbl_Products
-                 SET Barcode = @barcode, ProductName = @name, CategoryID = @catID, Unit = @unit,
-                     Price = @price, LowStockQty = @lowStock, Status = @status
-                 WHERE ProductID = @id", con)
+            Dim query As String = "UPDATE tbl_Products SET Barcode = @barcode, ProductName = @name, CategoryID = @catID, Unit = @unit, Price = @price, LowStockQty = @lowStock, Status = @status"
+            If dateAdded.HasValue Then
+                query &= ", CreatedAt = @createdAt"
+            End If
+            query &= " WHERE ProductID = @id"
+
+            Using cmd As New SqlCommand(query, con)
                 cmd.Parameters.AddWithValue("@barcode",  barcode)
                 cmd.Parameters.AddWithValue("@name",     productName)
                 cmd.Parameters.AddWithValue("@catID",    categoryID)
@@ -122,6 +126,9 @@ Public Module ProductRepository
                 cmd.Parameters.AddWithValue("@price",    price)
                 cmd.Parameters.AddWithValue("@lowStock", lowStockQty)
                 cmd.Parameters.AddWithValue("@status",   status)
+                If dateAdded.HasValue Then
+                    cmd.Parameters.AddWithValue("@createdAt", dateAdded.Value)
+                End If
                 cmd.Parameters.AddWithValue("@id",       productID)
                 cmd.ExecuteNonQuery()
             End Using

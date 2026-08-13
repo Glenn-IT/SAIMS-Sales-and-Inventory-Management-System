@@ -9,7 +9,12 @@ Public Class ForgotPasswordForm
     Private _answerAttempts As Integer = 0
 
     Private Sub ForgotPasswordForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        cmbQuestion.Items.AddRange(Constants.SecurityQuestions)
+        cmbQuestion.Items.Clear()
+        For Each q As String In Constants.SecurityQuestions
+            If q <> "Other" Then
+                cmbQuestion.Items.Add(q)
+            End If
+        Next
         txtUsername.Focus()
     End Sub
 
@@ -71,6 +76,10 @@ Public Class ForgotPasswordForm
         txtUsername.Visible = False
         btnNext.Visible = False
         btnCancelStep1.Visible = False
+
+        If Not String.IsNullOrWhiteSpace(_correctQuestion) AndAlso Not cmbQuestion.Items.Contains(_correctQuestion) Then
+            cmbQuestion.Items.Add(_correctQuestion)
+        End If
 
         lblQuestionPrompt.Visible = True
         cmbQuestion.Visible = True

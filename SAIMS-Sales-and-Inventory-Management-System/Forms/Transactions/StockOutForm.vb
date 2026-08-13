@@ -10,6 +10,7 @@ Public Class StockOutForm
         cmbReason.SelectedIndex = 0
 
         dtpDate.Value = DateTime.Now
+        dtpFilterDate.Value = DateTime.Now
         LoadStockOutHistory()
     End Sub
 
@@ -30,8 +31,28 @@ Public Class StockOutForm
             Dim dt As DataTable = StockMovementRepository.GetAll()
             dgvStockOut.Rows.Clear()
 
+            Dim searchKey As String = txtSearch.Text.Trim().ToLower()
+            Dim useDateFilter As Boolean = chkUseDateFilter.Checked
+            Dim filterDate As Date = dtpFilterDate.Value.Date
+
             For Each row As DataRow In dt.Rows
                 If row("MovementType").ToString() = Constants.MOVEMENT_STOCKOUT Then
+                    Dim barcode As String = If(IsDBNull(row("Barcode")), "", row("Barcode").ToString())
+                    Dim productName As String = row("ProductName").ToString()
+                    Dim mDate As DateTime = CDate(row("MovementDate"))
+
+                    If Not String.IsNullOrEmpty(searchKey) Then
+                        If Not barcode.ToLower().Contains(searchKey) AndAlso Not productName.ToLower().Contains(searchKey) Then
+                            Continue For
+                        End If
+                    End If
+
+                    If useDateFilter Then
+                        If mDate.Date <> filterDate Then
+                            Continue For
+                        End If
+                    End If
+
                     Dim reasonFull As String = row("Reason").ToString()
                     Dim reason     As String = reasonFull
                     Dim remarks    As String = ""
@@ -44,10 +65,11 @@ Public Class StockOutForm
 
                     dgvStockOut.Rows.Add(
                         row("MovementID").ToString(),
-                        row("ProductName").ToString(),
+                        barcode,
+                        productName,
                         row("Quantity").ToString(),
                         reason,
-                        CDate(row("MovementDate")).ToString("yyyy-MM-dd HH:mm"),
+                        mDate.ToString("yyyy-MM-dd HH:mm"),
                         remarks)
                 End If
             Next
@@ -56,6 +78,28 @@ Public Class StockOutForm
             MessageBox.Show("Failed to load stock out history." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub txtSearch_TextChanged(sender As Object, e As EventArgs) Handles txtSearch.TextChanged
+        LoadStockOutHistory()
+    End Sub
+
+    Private Sub chkUseDateFilter_CheckedChanged(sender As Object, e As EventArgs) Handles chkUseDateFilter.CheckedChanged
+        dtpFilterDate.Enabled = chkUseDateFilter.Checked
+        LoadStockOutHistory()
+    End Sub
+
+    Private Sub dtpFilterDate_ValueChanged(sender As Object, e As EventArgs) Handles dtpFilterDate.ValueChanged
+        If chkUseDateFilter.Checked Then
+            LoadStockOutHistory()
+        End If
+    End Sub
+
+    Private Sub btnClearFilter_Click(sender As Object, e As EventArgs) Handles btnClearFilter.Click
+        txtSearch.Clear()
+        chkUseDateFilter.Checked = False
+        dtpFilterDate.Value = DateTime.Now
+        LoadStockOutHistory()
     End Sub
 
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click

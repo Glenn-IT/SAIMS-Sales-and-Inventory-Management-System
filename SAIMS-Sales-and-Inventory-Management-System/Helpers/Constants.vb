@@ -39,7 +39,8 @@ Public Module Constants
         "What is your mother's maiden name?",
         "What city were you born in?",
         "What was the name of your elementary school?",
-        "What is your favorite book?"
+        "What is your favorite book?",
+        "Other"
     }
 
 End Module

@@ -41,6 +41,8 @@ Public Class UserDialogForm
             txtConfirmPassword.Visible = False
             lblSecurityQuestion.Visible = False
             cboSecurityQuestion.Visible = False
+            lblNewSecurityQuestion.Visible = False
+            txtNewSecurityQuestion.Visible = False
             lblSecurityAnswer.Visible = False
             txtSecurityAnswer.Visible = False
 
@@ -56,7 +58,32 @@ Public Class UserDialogForm
             txtFullName.Text = ""
             txtPassword.Text = ""
             txtConfirmPassword.Text = ""
+            txtNewSecurityQuestion.Text = ""
             txtSecurityAnswer.Text = ""
+            Me.Height = 450
+        End If
+    End Sub
+
+    Private Sub cboSecurityQuestion_SelectedIndexChanged(sender As Object, e As EventArgs) Handles cboSecurityQuestion.SelectedIndexChanged
+        If IsEditMode Then Return
+
+        Dim isOther As Boolean = (cboSecurityQuestion.SelectedItem IsNot Nothing AndAlso
+                                  cboSecurityQuestion.SelectedItem.ToString() = "Other")
+
+        lblNewSecurityQuestion.Visible = isOther
+        txtNewSecurityQuestion.Visible = isOther
+
+        If isOther Then
+            lblSecurityAnswer.Location = New Point(25, 343)
+            txtSecurityAnswer.Location = New Point(25, 363)
+            btnSave.Location = New Point(245, 415)
+            btnCancel.Location = New Point(355, 415)
+            Me.Height = 505
+        Else
+            lblSecurityAnswer.Location = New Point(25, 288)
+            txtSecurityAnswer.Location = New Point(25, 308)
+            btnSave.Location = New Point(245, 360)
+            btnCancel.Location = New Point(355, 360)
             Me.Height = 450
         End If
     End Sub
@@ -99,7 +126,18 @@ Public Class UserDialogForm
                 Return
             End If
 
-            If cboSecurityQuestion.SelectedItem Is Nothing Then
+            Dim secQuestion As String = ""
+            If cboSecurityQuestion.SelectedItem IsNot Nothing AndAlso cboSecurityQuestion.SelectedItem.ToString() = "Other" Then
+                secQuestion = InputHelper.SanitizeInput(txtNewSecurityQuestion.Text.Trim())
+                If String.IsNullOrWhiteSpace(secQuestion) Then
+                    MessageBox.Show("Please enter your new security question.", "Validation Error",
+                                    MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    txtNewSecurityQuestion.Focus()
+                    Return
+                End If
+            ElseIf cboSecurityQuestion.SelectedItem IsNot Nothing Then
+                secQuestion = cboSecurityQuestion.SelectedItem.ToString()
+            Else
                 MessageBox.Show("Security Question is required.", "Validation Error",
                                 MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 cboSecurityQuestion.Focus()
@@ -114,7 +152,7 @@ Public Class UserDialogForm
             End If
 
             PasswordInput = pass
-            SecurityQuestionInput = cboSecurityQuestion.SelectedItem.ToString()
+            SecurityQuestionInput = secQuestion
             SecurityAnswerInput = txtSecurityAnswer.Text.Trim()
         End If
 

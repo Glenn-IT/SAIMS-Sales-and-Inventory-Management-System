@@ -31,6 +31,8 @@ Partial Class UserDialogForm
         txtConfirmPassword = New TextBox()
         lblSecurityQuestion = New Label()
         cboSecurityQuestion = New ComboBox()
+        lblNewSecurityQuestion = New Label()
+        txtNewSecurityQuestion = New TextBox()
         lblSecurityAnswer = New Label()
         txtSecurityAnswer = New TextBox()
         lblStatus = New Label()
@@ -197,6 +199,26 @@ Partial Class UserDialogForm
         cboSecurityQuestion.Size = New Size(430, 25)
         cboSecurityQuestion.TabIndex = 14
         ' 
+        ' lblNewSecurityQuestion
+        ' 
+        lblNewSecurityQuestion.AutoSize = True
+        lblNewSecurityQuestion.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
+        lblNewSecurityQuestion.Location = New Point(25, 288)
+        lblNewSecurityQuestion.Name = "lblNewSecurityQuestion"
+        lblNewSecurityQuestion.Size = New Size(155, 17)
+        lblNewSecurityQuestion.TabIndex = 19
+        lblNewSecurityQuestion.Text = "New Security Question:"
+        lblNewSecurityQuestion.Visible = False
+        ' 
+        ' txtNewSecurityQuestion
+        ' 
+        txtNewSecurityQuestion.Font = New Font("Segoe UI", 10F)
+        txtNewSecurityQuestion.Location = New Point(25, 308)
+        txtNewSecurityQuestion.Name = "txtNewSecurityQuestion"
+        txtNewSecurityQuestion.Size = New Size(430, 25)
+        txtNewSecurityQuestion.TabIndex = 20
+        txtNewSecurityQuestion.Visible = False
+        ' 
         ' lblSecurityAnswer
         ' 
         lblSecurityAnswer.AutoSize = True
@@ -251,6 +273,8 @@ Partial Class UserDialogForm
         Controls.Add(btnSave)
         Controls.Add(txtSecurityAnswer)
         Controls.Add(lblSecurityAnswer)
+        Controls.Add(txtNewSecurityQuestion)
+        Controls.Add(lblNewSecurityQuestion)
         Controls.Add(cboSecurityQuestion)
         Controls.Add(lblSecurityQuestion)
         Controls.Add(txtConfirmPassword)
@@ -294,6 +318,8 @@ Partial Class UserDialogForm
     Friend WithEvents txtConfirmPassword As TextBox
     Friend WithEvents lblSecurityQuestion As Label
     Friend WithEvents cboSecurityQuestion As ComboBox
+    Friend WithEvents lblNewSecurityQuestion As Label
+    Friend WithEvents txtNewSecurityQuestion As TextBox
     Friend WithEvents lblSecurityAnswer As Label
     Friend WithEvents txtSecurityAnswer As TextBox
     Friend WithEvents btnSave As Button

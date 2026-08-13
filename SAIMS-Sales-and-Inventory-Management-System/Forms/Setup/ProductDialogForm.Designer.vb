@@ -25,6 +25,8 @@ Partial Class ProductDialogForm
         txtProductName = New TextBox()
         lblCategory = New Label()
         cboCategory = New ComboBox()
+        lblUnit = New Label()
+        cboUnit = New ComboBox()
         lblPrice = New Label()
         txtPrice = New TextBox()
         lblStock = New Label()
@@ -114,8 +116,29 @@ Partial Class ProductDialogForm
         cboCategory.FormattingEnabled = True
         cboCategory.Location = New Point(25, 198)
         cboCategory.Name = "cboCategory"
-        cboCategory.Size = New Size(430, 25)
+        cboCategory.Size = New Size(200, 25)
         cboCategory.TabIndex = 6
+        ' 
+        ' lblUnit
+        ' 
+        lblUnit.AutoSize = True
+        lblUnit.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
+        lblUnit.Location = New Point(255, 178)
+        lblUnit.Name = "lblUnit"
+        lblUnit.Size = New Size(40, 17)
+        lblUnit.TabIndex = 17
+        lblUnit.Text = "Unit:"
+        ' 
+        ' cboUnit
+        ' 
+        cboUnit.DropDownStyle = ComboBoxStyle.DropDownList
+        cboUnit.Font = New Font("Segoe UI", 10F)
+        cboUnit.FormattingEnabled = True
+        cboUnit.Items.AddRange(New Object() {"bottle", "box", "case", "pcs", "pack", "can", "kg", "g"})
+        cboUnit.Location = New Point(255, 198)
+        cboUnit.Name = "cboUnit"
+        cboUnit.Size = New Size(200, 25)
+        cboUnit.TabIndex = 18
         ' 
         ' lblPrice
         ' 
@@ -237,6 +260,8 @@ Partial Class ProductDialogForm
         Controls.Add(lblStock)
         Controls.Add(txtPrice)
         Controls.Add(lblPrice)
+        Controls.Add(cboUnit)
+        Controls.Add(lblUnit)
         Controls.Add(cboCategory)
         Controls.Add(lblCategory)
         Controls.Add(txtProductName)
@@ -266,6 +291,8 @@ Partial Class ProductDialogForm
     Friend WithEvents txtProductName As TextBox
     Friend WithEvents lblCategory As Label
     Friend WithEvents cboCategory As ComboBox
+    Friend WithEvents lblUnit As Label
+    Friend WithEvents cboUnit As ComboBox
     Friend WithEvents lblPrice As Label
     Friend WithEvents txtPrice As TextBox
     Friend WithEvents lblStock As Label

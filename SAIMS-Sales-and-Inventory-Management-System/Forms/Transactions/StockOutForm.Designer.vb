@@ -34,8 +34,15 @@ Partial Class StockOutForm
         Me.cmbProduct = New System.Windows.Forms.ComboBox()
         Me.lblProduct = New System.Windows.Forms.Label()
         Me.lblFormTitle = New System.Windows.Forms.Label()
+        Me.panelSearch = New System.Windows.Forms.Panel()
+        Me.lblSearch = New System.Windows.Forms.Label()
+        Me.txtSearch = New System.Windows.Forms.TextBox()
+        Me.chkUseDateFilter = New System.Windows.Forms.CheckBox()
+        Me.dtpFilterDate = New System.Windows.Forms.DateTimePicker()
+        Me.btnClearFilter = New System.Windows.Forms.Button()
         Me.dgvStockOut = New System.Windows.Forms.DataGridView()
         Me.colID = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colBarcode = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colProduct = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colQuantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colReason = New System.Windows.Forms.DataGridViewTextBoxColumn()
@@ -43,6 +50,7 @@ Partial Class StockOutForm
         Me.colRemarks = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.panelTop.SuspendLayout()
         Me.panelForm.SuspendLayout()
+        Me.panelSearch.SuspendLayout()
         CType(Me.dgvStockOut, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
         '
@@ -239,6 +247,73 @@ Partial Class StockOutForm
         Me.lblFormTitle.TabIndex = 0
         Me.lblFormTitle.Text = "Record Stock Out Entry"
         '
+        'panelSearch
+        '
+        Me.panelSearch.BackColor = System.Drawing.Color.FromArgb(CType(CType(245, Byte), Integer), CType(CType(247, Byte), Integer), CType(CType(250, Byte), Integer))
+        Me.panelSearch.Controls.Add(Me.lblSearch)
+        Me.panelSearch.Controls.Add(Me.txtSearch)
+        Me.panelSearch.Controls.Add(Me.chkUseDateFilter)
+        Me.panelSearch.Controls.Add(Me.dtpFilterDate)
+        Me.panelSearch.Controls.Add(Me.btnClearFilter)
+        Me.panelSearch.Dock = System.Windows.Forms.DockStyle.Top
+        Me.panelSearch.Location = New System.Drawing.Point(0, 300)
+        Me.panelSearch.Name = "panelSearch"
+        Me.panelSearch.Size = New System.Drawing.Size(1000, 55)
+        Me.panelSearch.TabIndex = 2
+        '
+        'lblSearch
+        '
+        Me.lblSearch.AutoSize = True
+        Me.lblSearch.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
+        Me.lblSearch.Location = New System.Drawing.Point(20, 18)
+        Me.lblSearch.Name = "lblSearch"
+        Me.lblSearch.Size = New System.Drawing.Size(52, 17)
+        Me.lblSearch.TabIndex = 0
+        Me.lblSearch.Text = "Search:"
+        '
+        'txtSearch
+        '
+        Me.txtSearch.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.txtSearch.Location = New System.Drawing.Point(78, 14)
+        Me.txtSearch.Name = "txtSearch"
+        Me.txtSearch.PlaceholderText = "Search barcode or product name..."
+        Me.txtSearch.Size = New System.Drawing.Size(260, 25)
+        Me.txtSearch.TabIndex = 1
+        '
+        'chkUseDateFilter
+        '
+        Me.chkUseDateFilter.AutoSize = True
+        Me.chkUseDateFilter.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
+        Me.chkUseDateFilter.Location = New System.Drawing.Point(365, 17)
+        Me.chkUseDateFilter.Name = "chkUseDateFilter"
+        Me.chkUseDateFilter.Size = New System.Drawing.Size(111, 21)
+        Me.chkUseDateFilter.TabIndex = 2
+        Me.chkUseDateFilter.Text = "Filter by Date:"
+        Me.chkUseDateFilter.UseVisualStyleBackColor = True
+        '
+        'dtpFilterDate
+        '
+        Me.dtpFilterDate.Enabled = False
+        Me.dtpFilterDate.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.dtpFilterDate.Format = System.Windows.Forms.DateTimePickerFormat.Short
+        Me.dtpFilterDate.Location = New System.Drawing.Point(482, 14)
+        Me.dtpFilterDate.Name = "dtpFilterDate"
+        Me.dtpFilterDate.Size = New System.Drawing.Size(130, 25)
+        Me.dtpFilterDate.TabIndex = 3
+        '
+        'btnClearFilter
+        '
+        Me.btnClearFilter.BackColor = System.Drawing.Color.FromArgb(CType(CType(149, Byte), Integer), CType(CType(165, Byte), Integer), CType(CType(166, Byte), Integer))
+        Me.btnClearFilter.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.btnClearFilter.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
+        Me.btnClearFilter.ForeColor = System.Drawing.Color.White
+        Me.btnClearFilter.Location = New System.Drawing.Point(630, 12)
+        Me.btnClearFilter.Name = "btnClearFilter"
+        Me.btnClearFilter.Size = New System.Drawing.Size(100, 30)
+        Me.btnClearFilter.TabIndex = 4
+        Me.btnClearFilter.Text = "Reset Filter"
+        Me.btnClearFilter.UseVisualStyleBackColor = False
+        '
         'dgvStockOut
         '
         Me.dgvStockOut.AllowUserToAddRows = False
@@ -246,16 +321,16 @@ Partial Class StockOutForm
         Me.dgvStockOut.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.dgvStockOut.BackgroundColor = System.Drawing.Color.White
         Me.dgvStockOut.ColumnHeadersHeight = 40
-        Me.dgvStockOut.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colID, Me.colProduct, Me.colQuantity, Me.colReason, Me.colDate, Me.colRemarks})
+        Me.dgvStockOut.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colID, Me.colBarcode, Me.colProduct, Me.colQuantity, Me.colReason, Me.colDate, Me.colRemarks})
         Me.dgvStockOut.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.dgvStockOut.Location = New System.Drawing.Point(0, 300)
+        Me.dgvStockOut.Location = New System.Drawing.Point(0, 355)
         Me.dgvStockOut.Name = "dgvStockOut"
         Me.dgvStockOut.ReadOnly = True
         Me.dgvStockOut.RowHeadersWidth = 51
         Me.dgvStockOut.RowTemplate.Height = 35
         Me.dgvStockOut.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect
-        Me.dgvStockOut.Size = New System.Drawing.Size(1000, 300)
-        Me.dgvStockOut.TabIndex = 2
+        Me.dgvStockOut.Size = New System.Drawing.Size(1000, 245)
+        Me.dgvStockOut.TabIndex = 3
         '
         'colID
         '
@@ -263,6 +338,13 @@ Partial Class StockOutForm
         Me.colID.MinimumWidth = 6
         Me.colID.Name = "colID"
         Me.colID.ReadOnly = True
+        '
+        'colBarcode
+        '
+        Me.colBarcode.HeaderText = "Barcode"
+        Me.colBarcode.MinimumWidth = 6
+        Me.colBarcode.Name = "colBarcode"
+        Me.colBarcode.ReadOnly = True
         '
         'colProduct
         '
@@ -306,6 +388,7 @@ Partial Class StockOutForm
         Me.BackColor = System.Drawing.Color.FromArgb(CType(CType(236, Byte), Integer), CType(CType(240, Byte), Integer), CType(CType(241, Byte), Integer))
         Me.ClientSize = New System.Drawing.Size(1000, 600)
         Me.Controls.Add(Me.dgvStockOut)
+        Me.Controls.Add(Me.panelSearch)
         Me.Controls.Add(Me.panelForm)
         Me.Controls.Add(Me.panelTop)
         Me.Name = "StockOutForm"
@@ -314,6 +397,8 @@ Partial Class StockOutForm
         Me.panelTop.PerformLayout()
         Me.panelForm.ResumeLayout(False)
         Me.panelForm.PerformLayout()
+        Me.panelSearch.ResumeLayout(False)
+        Me.panelSearch.PerformLayout()
         CType(Me.dgvStockOut, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
 
@@ -336,8 +421,15 @@ Partial Class StockOutForm
     Friend WithEvents btnAdd As Button
     Friend WithEvents btnClear As Button
     Friend WithEvents btnRefresh As Button
+    Friend WithEvents panelSearch As Panel
+    Friend WithEvents lblSearch As Label
+    Friend WithEvents txtSearch As TextBox
+    Friend WithEvents chkUseDateFilter As CheckBox
+    Friend WithEvents dtpFilterDate As DateTimePicker
+    Friend WithEvents btnClearFilter As Button
     Friend WithEvents dgvStockOut As DataGridView
     Friend WithEvents colID As DataGridViewTextBoxColumn
+    Friend WithEvents colBarcode As DataGridViewTextBoxColumn
     Friend WithEvents colProduct As DataGridViewTextBoxColumn
     Friend WithEvents colQuantity As DataGridViewTextBoxColumn
     Friend WithEvents colReason As DataGridViewTextBoxColumn

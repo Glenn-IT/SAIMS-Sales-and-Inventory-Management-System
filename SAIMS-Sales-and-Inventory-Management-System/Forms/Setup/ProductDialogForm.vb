@@ -15,6 +15,7 @@ Public Class ProductDialogForm
     Public Property BarcodeInput As String = ""
     Public Property ProductNameInput As String = ""
     Public Property CategoryIDInput As Integer = 0
+    Public Property UnitInput As String = "pcs"
     Public Property PriceInput As Decimal = 0
     Public Property StockInput As Integer = 0
     Public Property LowStockQtyInput As Integer = Constants.DEFAULT_LOW_STOCK_QTY
@@ -45,6 +46,18 @@ Public Class ProductDialogForm
                     Exit For
                 End If
             Next
+
+            ' Select Unit
+            If Not String.IsNullOrEmpty(UnitInput) Then
+                Dim foundIndex As Integer = cboUnit.FindStringExact(UnitInput.ToLower())
+                If foundIndex >= 0 Then
+                    cboUnit.SelectedIndex = foundIndex
+                Else
+                    cboUnit.Text = UnitInput
+                End If
+            Else
+                cboUnit.SelectedItem = "pcs"
+            End If
         Else
             lblHeaderTitle.Text = "Add New Product"
             Me.Text = "Add New Product"
@@ -56,6 +69,7 @@ Public Class ProductDialogForm
             numLowStock.Value = Constants.DEFAULT_LOW_STOCK_QTY
             cboStatus.SelectedItem = Constants.STATUS_ACTIVE
             If cboCategory.Items.Count > 0 Then cboCategory.SelectedIndex = 0
+            cboUnit.SelectedItem = "pcs"
         End If
     End Sub
 
@@ -109,10 +123,13 @@ Public Class ProductDialogForm
         End If
 
         Dim selectedCat As CategoryComboItem = CType(cboCategory.SelectedItem, CategoryComboItem)
+        Dim unit As String = InputHelper.SanitizeInput(cboUnit.Text.Trim())
+        If String.IsNullOrWhiteSpace(unit) Then unit = "pcs"
 
         BarcodeInput = barcode
         ProductNameInput = name
         CategoryIDInput = selectedCat.ID
+        UnitInput = unit
         PriceInput = price
         StockInput = CInt(numStock.Value)
         LowStockQtyInput = CInt(numLowStock.Value)

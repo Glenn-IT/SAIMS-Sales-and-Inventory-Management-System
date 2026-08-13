@@ -9,7 +9,7 @@ Public Module ProductRepository
             con.Open()
             Dim cmd As New SqlCommand(
                 "SELECT p.ProductID, p.Barcode, p.ProductName,
-                        p.CategoryID, c.CategoryName, p.Price, p.Stock, p.LowStockQty, p.Status,
+                        p.CategoryID, c.CategoryName, p.Unit, p.Price, p.Stock, p.LowStockQty, p.Status,
                         CASE
                             WHEN p.Stock = 0             THEN 'Out of Stock'
                             WHEN p.Stock <= p.LowStockQty THEN 'Low Stock'
@@ -29,7 +29,7 @@ Public Module ProductRepository
         Using con As New SqlConnection(dbconstring.Connection)
             con.Open()
             Dim cmd As New SqlCommand(
-                "SELECT p.ProductID, p.Barcode, p.ProductName,
+                "SELECT p.ProductID, p.Barcode, p.ProductName, p.Unit,
                         p.Price, p.Stock, p.Status
                  FROM tbl_Products p
                  WHERE p.Barcode = @barcode AND p.Status = @status", con)
@@ -47,7 +47,7 @@ Public Module ProductRepository
             con.Open()
             Dim cmd As New SqlCommand(
                 "SELECT p.ProductID, p.Barcode, p.ProductName,
-                        p.CategoryID, p.Price, p.Stock, p.LowStockQty, p.Status
+                        p.CategoryID, p.Unit, p.Price, p.Stock, p.LowStockQty, p.Status
                  FROM tbl_Products p
                  WHERE p.ProductID = @id", con)
             cmd.Parameters.AddWithValue("@id", productID)
@@ -62,7 +62,7 @@ Public Module ProductRepository
         Using con As New SqlConnection(dbconstring.Connection)
             con.Open()
             Dim cmd As New SqlCommand(
-                "SELECT p.ProductID, p.Barcode, p.ProductName, p.Stock, p.LowStockQty
+                "SELECT p.ProductID, p.Barcode, p.ProductName, p.Unit, p.Stock, p.LowStockQty
                  FROM tbl_Products p
                  WHERE p.Stock <= p.LowStockQty AND p.Stock > 0
                    AND p.Status = @status
@@ -86,16 +86,17 @@ Public Module ProductRepository
         End Using
     End Function
 
-    Public Sub Insert(barcode As String, productName As String, categoryID As Integer,
+    Public Sub Insert(barcode As String, productName As String, categoryID As Integer, unit As String,
                       price As Decimal, stock As Integer, lowStockQty As Integer)
         Using con As New SqlConnection(dbconstring.Connection)
             con.Open()
             Using cmd As New SqlCommand(
-                "INSERT INTO tbl_Products (Barcode, ProductName, CategoryID, Price, Stock, LowStockQty, Status)
-                 VALUES (@barcode, @name, @catID, @price, @stock, @lowStock, @status)", con)
+                "INSERT INTO tbl_Products (Barcode, ProductName, CategoryID, Unit, Price, Stock, LowStockQty, Status)
+                 VALUES (@barcode, @name, @catID, @unit, @price, @stock, @lowStock, @status)", con)
                 cmd.Parameters.AddWithValue("@barcode",  barcode)
                 cmd.Parameters.AddWithValue("@name",     productName)
                 cmd.Parameters.AddWithValue("@catID",    categoryID)
+                cmd.Parameters.AddWithValue("@unit",     If(String.IsNullOrWhiteSpace(unit), "pcs", unit))
                 cmd.Parameters.AddWithValue("@price",    price)
                 cmd.Parameters.AddWithValue("@stock",    stock)
                 cmd.Parameters.AddWithValue("@lowStock", lowStockQty)
@@ -106,17 +107,18 @@ Public Module ProductRepository
     End Sub
 
     Public Sub Update(productID As Integer, barcode As String, productName As String,
-                      categoryID As Integer, price As Decimal, lowStockQty As Integer, status As String)
+                      categoryID As Integer, unit As String, price As Decimal, lowStockQty As Integer, status As String)
         Using con As New SqlConnection(dbconstring.Connection)
             con.Open()
             Using cmd As New SqlCommand(
                 "UPDATE tbl_Products
-                 SET Barcode = @barcode, ProductName = @name, CategoryID = @catID,
+                 SET Barcode = @barcode, ProductName = @name, CategoryID = @catID, Unit = @unit,
                      Price = @price, LowStockQty = @lowStock, Status = @status
                  WHERE ProductID = @id", con)
                 cmd.Parameters.AddWithValue("@barcode",  barcode)
                 cmd.Parameters.AddWithValue("@name",     productName)
                 cmd.Parameters.AddWithValue("@catID",    categoryID)
+                cmd.Parameters.AddWithValue("@unit",     If(String.IsNullOrWhiteSpace(unit), "pcs", unit))
                 cmd.Parameters.AddWithValue("@price",    price)
                 cmd.Parameters.AddWithValue("@lowStock", lowStockQty)
                 cmd.Parameters.AddWithValue("@status",   status)

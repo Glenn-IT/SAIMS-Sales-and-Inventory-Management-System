@@ -46,12 +46,20 @@ BEGIN
         Barcode     NVARCHAR(50)  NOT NULL UNIQUE,
         ProductName NVARCHAR(150) NOT NULL,
         CategoryID  INT           NOT NULL,
+        Unit        NVARCHAR(50)  NOT NULL DEFAULT 'pcs',
         Price       DECIMAL(10,2) NOT NULL,
         Stock       INT           NOT NULL DEFAULT 0,
         LowStockQty INT           NOT NULL DEFAULT 10,
         Status      NVARCHAR(20)  NOT NULL DEFAULT 'Active',
         CreatedAt   DATETIME      NOT NULL DEFAULT GETDATE()
     );
+END
+ELSE
+BEGIN
+    IF NOT EXISTS (SELECT * FROM sys.columns WHERE Name = 'Unit' AND Object_ID = Object_ID('tbl_Products'))
+    BEGIN
+        ALTER TABLE tbl_Products ADD Unit NVARCHAR(50) NOT NULL DEFAULT 'pcs';
+    END
 END
 GO
 
@@ -190,17 +198,17 @@ GO
 -- ------------------------------------------------------------
 IF NOT EXISTS (SELECT 1 FROM tbl_Products)
 BEGIN
-    INSERT INTO tbl_Products (Barcode, ProductName, CategoryID, Price, Stock, LowStockQty, Status) VALUES
-        ('P001', 'Coca Cola 1.5L',          1, 55.00, 150, 20, 'Active'),
-        ('P002', 'Lucky Me Pancit Canton',  3, 12.50, 200, 30, 'Active'),
-        ('P003', 'Argentina Corned Beef',   2, 45.00,  80, 15, 'Active'),
-        ('P004', 'Red Horse Beer 1L',       5, 50.00, 100, 20, 'Active'),
-        ('P005', 'Sugar 1kg',               6, 65.00,  60, 10, 'Active'),
-        ('P006', 'Champion Detergent 100g', 8,  8.50, 120, 25, 'Active'),
-        ('P007', 'San Miguel Beer 330ml',   5, 45.00,   5,  5, 'Active'),
-        ('P008', 'Del Monte Tomato Sauce',  6, 18.00,  90, 15, 'Active'),
-        ('P009', 'Alaska Condensed Milk',   4, 35.00,   0, 10, 'Active'),
-        ('P010', 'Jack n Jill Piattos',     7, 25.00, 110, 20, 'Active');
+    INSERT INTO tbl_Products (Barcode, ProductName, CategoryID, Unit, Price, Stock, LowStockQty, Status) VALUES
+        ('P001', 'Coca Cola 1.5L',          1, 'bottle', 55.00, 150, 20, 'Active'),
+        ('P002', 'Lucky Me Pancit Canton',  3, 'pack',   12.50, 200, 30, 'Active'),
+        ('P003', 'Argentina Corned Beef',   2, 'can',    45.00,  80, 15, 'Active'),
+        ('P004', 'Red Horse Beer 1L',       5, 'bottle', 50.00, 100, 20, 'Active'),
+        ('P005', 'Sugar 1kg',               6, 'pack',   65.00,  60, 10, 'Active'),
+        ('P006', 'Champion Detergent 100g', 8, 'pack',    8.50, 120, 25, 'Active'),
+        ('P007', 'San Miguel Beer 330ml',   5, 'bottle', 45.00,   5,  5, 'Active'),
+        ('P008', 'Del Monte Tomato Sauce',  6, 'pack',   18.00,  90, 15, 'Active'),
+        ('P009', 'Alaska Condensed Milk',   4, 'can',    35.00,   0, 10, 'Active'),
+        ('P010', 'Jack n Jill Piattos',     7, 'pack',   25.00, 110, 20, 'Active');
 END
 GO
 

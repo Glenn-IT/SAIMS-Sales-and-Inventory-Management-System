@@ -45,6 +45,10 @@ Public Class UsersForm
             cmbQ.Items.AddRange(Constants.SecurityQuestions)
             cmbQ.SelectedIndex = 0
 
+            ' Custom / New Security Question TextBox
+            Dim lblNewQ As New Label() With {.Text = "New Security Question:", .Location = New Point(20, 105), .AutoSize = True, .Visible = False}
+            Dim txtNewQ As New TextBox() With {.Location = New Point(20, 127), .Width = 400, .Visible = False}
+
             ' Security Answer
             Dim lblAns As New Label() With {.Text = "Security Answer:", .Location = New Point(20, 105), .AutoSize = True}
             Dim txtAns As New TextBox() With {.Location = New Point(20, 127), .Width = 400}
@@ -52,7 +56,6 @@ Public Class UsersForm
             ' Buttons
             Dim btnSave As New Button() With {
                 .Text = "Save Question",
-                .DialogResult = DialogResult.OK,
                 .Location = New Point(200, 170),
                 .Size = New Size(115, 35),
                 .BackColor = Color.FromArgb(52, 73, 94),
@@ -73,21 +76,88 @@ Public Class UsersForm
                 .UseVisualStyleBackColor = False
             }
 
-            dlg.AcceptButton = btnSave
+            AddHandler cmbQ.SelectedIndexChanged, Sub(sender As Object, e As EventArgs)
+                Dim isOther As Boolean = (cmbQ.SelectedItem IsNot Nothing AndAlso cmbQ.SelectedItem.ToString() = "Other")
+                lblNewQ.Visible = isOther
+                txtNewQ.Visible = isOther
+                If isOther Then
+                    lblAns.Location = New Point(20, 160)
+                    txtAns.Location = New Point(20, 182)
+                    btnSave.Location = New Point(200, 225)
+                    btnCancel.Location = New Point(325, 225)
+                    dlg.Size = New Size(460, 315)
+                Else
+                    lblAns.Location = New Point(20, 105)
+                    txtAns.Location = New Point(20, 127)
+                    btnSave.Location = New Point(200, 170)
+                    btnCancel.Location = New Point(325, 170)
+                    dlg.Size = New Size(460, 260)
+                End If
+            End Sub
+
+            Dim capturedQuestion As String = ""
+            Dim capturedAnswer As String = ""
+
+            AddHandler btnSave.Click, Sub(sender As Object, e As EventArgs)
+                Dim selectedQ As String = If(cmbQ.SelectedItem IsNot Nothing, cmbQ.SelectedItem.ToString(), "")
+                If selectedQ = "Other" Then
+                    Dim customQ As String = txtNewQ.Text.Trim()
+                    If String.IsNullOrWhiteSpace(customQ) Then
+                        MessageBox.Show("Please enter your new security question.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                        txtNewQ.Focus()
+                        Return
+                    End If
+                    capturedQuestion = customQ
+                Else
+                    capturedQuestion = selectedQ
+                End If
+
+                If String.IsNullOrWhiteSpace(txtAns.Text.Trim()) Then
+                    MessageBox.Show("An answer is required.", "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    txtAns.Focus()
+                    Return
+                End If
+
+                capturedAnswer = txtAns.Text.Trim()
+                dlg.DialogResult = DialogResult.OK
+                dlg.Close()
+            End Sub
+
             dlg.CancelButton = btnCancel
 
             dlg.Controls.AddRange(New Control() {
-                lblTitle, lblQ, cmbQ, lblAns, txtAns, btnSave, btnCancel
+                lblTitle, lblQ, cmbQ, lblNewQ, txtNewQ, lblAns, txtAns, btnSave, btnCancel
             })
 
             If dlg.ShowDialog(Me) = DialogResult.OK Then
-                result.Question = cmbQ.SelectedItem.ToString()
-                result.Answer = txtAns.Text.Trim()
+                result.Question = capturedQuestion
+                result.Answer = capturedAnswer
                 Return True
             End If
             Return False
         End Using
     End Function
+
+    Private Sub PerformAutoLogout()
+        MessageBox.Show("Your account credentials have been updated successfully. You will now be automatically logged out.",
+                        "Auto Logout", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS, "Updated own credentials — Auto logged out.")
+        SessionManager.Clear()
+
+        Dim loginForm As New LoginForm()
+        loginForm.Show()
+
+        Dim openForms As New List(Of Form)(Application.OpenForms.Cast(Of Form)())
+        For Each f As Form In openForms
+            If f IsNot loginForm Then
+                Try
+                    f.Hide()
+                    f.Close()
+                Catch
+                End Try
+            End If
+        Next
+    End Sub
 
 #End Region
 
@@ -116,8 +186,17 @@ Public Class UsersForm
             UserRepository.SetSecurityQuestion(userID, inputs.Question, answerHash)
             ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
                                $"Security question set for user: {username} (ID: {userID})")
+
+            Dim isSelf As Boolean = (userID = SessionManager.UserID OrElse
+                                     String.Equals(username.Trim(), SessionManager.Username.Trim(), StringComparison.OrdinalIgnoreCase))
+            If isSelf Then
+                PerformAutoLogout()
+                Return
+            End If
+
             MessageBox.Show("Security question saved.", "Success",
                             MessageBoxButtons.OK, MessageBoxIcon.Information)
+
         Catch ex As Exception
             MessageBox.Show("Failed to save security question." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -147,8 +226,17 @@ Public Class UsersForm
                 UserRepository.UpdatePassword(userID, newHash)
                 ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
                                    $"Reset password for user: {username} (ID: {userID})")
+
+                Dim isSelf As Boolean = (userID = SessionManager.UserID OrElse
+                                         String.Equals(username.Trim(), SessionManager.Username.Trim(), StringComparison.OrdinalIgnoreCase))
+                If isSelf Then
+                    PerformAutoLogout()
+                    Return
+                End If
+
                 MessageBox.Show("Password reset successfully.", "Success",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information)
+
             Catch ex As Exception
                 MessageBox.Show("Failed to reset password." & Environment.NewLine & ex.Message,
                                 "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
@@ -251,8 +339,16 @@ Public Class UsersForm
                 ActivityLogger.Log(SessionManager.Username, Constants.LOG_SUCCESS,
                                    $"Updated user: {username} (ID: {userID})")
 
+                Dim isSelf As Boolean = (userID = SessionManager.UserID OrElse
+                                         String.Equals(username.Trim(), SessionManager.Username.Trim(), StringComparison.OrdinalIgnoreCase))
+                If isSelf Then
+                    PerformAutoLogout()
+                    Return
+                End If
+
                 MessageBox.Show("User updated successfully.", "Success",
                                 MessageBoxButtons.OK, MessageBoxIcon.Information)
+
                 LoadUsers()
             End Using
 

@@ -5,6 +5,7 @@ Public Class StockInForm
     Private Sub StockInForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         LoadProducts()
         dtpDate.Value = DateTime.Now
+        dtpFilterDate.Value = DateTime.Now
         LoadStockInHistory()
     End Sub
 
@@ -25,13 +26,34 @@ Public Class StockInForm
             Dim dt As DataTable = StockMovementRepository.GetAll()
             dgvStockIn.Rows.Clear()
 
+            Dim searchKey As String = txtSearch.Text.Trim().ToLower()
+            Dim useDateFilter As Boolean = chkUseDateFilter.Checked
+            Dim filterDate As Date = dtpFilterDate.Value.Date
+
             For Each row As DataRow In dt.Rows
                 If row("MovementType").ToString() = Constants.MOVEMENT_STOCKIN Then
+                    Dim barcode As String = If(IsDBNull(row("Barcode")), "", row("Barcode").ToString())
+                    Dim productName As String = row("ProductName").ToString()
+                    Dim mDate As DateTime = CDate(row("MovementDate"))
+
+                    If Not String.IsNullOrEmpty(searchKey) Then
+                        If Not barcode.ToLower().Contains(searchKey) AndAlso Not productName.ToLower().Contains(searchKey) Then
+                            Continue For
+                        End If
+                    End If
+
+                    If useDateFilter Then
+                        If mDate.Date <> filterDate Then
+                            Continue For
+                        End If
+                    End If
+
                     dgvStockIn.Rows.Add(
                         row("MovementID").ToString(),
-                        row("ProductName").ToString(),
+                        barcode,
+                        productName,
                         row("Quantity").ToString(),
-                        CDate(row("MovementDate")).ToString("yyyy-MM-dd HH:mm"),
+                        mDate.ToString("yyyy-MM-dd HH:mm"),
                         row("Reason").ToString())
                 End If
             Next
@@ -40,6 +62,28 @@ Public Class StockInForm
             MessageBox.Show("Failed to load stock in history." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub txtSearch_TextChanged(sender As Object, e As EventArgs) Handles txtSearch.TextChanged
+        LoadStockInHistory()
+    End Sub
+
+    Private Sub chkUseDateFilter_CheckedChanged(sender As Object, e As EventArgs) Handles chkUseDateFilter.CheckedChanged
+        dtpFilterDate.Enabled = chkUseDateFilter.Checked
+        LoadStockInHistory()
+    End Sub
+
+    Private Sub dtpFilterDate_ValueChanged(sender As Object, e As EventArgs) Handles dtpFilterDate.ValueChanged
+        If chkUseDateFilter.Checked Then
+            LoadStockInHistory()
+        End If
+    End Sub
+
+    Private Sub btnClearFilter_Click(sender As Object, e As EventArgs) Handles btnClearFilter.Click
+        txtSearch.Clear()
+        chkUseDateFilter.Checked = False
+        dtpFilterDate.Value = DateTime.Now
+        LoadStockInHistory()
     End Sub
 
     Private Sub btnAdd_Click(sender As Object, e As EventArgs) Handles btnAdd.Click

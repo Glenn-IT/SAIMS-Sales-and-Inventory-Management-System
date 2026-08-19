@@ -68,6 +68,29 @@ Public Class StockInForm
         LoadStockInHistory()
     End Sub
 
+    Private Sub txtSearch_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtSearch.KeyPress
+        If e.KeyChar = ChrW(Keys.Enter) Then
+            e.Handled = True
+            Dim barcode As String = InputHelper.SanitizeInput(txtSearch.Text).ToUpper()
+            If String.IsNullOrWhiteSpace(barcode) Then Return
+
+            Try
+                Dim dt As DataTable = ProductRepository.GetByBarcode(barcode)
+                If dt.Rows.Count > 0 Then
+                    Dim productID As Integer = CInt(dt.Rows(0)("ProductID"))
+                    cmbProduct.SelectedValue = productID
+                    System.Media.SystemSounds.Asterisk.Play()
+                    txtQuantity.Focus()
+                    txtQuantity.SelectAll()
+                Else
+                    System.Media.SystemSounds.Hand.Play()
+                End If
+            Catch ex As Exception
+                ' Keep filtering table on error
+            End Try
+        End If
+    End Sub
+
     Private Sub chkUseDateFilter_CheckedChanged(sender As Object, e As EventArgs) Handles chkUseDateFilter.CheckedChanged
         dtpFilterDate.Enabled = chkUseDateFilter.Checked
         LoadStockInHistory()

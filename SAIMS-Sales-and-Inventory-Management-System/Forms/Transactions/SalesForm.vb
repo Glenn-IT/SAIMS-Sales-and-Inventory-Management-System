@@ -4,9 +4,22 @@ Public Class SalesForm
     Private _cartItems As New Dictionary(Of String, (ProductID As Integer, UnitPrice As Decimal))
 
     Private Sub SalesForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        Me.KeyPreview = True
         cmbPaymentMethod.SelectedIndex = 0
         txtBarcodeScanner.Focus()
         UpdateTransactionSummary()
+    End Sub
+
+    ' Hands-free scanner auto-focus: intercepts keypresses outside of payment/discount textboxes
+    Private Sub SalesForm_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown
+        If Not txtDiscount.Focused AndAlso Not txtAmountTendered.Focused AndAlso Not txtBarcodeScanner.Focused Then
+            If (e.KeyCode >= Keys.A AndAlso e.KeyCode <= Keys.Z) OrElse
+               (e.KeyCode >= Keys.D0 AndAlso e.KeyCode <= Keys.D9) OrElse
+               (e.KeyCode >= Keys.NumPad0 AndAlso e.KeyCode <= Keys.NumPad9) OrElse
+               e.KeyCode = Keys.Enter Then
+                txtBarcodeScanner.Focus()
+            End If
+        End If
     End Sub
 
     ' ─── Barcode scanning ───────────────────────────────────────────────────────
@@ -32,6 +45,7 @@ Public Class SalesForm
             If String.IsNullOrWhiteSpace(dlg.SelectedBarcode) Then Return
             LookupAndAddProduct(dlg.SelectedBarcode, dlg.SelectedQuantity)
         End Using
+        txtBarcodeScanner.Focus()
     End Sub
 
     Private Sub LookupAndAddProduct(barcode As String, Optional quantityToAdd As Integer = 1)
@@ -39,6 +53,7 @@ Public Class SalesForm
             Dim dt As DataTable = ProductRepository.GetByBarcode(barcode)
 
             If dt.Rows.Count = 0 Then
+                System.Media.SystemSounds.Hand.Play()
                 MessageBox.Show($"Product with barcode '{barcode}' not found or is inactive.",
                                 "Product Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return
@@ -61,16 +76,20 @@ Public Class SalesForm
             Next
 
             If stock - (alreadyInCart + quantityToAdd) < 0 Then
+                System.Media.SystemSounds.Hand.Play()
                 MessageBox.Show($"Not enough stock for '{productName}'. Available: {stock - alreadyInCart}",
                                 "Out of Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning)
                 Return
             End If
 
             AddItemToCart(barcode, productID, productName, price, quantityToAdd)
+            System.Media.SystemSounds.Asterisk.Play()
 
         Catch ex As Exception
             MessageBox.Show("Failed to look up product." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        Finally
+            txtBarcodeScanner.Focus()
         End Try
     End Sub
 

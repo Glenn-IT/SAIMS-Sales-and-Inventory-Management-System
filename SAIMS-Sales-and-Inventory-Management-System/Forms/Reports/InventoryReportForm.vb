@@ -47,30 +47,7 @@ Public Class InventoryReportForm
             txtLowStock.Text   = lowStockCount.ToString()
             txtOutOfStock.Text = outOfStockCnt.ToString()
 
-            ' Stock movements filtered to the selected report period
-            Dim range     As (DateFrom As DateTime, DateTo As DateTime) = GetReportDateRange()
-            Dim movements As DataTable = StockMovementRepository.GetByDateRange(range.DateFrom, range.DateTo)
-
-            Dim totalIn  As Integer = 0
-            Dim totalOut As Integer = 0
-
-            For Each row As DataRow In movements.Rows
-                Dim qty   As Integer = CInt(row("Quantity"))
-                Dim mType As String  = row("MovementType").ToString()
-                If mType = Constants.MOVEMENT_STOCKIN Then
-                    totalIn += qty
-                ElseIf mType = Constants.MOVEMENT_STOCKOUT OrElse mType = Constants.MOVEMENT_SALE Then
-                    totalOut += qty
-                End If
-            Next
-
-            Dim opening As Integer = Math.Max(0, totalStock - totalIn + totalOut)
-
-            txtOpeningStock.Text = opening.ToString()
-            txtStockIn.Text      = totalIn.ToString()
-            txtStockOut.Text     = totalOut.ToString()
-            txtClosingStock.Text = totalStock.ToString()
-
+            Dim range As (DateFrom As DateTime, DateTo As DateTime) = GetReportDateRange()
             lblReportPeriod.Text = $"Period: {range.DateFrom:MMM dd, yyyy}  —  {range.DateTo:MMM dd, yyyy}"
 
         Catch ex As Exception
@@ -115,10 +92,6 @@ Public Class InventoryReportForm
             sb.AppendLine($"  Total Stock    : {txtTotalStock.Text} units")
             sb.AppendLine($"  Low Stock      : {txtLowStock.Text}")
             sb.AppendLine($"  Out of Stock   : {txtOutOfStock.Text}")
-            sb.AppendLine()
-            sb.AppendLine("── STOCK MOVEMENT ─────────────────")
-            sb.AppendLine($"  Stock In       : +{txtStockIn.Text}")
-            sb.AppendLine($"  Stock Out/Sold : -{txtStockOut.Text}")
 
             If summary.Rows.Count > 0 Then
                 Dim row As DataRow = summary.Rows(0)

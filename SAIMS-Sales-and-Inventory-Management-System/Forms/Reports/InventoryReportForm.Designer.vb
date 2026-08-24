@@ -27,16 +27,6 @@ Partial Class InventoryReportForm
         Me.lblReportType = New System.Windows.Forms.Label()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.panelSummary = New System.Windows.Forms.Panel()
-        Me.panelStockMovement = New System.Windows.Forms.Panel()
-        Me.txtClosingStock = New System.Windows.Forms.TextBox()
-        Me.lblClosingStock = New System.Windows.Forms.Label()
-        Me.txtStockOut = New System.Windows.Forms.TextBox()
-        Me.lblStockOut = New System.Windows.Forms.Label()
-        Me.txtStockIn = New System.Windows.Forms.TextBox()
-        Me.lblStockIn = New System.Windows.Forms.Label()
-        Me.txtOpeningStock = New System.Windows.Forms.TextBox()
-        Me.lblOpeningStock = New System.Windows.Forms.Label()
-        Me.lblStockMovement = New System.Windows.Forms.Label()
         Me.panelStats = New System.Windows.Forms.Panel()
         Me.txtOutOfStock = New System.Windows.Forms.TextBox()
         Me.lblOutOfStock = New System.Windows.Forms.Label()
@@ -56,7 +46,6 @@ Partial Class InventoryReportForm
         Me.colStatus = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.panelTop.SuspendLayout()
         Me.panelSummary.SuspendLayout()
-        Me.panelStockMovement.SuspendLayout()
         Me.panelStats.SuspendLayout()
         CType(Me.dgvInventory, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SuspendLayout()
@@ -178,7 +167,6 @@ Partial Class InventoryReportForm
         'panelSummary
         '
         Me.panelSummary.BackColor = System.Drawing.Color.White
-        Me.panelSummary.Controls.Add(Me.panelStockMovement)
         Me.panelSummary.Controls.Add(Me.panelStats)
         Me.panelSummary.Controls.Add(Me.lblReportPeriod)
         Me.panelSummary.Controls.Add(Me.lblSummaryTitle)
@@ -188,118 +176,6 @@ Partial Class InventoryReportForm
         Me.panelSummary.Padding = New System.Windows.Forms.Padding(15)
         Me.panelSummary.Size = New System.Drawing.Size(1200, 200)
         Me.panelSummary.TabIndex = 1
-        '
-        'panelStockMovement
-        '
-        Me.panelStockMovement.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle
-        Me.panelStockMovement.Controls.Add(Me.txtClosingStock)
-        Me.panelStockMovement.Controls.Add(Me.lblClosingStock)
-        Me.panelStockMovement.Controls.Add(Me.txtStockOut)
-        Me.panelStockMovement.Controls.Add(Me.lblStockOut)
-        Me.panelStockMovement.Controls.Add(Me.txtStockIn)
-        Me.panelStockMovement.Controls.Add(Me.lblStockIn)
-        Me.panelStockMovement.Controls.Add(Me.txtOpeningStock)
-        Me.panelStockMovement.Controls.Add(Me.lblOpeningStock)
-        Me.panelStockMovement.Controls.Add(Me.lblStockMovement)
-        Me.panelStockMovement.Location = New System.Drawing.Point(625, 65)
-        Me.panelStockMovement.Name = "panelStockMovement"
-        Me.panelStockMovement.Size = New System.Drawing.Size(560, 120)
-        Me.panelStockMovement.TabIndex = 3
-        '
-        'txtClosingStock
-        '
-        Me.txtClosingStock.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.txtClosingStock.Location = New System.Drawing.Point(420, 75)
-        Me.txtClosingStock.Name = "txtClosingStock"
-        Me.txtClosingStock.ReadOnly = True
-        Me.txtClosingStock.Size = New System.Drawing.Size(120, 29)
-        Me.txtClosingStock.TabIndex = 8
-        Me.txtClosingStock.Text = "0"
-        Me.txtClosingStock.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'lblClosingStock
-        '
-        Me.lblClosingStock.AutoSize = True
-        Me.lblClosingStock.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.lblClosingStock.Location = New System.Drawing.Point(420, 55)
-        Me.lblClosingStock.Name = "lblClosingStock"
-        Me.lblClosingStock.Size = New System.Drawing.Size(81, 15)
-        Me.lblClosingStock.TabIndex = 7
-        Me.lblClosingStock.Text = "Closing Stock"
-        '
-        'txtStockOut
-        '
-        Me.txtStockOut.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.txtStockOut.Location = New System.Drawing.Point(290, 75)
-        Me.txtStockOut.Name = "txtStockOut"
-        Me.txtStockOut.ReadOnly = True
-        Me.txtStockOut.Size = New System.Drawing.Size(120, 29)
-        Me.txtStockOut.TabIndex = 6
-        Me.txtStockOut.Text = "0"
-        Me.txtStockOut.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'lblStockOut
-        '
-        Me.lblStockOut.AutoSize = True
-        Me.lblStockOut.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.lblStockOut.Location = New System.Drawing.Point(290, 55)
-        Me.lblStockOut.Name = "lblStockOut"
-        Me.lblStockOut.Size = New System.Drawing.Size(58, 15)
-        Me.lblStockOut.TabIndex = 5
-        Me.lblStockOut.Text = "Stock Out"
-        '
-        'txtStockIn
-        '
-        Me.txtStockIn.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.txtStockIn.Location = New System.Drawing.Point(160, 75)
-        Me.txtStockIn.Name = "txtStockIn"
-        Me.txtStockIn.ReadOnly = True
-        Me.txtStockIn.Size = New System.Drawing.Size(120, 29)
-        Me.txtStockIn.TabIndex = 4
-        Me.txtStockIn.Text = "0"
-        Me.txtStockIn.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'lblStockIn
-        '
-        Me.lblStockIn.AutoSize = True
-        Me.lblStockIn.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.lblStockIn.Location = New System.Drawing.Point(160, 55)
-        Me.lblStockIn.Name = "lblStockIn"
-        Me.lblStockIn.Size = New System.Drawing.Size(50, 15)
-        Me.lblStockIn.TabIndex = 3
-        Me.lblStockIn.Text = "Stock In"
-        '
-        'txtOpeningStock
-        '
-        Me.txtOpeningStock.Font = New System.Drawing.Font("Segoe UI", 12.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.txtOpeningStock.Location = New System.Drawing.Point(30, 75)
-        Me.txtOpeningStock.Name = "txtOpeningStock"
-        Me.txtOpeningStock.ReadOnly = True
-        Me.txtOpeningStock.Size = New System.Drawing.Size(120, 29)
-        Me.txtOpeningStock.TabIndex = 2
-        Me.txtOpeningStock.Text = "0"
-        Me.txtOpeningStock.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
-        '
-        'lblOpeningStock
-        '
-        Me.lblOpeningStock.AutoSize = True
-        Me.lblOpeningStock.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.lblOpeningStock.Location = New System.Drawing.Point(30, 55)
-        Me.lblOpeningStock.Name = "lblOpeningStock"
-        Me.lblOpeningStock.Size = New System.Drawing.Size(86, 15)
-        Me.lblOpeningStock.TabIndex = 1
-        Me.lblOpeningStock.Text = "Opening Stock"
-        '
-        'lblStockMovement
-        '
-        Me.lblStockMovement.AutoSize = True
-        Me.lblStockMovement.Font = New System.Drawing.Font("Segoe UI", 11.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.lblStockMovement.ForeColor = System.Drawing.Color.FromArgb(CType(CType(52, Byte), Integer), CType(CType(73, Byte), Integer), CType(CType(94, Byte), Integer))
-        Me.lblStockMovement.Location = New System.Drawing.Point(10, 15)
-        Me.lblStockMovement.Name = "lblStockMovement"
-        Me.lblStockMovement.Size = New System.Drawing.Size(169, 20)
-        Me.lblStockMovement.TabIndex = 0
-        Me.lblStockMovement.Text = "Stock Movement"
         '
         'panelStats
         '
@@ -314,17 +190,17 @@ Partial Class InventoryReportForm
         Me.panelStats.Controls.Add(Me.lblTotalItems)
         Me.panelStats.Location = New System.Drawing.Point(15, 65)
         Me.panelStats.Name = "panelStats"
-        Me.panelStats.Size = New System.Drawing.Size(600, 120)
+        Me.panelStats.Size = New System.Drawing.Size(1170, 120)
         Me.panelStats.TabIndex = 2
         '
         'txtOutOfStock
         '
         Me.txtOutOfStock.Font = New System.Drawing.Font("Segoe UI", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.txtOutOfStock.ForeColor = System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(57, Byte), Integer), CType(CType(43, Byte), Integer))
-        Me.txtOutOfStock.Location = New System.Drawing.Point(455, 60)
+        Me.txtOutOfStock.Location = New System.Drawing.Point(940, 60)
         Me.txtOutOfStock.Name = "txtOutOfStock"
         Me.txtOutOfStock.ReadOnly = True
-        Me.txtOutOfStock.Size = New System.Drawing.Size(120, 32)
+        Me.txtOutOfStock.Size = New System.Drawing.Size(200, 32)
         Me.txtOutOfStock.TabIndex = 7
         Me.txtOutOfStock.Text = "0"
         Me.txtOutOfStock.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
@@ -333,7 +209,7 @@ Partial Class InventoryReportForm
         '
         Me.lblOutOfStock.AutoSize = True
         Me.lblOutOfStock.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.lblOutOfStock.Location = New System.Drawing.Point(455, 30)
+        Me.lblOutOfStock.Location = New System.Drawing.Point(940, 30)
         Me.lblOutOfStock.Name = "lblOutOfStock"
         Me.lblOutOfStock.Size = New System.Drawing.Size(94, 19)
         Me.lblOutOfStock.TabIndex = 6
@@ -343,10 +219,10 @@ Partial Class InventoryReportForm
         '
         Me.txtLowStock.Font = New System.Drawing.Font("Segoe UI", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.txtLowStock.ForeColor = System.Drawing.Color.FromArgb(CType(CType(230, Byte), Integer), CType(CType(126, Byte), Integer), CType(CType(34, Byte), Integer))
-        Me.txtLowStock.Location = New System.Drawing.Point(310, 60)
+        Me.txtLowStock.Location = New System.Drawing.Point(640, 60)
         Me.txtLowStock.Name = "txtLowStock"
         Me.txtLowStock.ReadOnly = True
-        Me.txtLowStock.Size = New System.Drawing.Size(120, 32)
+        Me.txtLowStock.Size = New System.Drawing.Size(200, 32)
         Me.txtLowStock.TabIndex = 5
         Me.txtLowStock.Text = "0"
         Me.txtLowStock.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
@@ -355,7 +231,7 @@ Partial Class InventoryReportForm
         '
         Me.lblLowStock.AutoSize = True
         Me.lblLowStock.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.lblLowStock.Location = New System.Drawing.Point(310, 30)
+        Me.lblLowStock.Location = New System.Drawing.Point(640, 30)
         Me.lblLowStock.Name = "lblLowStock"
         Me.lblLowStock.Size = New System.Drawing.Size(79, 19)
         Me.lblLowStock.TabIndex = 4
@@ -365,10 +241,10 @@ Partial Class InventoryReportForm
         '
         Me.txtTotalStock.Font = New System.Drawing.Font("Segoe UI", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.txtTotalStock.ForeColor = System.Drawing.Color.FromArgb(CType(CType(39, Byte), Integer), CType(CType(174, Byte), Integer), CType(CType(96, Byte), Integer))
-        Me.txtTotalStock.Location = New System.Drawing.Point(165, 60)
+        Me.txtTotalStock.Location = New System.Drawing.Point(340, 60)
         Me.txtTotalStock.Name = "txtTotalStock"
         Me.txtTotalStock.ReadOnly = True
-        Me.txtTotalStock.Size = New System.Drawing.Size(120, 32)
+        Me.txtTotalStock.Size = New System.Drawing.Size(200, 32)
         Me.txtTotalStock.TabIndex = 3
         Me.txtTotalStock.Text = "0"
         Me.txtTotalStock.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
@@ -377,7 +253,7 @@ Partial Class InventoryReportForm
         '
         Me.lblTotalStock.AutoSize = True
         Me.lblTotalStock.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.lblTotalStock.Location = New System.Drawing.Point(165, 30)
+        Me.lblTotalStock.Location = New System.Drawing.Point(340, 30)
         Me.lblTotalStock.Name = "lblTotalStock"
         Me.lblTotalStock.Size = New System.Drawing.Size(85, 19)
         Me.lblTotalStock.TabIndex = 2
@@ -387,10 +263,10 @@ Partial Class InventoryReportForm
         '
         Me.txtTotalItems.Font = New System.Drawing.Font("Segoe UI", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.txtTotalItems.ForeColor = System.Drawing.Color.FromArgb(CType(CType(52, Byte), Integer), CType(CType(152, Byte), Integer), CType(CType(219, Byte), Integer))
-        Me.txtTotalItems.Location = New System.Drawing.Point(20, 60)
+        Me.txtTotalItems.Location = New System.Drawing.Point(40, 60)
         Me.txtTotalItems.Name = "txtTotalItems"
         Me.txtTotalItems.ReadOnly = True
-        Me.txtTotalItems.Size = New System.Drawing.Size(120, 32)
+        Me.txtTotalItems.Size = New System.Drawing.Size(200, 32)
         Me.txtTotalItems.TabIndex = 1
         Me.txtTotalItems.Text = "0"
         Me.txtTotalItems.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
@@ -399,7 +275,7 @@ Partial Class InventoryReportForm
         '
         Me.lblTotalItems.AutoSize = True
         Me.lblTotalItems.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.lblTotalItems.Location = New System.Drawing.Point(20, 30)
+        Me.lblTotalItems.Location = New System.Drawing.Point(40, 30)
         Me.lblTotalItems.Name = "lblTotalItems"
         Me.lblTotalItems.Size = New System.Drawing.Size(85, 19)
         Me.lblTotalItems.TabIndex = 0
@@ -494,8 +370,6 @@ Partial Class InventoryReportForm
         Me.panelTop.PerformLayout()
         Me.panelSummary.ResumeLayout(False)
         Me.panelSummary.PerformLayout()
-        Me.panelStockMovement.ResumeLayout(False)
-        Me.panelStockMovement.PerformLayout()
         Me.panelStats.ResumeLayout(False)
         Me.panelStats.PerformLayout()
         CType(Me.dgvInventory, System.ComponentModel.ISupportInitialize).EndInit()
@@ -524,16 +398,6 @@ Partial Class InventoryReportForm
     Friend WithEvents lblLowStock As Label
     Friend WithEvents txtOutOfStock As TextBox
     Friend WithEvents lblOutOfStock As Label
-    Friend WithEvents panelStockMovement As Panel
-    Friend WithEvents lblStockMovement As Label
-    Friend WithEvents txtOpeningStock As TextBox
-    Friend WithEvents lblOpeningStock As Label
-    Friend WithEvents txtStockIn As TextBox
-    Friend WithEvents lblStockIn As Label
-    Friend WithEvents txtStockOut As TextBox
-    Friend WithEvents lblStockOut As Label
-    Friend WithEvents txtClosingStock As TextBox
-    Friend WithEvents lblClosingStock As Label
     Friend WithEvents dgvInventory As DataGridView
     Friend WithEvents colProductName As DataGridViewTextBoxColumn
     Friend WithEvents colCategory As DataGridViewTextBoxColumn

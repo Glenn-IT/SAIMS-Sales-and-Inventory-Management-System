@@ -127,10 +127,7 @@ Public Class ReceiptsForm
         End If
 
         Dim receiptNo As String = dgvReceipts.SelectedRows(0).Cells("colReceiptNo").Value.ToString()
-        MessageBox.Show($"Printer integration is not yet implemented." &
-                        Environment.NewLine & Environment.NewLine &
-                        $"Receipt: {receiptNo}",
-                        "Print Receipt", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        ReceiptPrinter.PrintReceipt(receiptNo)
     End Sub
 
     Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click

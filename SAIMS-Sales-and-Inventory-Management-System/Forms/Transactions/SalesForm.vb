@@ -305,6 +305,7 @@ Public Class SalesForm
                             "Sale Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
             ClearCart()
+            ReceiptPrinter.PrintReceipt(receiptNo)
 
         Catch ex As Exception
             MessageBox.Show("Failed to save transaction." & Environment.NewLine & ex.Message,

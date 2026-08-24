@@ -53,6 +53,7 @@ Public Class StockInForm
                         barcode,
                         productName,
                         row("Quantity").ToString(),
+                        row("TotalQuantity").ToString(),
                         mDate.ToString("yyyy-MM-dd HH:mm"),
                         row("Reason").ToString())
                 End If
@@ -142,6 +143,7 @@ Public Class StockInForm
                             "Stock In Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
 
             ClearFields()
+            LoadProducts()
             LoadStockInHistory()
 
         Catch ex As Exception

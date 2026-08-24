@@ -8,7 +8,7 @@ Public Module StockMovementRepository
         Using con As New SqlConnection(dbconstring.Connection)
             con.Open()
             Dim cmd As New SqlCommand(
-                "SELECT sm.MovementID, p.Barcode, p.ProductName, sm.MovementType,
+                "SELECT sm.MovementID, p.Barcode, p.ProductName, p.Stock AS TotalQuantity, sm.MovementType,
                         sm.Quantity, sm.Reason, sm.MovementDate, u.FullName AS CreatedBy
                  FROM tbl_StockMovements sm
                  INNER JOIN tbl_Products p ON sm.ProductID = p.ProductID
@@ -43,7 +43,7 @@ Public Module StockMovementRepository
         Using con As New SqlConnection(dbconstring.Connection)
             con.Open()
             Dim cmd As New SqlCommand(
-                "SELECT sm.MovementID, p.Barcode, p.ProductName, sm.MovementType,
+                "SELECT sm.MovementID, p.Barcode, p.ProductName, p.Stock AS TotalQuantity, sm.MovementType,
                         sm.Quantity, sm.Reason, sm.MovementDate, u.FullName AS CreatedBy
                  FROM tbl_StockMovements sm
                  INNER JOIN tbl_Products p ON sm.ProductID = p.ProductID

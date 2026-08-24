@@ -43,6 +43,7 @@ Partial Class StockInForm
         Me.colBarcode = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colProduct = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colQuantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colTotalQuantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colDate = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colRemarks = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.panelTop.SuspendLayout()
@@ -296,7 +297,7 @@ Partial Class StockInForm
         Me.dgvStockIn.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.dgvStockIn.BackgroundColor = System.Drawing.Color.White
         Me.dgvStockIn.ColumnHeadersHeight = 40
-        Me.dgvStockIn.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colID, Me.colBarcode, Me.colProduct, Me.colQuantity, Me.colDate, Me.colRemarks})
+        Me.dgvStockIn.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colID, Me.colBarcode, Me.colProduct, Me.colQuantity, Me.colTotalQuantity, Me.colDate, Me.colRemarks})
         Me.dgvStockIn.Dock = System.Windows.Forms.DockStyle.Fill
         Me.dgvStockIn.Location = New System.Drawing.Point(0, 325)
         Me.dgvStockIn.Name = "dgvStockIn"
@@ -330,10 +331,17 @@ Partial Class StockInForm
         '
         'colQuantity
         '
-        Me.colQuantity.HeaderText = "Quantity"
+        Me.colQuantity.HeaderText = "Added Quantity"
         Me.colQuantity.MinimumWidth = 6
         Me.colQuantity.Name = "colQuantity"
         Me.colQuantity.ReadOnly = True
+        '
+        'colTotalQuantity
+        '
+        Me.colTotalQuantity.HeaderText = "Total Quantity"
+        Me.colTotalQuantity.MinimumWidth = 6
+        Me.colTotalQuantity.Name = "colTotalQuantity"
+        Me.colTotalQuantity.ReadOnly = True
         '
         'colDate
         '
@@ -398,6 +406,7 @@ Partial Class StockInForm
     Friend WithEvents colBarcode As DataGridViewTextBoxColumn
     Friend WithEvents colProduct As DataGridViewTextBoxColumn
     Friend WithEvents colQuantity As DataGridViewTextBoxColumn
+    Friend WithEvents colTotalQuantity As DataGridViewTextBoxColumn
     Friend WithEvents colDate As DataGridViewTextBoxColumn
     Friend WithEvents colRemarks As DataGridViewTextBoxColumn
 End Class

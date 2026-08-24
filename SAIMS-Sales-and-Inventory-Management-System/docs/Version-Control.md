@@ -62,6 +62,7 @@ while Users/Products (and everything after) stay gated.
 | v3.00 | Login / Forgot Password / Dashboard shell + Admin: Categories Management | `LoginForm`, `ForgotPasswordForm`, `MainDashboardForm`, `CategoriesForm` | `UsersForm`, `ProductsForm`, `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
 | v3.02 | Admin: Users Management + Admin: Products Management | + `UsersForm`, `ProductsForm` | `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm`, `ReceiptsForm` |
 | v3.07 | Cashier: Sales Transaction (POS) | + `StockInForm`, `StockOutForm`, `InventoryReportForm`, `SalesForm` | `ReceiptsForm` |
+| v3.08 | Cashier: Receipts (Full System) | + `ReceiptsForm` | *(none — full system unlocked)* |
 
 `CURRENT_VERSION_NUMBER` was reset to `1` (from `8`) in `UnderConstructionForm.vb`
 to re-lock every form except `CategoriesForm`; `CURRENT_VERSION` was bumped to

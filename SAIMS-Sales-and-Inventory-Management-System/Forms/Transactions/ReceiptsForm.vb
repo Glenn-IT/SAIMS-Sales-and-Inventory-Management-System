@@ -1,75 +1,23 @@
 Public Class ReceiptsForm
 
     Private _sales As DataTable
-    Private _dtpFrom As DateTimePicker
-    Private _dtpTo   As DateTimePicker
 
     Private Sub ReceiptsForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        AddFilterControls()
+        dtpFrom.Value = DateTime.Today.AddDays(-30)
+        dtpTo.Value   = DateTime.Today
         LoadReceipts()
     End Sub
 
-    Private Sub AddFilterControls()
-        panelTop.Height = 140
-
-        Dim lblFrom As New Label() With {
-            .Text = "From:", .AutoSize = True,
-            .Font = New Font("Segoe UI", 9),
-            .Location = New Point(15, 95)}
-
-        _dtpFrom = New DateTimePicker() With {
-            .Format   = DateTimePickerFormat.Short,
-            .Location = New Point(60, 90),
-            .Size     = New Size(130, 25),
-            .Value    = DateTime.Today.AddDays(-30)}
-
-        Dim lblTo As New Label() With {
-            .Text = "To:", .AutoSize = True,
-            .Font = New Font("Segoe UI", 9),
-            .Location = New Point(200, 95)}
-
-        _dtpTo = New DateTimePicker() With {
-            .Format   = DateTimePickerFormat.Short,
-            .Location = New Point(225, 90),
-            .Size     = New Size(130, 25),
-            .Value    = DateTime.Today}
-
-        Dim btnFilter As New Button() With {
-            .Text      = "Filter",
-            .BackColor = Color.FromArgb(46, 204, 113),
-            .ForeColor = Color.White,
-            .FlatStyle = FlatStyle.Flat,
-            .Font      = New Font("Segoe UI", 9, FontStyle.Bold),
-            .Location  = New Point(365, 87),
-            .Size      = New Size(80, 28),
-            .UseVisualStyleBackColor = False}
-
-        Dim btnShowAll As New Button() With {
-            .Text      = "Show All",
-            .BackColor = Color.FromArgb(52, 152, 219),
-            .ForeColor = Color.White,
-            .FlatStyle = FlatStyle.Flat,
-            .Font      = New Font("Segoe UI", 9, FontStyle.Bold),
-            .Location  = New Point(455, 87),
-            .Size      = New Size(80, 28),
-            .UseVisualStyleBackColor = False}
-
-        AddHandler btnFilter.Click,  AddressOf btnFilter_Click
-        AddHandler btnShowAll.Click, AddressOf btnShowAll_Click
-
-        panelTop.Controls.AddRange({lblFrom, _dtpFrom, lblTo, _dtpTo, btnFilter, btnShowAll})
-    End Sub
-
-    Private Sub btnFilter_Click(sender As Object, e As EventArgs)
-        If _dtpFrom.Value.Date > _dtpTo.Value.Date Then
+    Private Sub btnFilter_Click(sender As Object, e As EventArgs) Handles btnFilter.Click
+        If dtpFrom.Value.Date > dtpTo.Value.Date Then
             MessageBox.Show("'From' date cannot be after 'To' date.", "Invalid Range",
                             MessageBoxButtons.OK, MessageBoxIcon.Warning)
             Return
         End If
-        LoadReceiptsByDateRange(_dtpFrom.Value, _dtpTo.Value)
+        LoadReceiptsByDateRange(dtpFrom.Value, dtpTo.Value)
     End Sub
 
-    Private Sub btnShowAll_Click(sender As Object, e As EventArgs)
+    Private Sub btnShowAll_Click(sender As Object, e As EventArgs) Handles btnShowAll.Click
         LoadReceipts()
     End Sub
 
@@ -143,8 +91,7 @@ Public Class ReceiptsForm
             sb.AppendLine("ITEMS:")
 
             For Each item As DataRow In items.Rows
-                Dim lineDesc As String = $"  {item("ProductName")}"
-                Dim lineAmt  As String = $"₱{CDec(item("LineTotal")):N2}"
+                Dim lineAmt As String = $"₱{CDec(item("LineTotal")):N2}"
                 sb.AppendLine($"  {item("ProductName")}")
                 sb.AppendLine($"    {item("Quantity")} x ₱{CDec(item("UnitPrice")):N2} = {lineAmt}")
             Next

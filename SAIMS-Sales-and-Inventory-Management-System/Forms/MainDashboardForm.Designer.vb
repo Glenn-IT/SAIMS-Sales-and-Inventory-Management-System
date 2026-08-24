@@ -23,6 +23,9 @@ Partial Class MainDashboardForm
         panelSidebar = New Panel()
         btnLogout = New Button()
         btnAbout = New Button()
+        panelAboutSubmenu = New Panel()
+        btnDevelopersInfo = New Button()
+        btnSystemManual = New Button()
         btnReports = New Button()
         panelTransactionsSubmenu = New Panel()
         btnReceipts = New Button()
@@ -83,6 +86,7 @@ Partial Class MainDashboardForm
         panelSidebar.AutoScroll = True
         panelSidebar.BackColor = Color.FromArgb(CByte(44), CByte(62), CByte(80))
         panelSidebar.Controls.Add(btnLogout)
+        panelSidebar.Controls.Add(panelAboutSubmenu)
         panelSidebar.Controls.Add(btnAbout)
         panelSidebar.Controls.Add(btnReports)
         panelSidebar.Controls.Add(panelTransactionsSubmenu)
@@ -112,6 +116,50 @@ Partial Class MainDashboardForm
         btnLogout.Text = "Logout"
         btnLogout.TextAlign = ContentAlignment.MiddleLeft
         btnLogout.UseVisualStyleBackColor = False
+        ' 
+        ' panelAboutSubmenu
+        ' 
+        panelAboutSubmenu.BackColor = Color.FromArgb(CByte(52), CByte(73), CByte(94))
+        panelAboutSubmenu.Controls.Add(btnDevelopersInfo)
+        panelAboutSubmenu.Controls.Add(btnSystemManual)
+        panelAboutSubmenu.Dock = DockStyle.Top
+        panelAboutSubmenu.Location = New Point(0, 612)
+        panelAboutSubmenu.Name = "panelAboutSubmenu"
+        panelAboutSubmenu.Size = New Size(250, 90)
+        panelAboutSubmenu.TabIndex = 8
+        panelAboutSubmenu.Visible = False
+        ' 
+        ' btnDevelopersInfo
+        ' 
+        btnDevelopersInfo.Dock = DockStyle.Top
+        btnDevelopersInfo.FlatAppearance.BorderSize = 0
+        btnDevelopersInfo.FlatStyle = FlatStyle.Flat
+        btnDevelopersInfo.Font = New Font("Segoe UI", 9.0F)
+        btnDevelopersInfo.ForeColor = Color.White
+        btnDevelopersInfo.Location = New Point(0, 45)
+        btnDevelopersInfo.Name = "btnDevelopersInfo"
+        btnDevelopersInfo.Padding = New Padding(35, 0, 0, 0)
+        btnDevelopersInfo.Size = New Size(250, 45)
+        btnDevelopersInfo.TabIndex = 1
+        btnDevelopersInfo.Text = "Developers Information"
+        btnDevelopersInfo.TextAlign = ContentAlignment.MiddleLeft
+        btnDevelopersInfo.UseVisualStyleBackColor = True
+        ' 
+        ' btnSystemManual
+        ' 
+        btnSystemManual.Dock = DockStyle.Top
+        btnSystemManual.FlatAppearance.BorderSize = 0
+        btnSystemManual.FlatStyle = FlatStyle.Flat
+        btnSystemManual.Font = New Font("Segoe UI", 9.0F)
+        btnSystemManual.ForeColor = Color.White
+        btnSystemManual.Location = New Point(0, 0)
+        btnSystemManual.Name = "btnSystemManual"
+        btnSystemManual.Padding = New Padding(35, 0, 0, 0)
+        btnSystemManual.Size = New Size(250, 45)
+        btnSystemManual.TabIndex = 0
+        btnSystemManual.Text = "System Manual"
+        btnSystemManual.TextAlign = ContentAlignment.MiddleLeft
+        btnSystemManual.UseVisualStyleBackColor = True
         ' 
         ' btnAbout
         ' 
@@ -369,6 +417,9 @@ Partial Class MainDashboardForm
     Friend WithEvents btnStockIn As Button
     Friend WithEvents btnReceipts As Button
     Friend WithEvents btnAbout As Button
+    Friend WithEvents panelAboutSubmenu As Panel
+    Friend WithEvents btnDevelopersInfo As Button
+    Friend WithEvents btnSystemManual As Button
     Friend WithEvents btnLogout As Button
     Friend WithEvents panelContent As Panel
 End Class

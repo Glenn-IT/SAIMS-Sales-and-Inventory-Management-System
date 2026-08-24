@@ -82,14 +82,19 @@ Public Class MainDashboardForm
     End Sub
 
     Private Sub btnAbout_Click(sender As Object, e As EventArgs) Handles btnAbout.Click
-        MessageBox.Show("Sales and Inventory Management System (SAIMS)" & vbCrLf &
-                       "Version 1.0" & vbCrLf &
-                       "UI Prototype for Presentation" & vbCrLf & vbCrLf &
-                       "Technology: VB.NET WinForms � .NET 8.0" & vbCrLf &
-                       "� 2024 SAIMS Development Team",
-                       "About SAIMS",
-                       MessageBoxButtons.OK,
-                       MessageBoxIcon.Information)
+        ShowAboutSubmenu()
+    End Sub
+
+    Private Sub ShowAboutSubmenu()
+        panelAboutSubmenu.Visible = Not panelAboutSubmenu.Visible
+    End Sub
+
+    Private Sub btnSystemManual_Click(sender As Object, e As EventArgs) Handles btnSystemManual.Click
+        LoadFormInPanel(New SystemManualForm())
+    End Sub
+
+    Private Sub btnDevelopersInfo_Click(sender As Object, e As EventArgs) Handles btnDevelopersInfo.Click
+        LoadFormInPanel(New DevelopersInfoForm())
     End Sub
 
     Private Sub btnLogout_Click(sender As Object, e As EventArgs) Handles btnLogout.Click

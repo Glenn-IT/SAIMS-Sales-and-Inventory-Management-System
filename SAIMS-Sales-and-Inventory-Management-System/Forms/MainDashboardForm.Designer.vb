@@ -26,7 +26,6 @@ Partial Class MainDashboardForm
         btnReports = New Button()
         panelTransactionsSubmenu = New Panel()
         btnReceipts = New Button()
-        btnStockOut = New Button()
         btnStockIn = New Button()
         btnSales = New Button()
         btnTransactions = New Button()
@@ -150,13 +149,12 @@ Partial Class MainDashboardForm
         ' 
         panelTransactionsSubmenu.BackColor = Color.FromArgb(CByte(52), CByte(73), CByte(94))
         panelTransactionsSubmenu.Controls.Add(btnReceipts)
-        panelTransactionsSubmenu.Controls.Add(btnStockOut)
         panelTransactionsSubmenu.Controls.Add(btnStockIn)
         panelTransactionsSubmenu.Controls.Add(btnSales)
         panelTransactionsSubmenu.Dock = DockStyle.Top
         panelTransactionsSubmenu.Location = New Point(0, 329)
         panelTransactionsSubmenu.Name = "panelTransactionsSubmenu"
-        panelTransactionsSubmenu.Size = New Size(250, 181)
+        panelTransactionsSubmenu.Size = New Size(250, 136)
         panelTransactionsSubmenu.TabIndex = 5
         panelTransactionsSubmenu.Visible = False
         ' 
@@ -167,7 +165,7 @@ Partial Class MainDashboardForm
         btnReceipts.FlatStyle = FlatStyle.Flat
         btnReceipts.Font = New Font("Segoe UI", 9.0F)
         btnReceipts.ForeColor = Color.White
-        btnReceipts.Location = New Point(0, 135)
+        btnReceipts.Location = New Point(0, 90)
         btnReceipts.Name = "btnReceipts"
         btnReceipts.Padding = New Padding(35, 0, 0, 0)
         btnReceipts.Size = New Size(250, 45)
@@ -175,22 +173,6 @@ Partial Class MainDashboardForm
         btnReceipts.Text = "Receipts"
         btnReceipts.TextAlign = ContentAlignment.MiddleLeft
         btnReceipts.UseVisualStyleBackColor = True
-        ' 
-        ' btnStockOut
-        ' 
-        btnStockOut.Dock = DockStyle.Top
-        btnStockOut.FlatAppearance.BorderSize = 0
-        btnStockOut.FlatStyle = FlatStyle.Flat
-        btnStockOut.Font = New Font("Segoe UI", 9.0F)
-        btnStockOut.ForeColor = Color.White
-        btnStockOut.Location = New Point(0, 90)
-        btnStockOut.Name = "btnStockOut"
-        btnStockOut.Padding = New Padding(35, 0, 0, 0)
-        btnStockOut.Size = New Size(250, 45)
-        btnStockOut.TabIndex = 2
-        btnStockOut.Text = "Stock Out"
-        btnStockOut.TextAlign = ContentAlignment.MiddleLeft
-        btnStockOut.UseVisualStyleBackColor = True
         ' 
         ' btnStockIn
         ' 
@@ -385,7 +367,6 @@ Partial Class MainDashboardForm
     Friend WithEvents panelTransactionsSubmenu As Panel
     Friend WithEvents btnSales As Button
     Friend WithEvents btnStockIn As Button
-    Friend WithEvents btnStockOut As Button
     Friend WithEvents btnReceipts As Button
     Friend WithEvents btnAbout As Button
     Friend WithEvents btnLogout As Button

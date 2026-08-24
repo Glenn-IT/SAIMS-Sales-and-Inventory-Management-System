@@ -73,10 +73,6 @@ Public Class MainDashboardForm
         LoadGatedForm(4, Function() New StockInForm())
     End Sub
 
-    Private Sub btnStockOut_Click(sender As Object, e As EventArgs) Handles btnStockOut.Click
-        LoadGatedForm(5, Function() New StockOutForm())
-    End Sub
-
     Private Sub btnReceipts_Click(sender As Object, e As EventArgs) Handles btnReceipts.Click
         LoadGatedForm(8, Function() New ReceiptsForm())
     End Sub

@@ -20,6 +20,66 @@ Public Module StockMovementRepository
         Return dt
     End Function
 
+    ''' <summary>
+    ''' Returns distinct products that have stock-in movements with aggregated summary info.
+    ''' </summary>
+    Public Function GetStockInSummary(Optional filterDate As Nullable(Of DateTime) = Nothing) As DataTable
+        Dim dt As New DataTable()
+        Using con As New SqlConnection(dbconstring.Connection)
+            con.Open()
+            Dim query As String =
+                "SELECT p.ProductID, p.Barcode, p.ProductName, 
+                        ISNULL(c.CategoryName, 'Uncategorized') AS CategoryName,
+                        p.Stock AS CurrentStock,
+                        SUM(sm.Quantity) AS TotalStockInQty,
+                        MAX(sm.MovementDate) AS LastStockInDate,
+                        COUNT(sm.MovementID) AS StockInCount
+                 FROM tbl_StockMovements sm
+                 INNER JOIN tbl_Products p ON sm.ProductID = p.ProductID
+                 LEFT JOIN tbl_Categories c ON p.CategoryID = c.CategoryID
+                 WHERE sm.MovementType = @movementType"
+
+            If filterDate.HasValue Then
+                query &= " AND CAST(sm.MovementDate AS DATE) = @filterDate"
+            End If
+
+            query &= " GROUP BY p.ProductID, p.Barcode, p.ProductName, c.CategoryName, p.Stock
+                       ORDER BY MAX(sm.MovementDate) DESC"
+
+            Using cmd As New SqlCommand(query, con)
+                cmd.Parameters.AddWithValue("@movementType", Constants.MOVEMENT_STOCKIN)
+                If filterDate.HasValue Then
+                    cmd.Parameters.AddWithValue("@filterDate", filterDate.Value.Date)
+                End If
+                Dim adapter As New SqlDataAdapter(cmd)
+                adapter.Fill(dt)
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    ''' <summary>
+    ''' Returns all Stock In movement records for a specific product including dates, quantities, remarks, and user.
+    ''' </summary>
+    Public Function GetStockInHistoryByProduct(productID As Integer) As DataTable
+        Dim dt As New DataTable()
+        Using con As New SqlConnection(dbconstring.Connection)
+            con.Open()
+            Dim cmd As New SqlCommand(
+                "SELECT sm.MovementID, sm.Quantity, sm.Reason, sm.MovementDate,
+                        ISNULL(u.FullName, u.Username) AS CreatedBy
+                 FROM tbl_StockMovements sm
+                 INNER JOIN tbl_Users u ON sm.CreatedBy = u.UserID
+                 WHERE sm.ProductID = @productID AND sm.MovementType = @movementType
+                 ORDER BY sm.MovementDate DESC", con)
+            cmd.Parameters.AddWithValue("@productID", productID)
+            cmd.Parameters.AddWithValue("@movementType", Constants.MOVEMENT_STOCKIN)
+            Dim adapter As New SqlDataAdapter(cmd)
+            adapter.Fill(dt)
+        End Using
+        Return dt
+    End Function
+
     Public Function GetByProduct(productID As Integer) As DataTable
         Dim dt As New DataTable()
         Using con As New SqlConnection(dbconstring.Connection)

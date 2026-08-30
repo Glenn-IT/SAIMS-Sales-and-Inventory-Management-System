@@ -39,13 +39,14 @@ Partial Class StockInForm
         Me.dtpFilterDate = New System.Windows.Forms.DateTimePicker()
         Me.btnClearFilter = New System.Windows.Forms.Button()
         Me.dgvStockIn = New System.Windows.Forms.DataGridView()
-        Me.colID = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colProductID = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colBarcode = New System.Windows.Forms.DataGridViewTextBoxColumn()
         Me.colProduct = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colQuantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colTotalQuantity = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colDate = New System.Windows.Forms.DataGridViewTextBoxColumn()
-        Me.colRemarks = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colCategory = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colCurrentStock = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colTotalStockIn = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colLastDate = New System.Windows.Forms.DataGridViewTextBoxColumn()
+        Me.colAction = New System.Windows.Forms.DataGridViewButtonColumn()
         Me.panelTop.SuspendLayout()
         Me.panelForm.SuspendLayout()
         Me.panelSearch.SuspendLayout()
@@ -292,12 +293,13 @@ Partial Class StockInForm
         '
         'dgvStockIn
         '
+        Dim dataGridViewCellStyleButton As System.Windows.Forms.DataGridViewCellStyle = New System.Windows.Forms.DataGridViewCellStyle()
         Me.dgvStockIn.AllowUserToAddRows = False
         Me.dgvStockIn.AllowUserToDeleteRows = False
         Me.dgvStockIn.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill
         Me.dgvStockIn.BackgroundColor = System.Drawing.Color.White
         Me.dgvStockIn.ColumnHeadersHeight = 40
-        Me.dgvStockIn.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colID, Me.colBarcode, Me.colProduct, Me.colQuantity, Me.colTotalQuantity, Me.colDate, Me.colRemarks})
+        Me.dgvStockIn.Columns.AddRange(New System.Windows.Forms.DataGridViewColumn() {Me.colProductID, Me.colBarcode, Me.colProduct, Me.colCategory, Me.colCurrentStock, Me.colTotalStockIn, Me.colLastDate, Me.colAction})
         Me.dgvStockIn.Dock = System.Windows.Forms.DockStyle.Fill
         Me.dgvStockIn.Location = New System.Drawing.Point(0, 325)
         Me.dgvStockIn.Name = "dgvStockIn"
@@ -308,15 +310,17 @@ Partial Class StockInForm
         Me.dgvStockIn.Size = New System.Drawing.Size(1000, 275)
         Me.dgvStockIn.TabIndex = 3
         '
-        'colID
+        'colProductID
         '
-        Me.colID.HeaderText = "Stock In ID"
-        Me.colID.MinimumWidth = 6
-        Me.colID.Name = "colID"
-        Me.colID.ReadOnly = True
+        Me.colProductID.HeaderText = "Product ID"
+        Me.colProductID.MinimumWidth = 6
+        Me.colProductID.Name = "colProductID"
+        Me.colProductID.ReadOnly = True
+        Me.colProductID.Visible = False
         '
         'colBarcode
         '
+        Me.colBarcode.FillWeight = 15.0!
         Me.colBarcode.HeaderText = "Barcode"
         Me.colBarcode.MinimumWidth = 6
         Me.colBarcode.Name = "colBarcode"
@@ -324,38 +328,61 @@ Partial Class StockInForm
         '
         'colProduct
         '
+        Me.colProduct.FillWeight = 25.0!
         Me.colProduct.HeaderText = "Product Name"
         Me.colProduct.MinimumWidth = 6
         Me.colProduct.Name = "colProduct"
         Me.colProduct.ReadOnly = True
         '
-        'colQuantity
+        'colCategory
         '
-        Me.colQuantity.HeaderText = "Added Quantity"
-        Me.colQuantity.MinimumWidth = 6
-        Me.colQuantity.Name = "colQuantity"
-        Me.colQuantity.ReadOnly = True
+        Me.colCategory.FillWeight = 15.0!
+        Me.colCategory.HeaderText = "Category"
+        Me.colCategory.MinimumWidth = 6
+        Me.colCategory.Name = "colCategory"
+        Me.colCategory.ReadOnly = True
         '
-        'colTotalQuantity
+        'colCurrentStock
         '
-        Me.colTotalQuantity.HeaderText = "Total Quantity"
-        Me.colTotalQuantity.MinimumWidth = 6
-        Me.colTotalQuantity.Name = "colTotalQuantity"
-        Me.colTotalQuantity.ReadOnly = True
+        Me.colCurrentStock.FillWeight = 12.0!
+        Me.colCurrentStock.HeaderText = "Current Stock"
+        Me.colCurrentStock.MinimumWidth = 6
+        Me.colCurrentStock.Name = "colCurrentStock"
+        Me.colCurrentStock.ReadOnly = True
         '
-        'colDate
+        'colTotalStockIn
         '
-        Me.colDate.HeaderText = "Date"
-        Me.colDate.MinimumWidth = 6
-        Me.colDate.Name = "colDate"
-        Me.colDate.ReadOnly = True
+        Me.colTotalStockIn.FillWeight = 13.0!
+        Me.colTotalStockIn.HeaderText = "Total Stocked In"
+        Me.colTotalStockIn.MinimumWidth = 6
+        Me.colTotalStockIn.Name = "colTotalStockIn"
+        Me.colTotalStockIn.ReadOnly = True
         '
-        'colRemarks
+        'colLastDate
         '
-        Me.colRemarks.HeaderText = "Remarks"
-        Me.colRemarks.MinimumWidth = 6
-        Me.colRemarks.Name = "colRemarks"
-        Me.colRemarks.ReadOnly = True
+        Me.colLastDate.FillWeight = 18.0!
+        Me.colLastDate.HeaderText = "Last Stock In Date"
+        Me.colLastDate.MinimumWidth = 6
+        Me.colLastDate.Name = "colLastDate"
+        Me.colLastDate.ReadOnly = True
+        '
+        'colAction
+        '
+        dataGridViewCellStyleButton.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter
+        dataGridViewCellStyleButton.BackColor = System.Drawing.Color.FromArgb(CType(CType(52, Byte), Integer), CType(CType(152, Byte), Integer), CType(CType(219, Byte), Integer))
+        dataGridViewCellStyleButton.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
+        dataGridViewCellStyleButton.ForeColor = System.Drawing.Color.White
+        dataGridViewCellStyleButton.SelectionBackColor = System.Drawing.Color.FromArgb(CType(CType(41, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(185, Byte), Integer))
+        dataGridViewCellStyleButton.SelectionForeColor = System.Drawing.Color.White
+        Me.colAction.DefaultCellStyle = dataGridViewCellStyleButton
+        Me.colAction.FillWeight = 14.0!
+        Me.colAction.FlatStyle = System.Windows.Forms.FlatStyle.Flat
+        Me.colAction.HeaderText = "Action"
+        Me.colAction.MinimumWidth = 6
+        Me.colAction.Name = "colAction"
+        Me.colAction.ReadOnly = True
+        Me.colAction.Text = "View Dates"
+        Me.colAction.UseColumnTextForButtonValue = True
         '
         'StockInForm
         '
@@ -402,11 +429,12 @@ Partial Class StockInForm
     Friend WithEvents dtpFilterDate As DateTimePicker
     Friend WithEvents btnClearFilter As Button
     Friend WithEvents dgvStockIn As DataGridView
-    Friend WithEvents colID As DataGridViewTextBoxColumn
+    Friend WithEvents colProductID As DataGridViewTextBoxColumn
     Friend WithEvents colBarcode As DataGridViewTextBoxColumn
     Friend WithEvents colProduct As DataGridViewTextBoxColumn
-    Friend WithEvents colQuantity As DataGridViewTextBoxColumn
-    Friend WithEvents colTotalQuantity As DataGridViewTextBoxColumn
-    Friend WithEvents colDate As DataGridViewTextBoxColumn
-    Friend WithEvents colRemarks As DataGridViewTextBoxColumn
+    Friend WithEvents colCategory As DataGridViewTextBoxColumn
+    Friend WithEvents colCurrentStock As DataGridViewTextBoxColumn
+    Friend WithEvents colTotalStockIn As DataGridViewTextBoxColumn
+    Friend WithEvents colLastDate As DataGridViewTextBoxColumn
+    Friend WithEvents colAction As DataGridViewButtonColumn
 End Class

@@ -23,46 +23,77 @@ Public Class StockInForm
 
     Private Sub LoadStockInHistory()
         Try
-            Dim dt As DataTable = StockMovementRepository.GetAll()
+            Dim filterDate As Nullable(Of DateTime) = Nothing
+            If chkUseDateFilter.Checked Then
+                filterDate = dtpFilterDate.Value.Date
+            End If
+
+            Dim dt As DataTable = StockMovementRepository.GetStockInSummary(filterDate)
             dgvStockIn.Rows.Clear()
 
             Dim searchKey As String = txtSearch.Text.Trim().ToLower()
-            Dim useDateFilter As Boolean = chkUseDateFilter.Checked
-            Dim filterDate As Date = dtpFilterDate.Value.Date
 
             For Each row As DataRow In dt.Rows
-                If row("MovementType").ToString() = Constants.MOVEMENT_STOCKIN Then
-                    Dim barcode As String = If(IsDBNull(row("Barcode")), "", row("Barcode").ToString())
-                    Dim productName As String = row("ProductName").ToString()
-                    Dim mDate As DateTime = CDate(row("MovementDate"))
+                Dim barcode As String = If(IsDBNull(row("Barcode")), "", row("Barcode").ToString())
+                Dim productName As String = row("ProductName").ToString()
+                Dim categoryName As String = If(IsDBNull(row("CategoryName")), "", row("CategoryName").ToString())
+                Dim currentStock As Integer = CInt(row("CurrentStock"))
+                Dim totalStockIn As Integer = CInt(row("TotalStockInQty"))
+                Dim lastDate As DateTime = CDate(row("LastStockInDate"))
 
-                    If Not String.IsNullOrEmpty(searchKey) Then
-                        If Not barcode.ToLower().Contains(searchKey) AndAlso Not productName.ToLower().Contains(searchKey) Then
-                            Continue For
-                        End If
+                If Not String.IsNullOrEmpty(searchKey) Then
+                    If Not barcode.ToLower().Contains(searchKey) AndAlso
+                       Not productName.ToLower().Contains(searchKey) AndAlso
+                       Not categoryName.ToLower().Contains(searchKey) Then
+                        Continue For
                     End If
-
-                    If useDateFilter Then
-                        If mDate.Date <> filterDate Then
-                            Continue For
-                        End If
-                    End If
-
-                    dgvStockIn.Rows.Add(
-                        row("MovementID").ToString(),
-                        barcode,
-                        productName,
-                        row("Quantity").ToString(),
-                        row("TotalQuantity").ToString(),
-                        mDate.ToString("yyyy-MM-dd HH:mm"),
-                        row("Reason").ToString())
                 End If
+
+                dgvStockIn.Rows.Add(
+                    row("ProductID"),
+                    barcode,
+                    productName,
+                    categoryName,
+                    currentStock,
+                    "+" & totalStockIn.ToString(),
+                    lastDate.ToString("yyyy-MM-dd HH:mm"),
+                    "View Dates")
             Next
 
         Catch ex As Exception
-            MessageBox.Show("Failed to load stock in history." & Environment.NewLine & ex.Message,
+            MessageBox.Show("Failed to load stock in summary." & Environment.NewLine & ex.Message,
                             "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
         End Try
+    End Sub
+
+    Private Sub dgvStockIn_CellContentClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvStockIn.CellContentClick
+        If e.RowIndex >= 0 AndAlso e.ColumnIndex = colAction.Index Then
+            OpenStockInHistory(e.RowIndex)
+        End If
+    End Sub
+
+    Private Sub dgvStockIn_CellDoubleClick(sender As Object, e As DataGridViewCellEventArgs) Handles dgvStockIn.CellDoubleClick
+        If e.RowIndex >= 0 Then
+            OpenStockInHistory(e.RowIndex)
+        End If
+    End Sub
+
+    Private Sub OpenStockInHistory(rowIndex As Integer)
+        If rowIndex < 0 OrElse rowIndex >= dgvStockIn.Rows.Count Then Return
+
+        Dim row = dgvStockIn.Rows(rowIndex)
+        Dim productID As Integer = CInt(row.Cells("colProductID").Value)
+        Dim barcode As String = row.Cells("colBarcode").Value.ToString()
+        Dim productName As String = row.Cells("colProduct").Value.ToString()
+        Dim currentStock As Integer = CInt(row.Cells("colCurrentStock").Value)
+
+        Using dlg As New StockInHistoryDialogForm()
+            dlg.ProductID = productID
+            dlg.BarcodeText = barcode
+            dlg.ProductNameText = productName
+            dlg.CurrentStockQty = currentStock
+            dlg.ShowDialog(Me)
+        End Using
     End Sub
 
     Private Sub txtSearch_TextChanged(sender As Object, e As EventArgs) Handles txtSearch.TextChanged

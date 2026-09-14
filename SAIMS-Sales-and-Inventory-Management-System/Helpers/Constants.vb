@@ -1,5 +1,10 @@
 Public Module Constants
 
+    ' Application & Company details
+    Public Const APP_NAME     As String = "Sales & Inventory Management of Rhenwas Poultry Supply"
+    Public Const STORE_NAME   As String = "Rhenwas Poultry Supply"
+    Public Const SYSTEM_TITLE As String = "Sales & Inventory Management"
+
     ' User types
     Public Const USERTYPE_ADMIN   As String = "Admin"
     Public Const USERTYPE_CASHIER As String = "Cashier"

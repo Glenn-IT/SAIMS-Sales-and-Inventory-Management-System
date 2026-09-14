@@ -1,5 +1,5 @@
 -- ============================================================
--- SAIMS - Sales and Inventory Management System
+-- Sales & Inventory Management of Rhenwas Poultry Supply
 -- Database Setup Script
 -- Server  : Glenn\SQLEXPRESS
 -- Database: SAIMS_DB

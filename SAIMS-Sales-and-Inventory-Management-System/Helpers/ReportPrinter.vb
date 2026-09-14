@@ -305,8 +305,8 @@ Public Module ReportPrinter
         ' Top Header
         sb.AppendLine("    <div class='report-header'>")
         sb.AppendLine("      <div>")
-        sb.AppendLine("        <h1 class='brand-title'>SAIMS</h1>")
-        sb.AppendLine("        <p class='brand-subtitle'>Sales & Inventory Management System</p>")
+        sb.AppendLine("        <h1 class='brand-title'>RHENWAS POULTRY SUPPLY</h1>")
+        sb.AppendLine("        <p class='brand-subtitle'>Sales & Inventory Management</p>")
         sb.AppendLine("      </div>")
         sb.AppendLine("      <div class='report-badge-container'>")
         sb.AppendLine($"        <span class='report-badge'>{reportType} Inventory Report</span>")
@@ -440,7 +440,7 @@ Public Module ReportPrinter
 
         ' Footer
         sb.AppendLine("    <div class='report-footer'>")
-        sb.AppendLine("      <span>SAIMS &copy; " & DateTime.Now.Year.ToString() & " - Sales & Inventory Management System</span>")
+        sb.AppendLine("      <span>Rhenwas Poultry Supply &copy; " & DateTime.Now.Year.ToString() & " - Sales & Inventory Management</span>")
         sb.AppendLine($"      <span>Confidential Business Document &bull; Generated: {generatedOn}</span>")
         sb.AppendLine("    </div>")
 

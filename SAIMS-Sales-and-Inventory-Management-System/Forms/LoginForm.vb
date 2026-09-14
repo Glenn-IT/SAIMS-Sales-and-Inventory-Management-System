@@ -10,7 +10,7 @@ Public Class LoginForm
     Private WithEvents _lockTimer As New Timer() With {.Interval = 1000}
 
     Private Sub LoginForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        lblBrandFooter.Text = "SAIMS " & UnderConstructionForm.CURRENT_VERSION
+        lblBrandFooter.Text = STORE_NAME & " " & UnderConstructionForm.CURRENT_VERSION
         CheckDatabaseConnection()
         txtUsername.Focus()
     End Sub

@@ -1,4 +1,4 @@
-﻿Imports Microsoft.VisualBasic.ApplicationServices
+Imports Microsoft.VisualBasic.ApplicationServices
 Imports Serilog
 Imports System.IO
 
@@ -19,12 +19,12 @@ Namespace My
                     outputTemplate:="{Timestamp:yyyy-MM-dd HH:mm:ss} [{Level:u3}] {Message:lj}{NewLine}{Exception}") _
                 .CreateLogger()
 
-            Serilog.Log.Information("SAIMS application started.")
+            Serilog.Log.Information("Sales & Inventory Management of Rhenwas Poultry Supply application started.")
         End Sub
 
         Private Sub MyApplication_Shutdown(sender As Object,
                                            e As EventArgs) Handles Me.Shutdown
-            Serilog.Log.Information("SAIMS application shut down.")
+            Serilog.Log.Information("Sales & Inventory Management of Rhenwas Poultry Supply application shut down.")
             Serilog.Log.CloseAndFlush()
         End Sub
 

@@ -64,18 +64,18 @@ Partial Class LoginForm
         lblBrandFooter.Name = "lblBrandFooter"
         lblBrandFooter.Size = New Size(200, 23)
         lblBrandFooter.TabIndex = 3
-        lblBrandFooter.Text = "SAIMS"
+        lblBrandFooter.Text = "Rhenwas Poultry Supply"
         lblBrandFooter.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' lblBrandSubtitle
         ' 
-        lblBrandSubtitle.Font = New Font("Segoe UI", 10.5F)
+        lblBrandSubtitle.Font = New Font("Segoe UI", 9.5F)
         lblBrandSubtitle.ForeColor = Color.FromArgb(CByte(189), CByte(195), CByte(199))
-        lblBrandSubtitle.Location = New Point(10, 249)
+        lblBrandSubtitle.Location = New Point(10, 245)
         lblBrandSubtitle.Name = "lblBrandSubtitle"
-        lblBrandSubtitle.Size = New Size(200, 57)
+        lblBrandSubtitle.Size = New Size(200, 65)
         lblBrandSubtitle.TabIndex = 2
-        lblBrandSubtitle.Text = "Sales & Inventory" & vbCrLf & "Management System"
+        lblBrandSubtitle.Text = "Poultry Supply" & vbCrLf & "Sales & Inventory Management"
         lblBrandSubtitle.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' pnlAccentLine
@@ -88,13 +88,13 @@ Partial Class LoginForm
         ' 
         ' lblBrandTitle
         ' 
-        lblBrandTitle.Font = New Font("Segoe UI", 26.0F, FontStyle.Bold)
+        lblBrandTitle.Font = New Font("Segoe UI", 22.0F, FontStyle.Bold)
         lblBrandTitle.ForeColor = Color.White
-        lblBrandTitle.Location = New Point(10, 170)
+        lblBrandTitle.Location = New Point(10, 168)
         lblBrandTitle.Name = "lblBrandTitle"
-        lblBrandTitle.Size = New Size(200, 51)
+        lblBrandTitle.Size = New Size(200, 53)
         lblBrandTitle.TabIndex = 0
-        lblBrandTitle.Text = "SAIMS"
+        lblBrandTitle.Text = "RHENWAS"
         lblBrandTitle.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' panelMain
@@ -248,7 +248,7 @@ Partial Class LoginForm
         FormBorderStyle = FormBorderStyle.None
         Name = "LoginForm"
         StartPosition = FormStartPosition.CenterScreen
-        Text = "SAIMS - Login"
+        Text = "Sales & Inventory Management of Rhenwas Poultry Supply - Login"
         panelBrand.ResumeLayout(False)
         panelMain.ResumeLayout(False)
         panelMain.PerformLayout()

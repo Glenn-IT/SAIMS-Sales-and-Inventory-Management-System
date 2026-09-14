@@ -9,11 +9,11 @@ Public Class SystemManualForm
     Private Sub PopulateManual()
         txtManualContent.Clear()
 
-        AppendHeader("SAIMS — SALES AND INVENTORY MANAGEMENT SYSTEM")
+        AppendHeader("SALES & INVENTORY MANAGEMENT OF RHENWAS POULTRY SUPPLY")
         AppendSubHeader("SYSTEM OPERATING MANUAL & USER GUIDE" & vbCrLf)
 
         AppendSectionTitle("1. OVERVIEW & ACCESS ROLES")
-        AppendText("SAIMS is an enterprise sales and inventory management application designed for streamlined product tracking, inventory replenishment, point-of-sale (POS) cashier transactions, and receipt auditing." & vbCrLf & vbCrLf)
+        AppendText("The Sales & Inventory Management System of Rhenwas Poultry Supply is designed for streamlined product tracking, inventory replenishment, point-of-sale (POS) cashier transactions, and receipt auditing." & vbCrLf & vbCrLf)
         AppendBullet("Administrator / Manager", "Full access to Setup (Users, Products, Categories), Stock In, Sales POS, Receipts, and Reports.")
         AppendBullet("Cashier", "Access to Point-of-Sale (Sales), Receipts viewing & printing, and Stock In functions.")
 

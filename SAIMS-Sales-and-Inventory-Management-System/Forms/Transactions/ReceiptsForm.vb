@@ -81,7 +81,8 @@ Public Class ReceiptsForm
 
             Dim sb As New System.Text.StringBuilder()
             sb.AppendLine("══════════════════════════════")
-            sb.AppendLine("          SAIMS RECEIPT")
+            sb.AppendLine("    RHENWAS POULTRY SUPPLY")
+            sb.AppendLine("  Sales & Inventory Management")
             sb.AppendLine("══════════════════════════════")
             sb.AppendLine($"Receipt No : {saleRow("ReceiptNo")}")
             sb.AppendLine($"Date       : {CDate(saleRow("SaleDate")):yyyy-MM-dd HH:mm}")

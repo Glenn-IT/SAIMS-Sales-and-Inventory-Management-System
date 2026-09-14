@@ -79,7 +79,7 @@ Partial Class MainDashboardForm
         lblHeader.Name = "lblHeader"
         lblHeader.Size = New Size(308, 30)
         lblHeader.TabIndex = 0
-        lblHeader.Text = "Main Dashboard - SAIMS v1.0"
+        lblHeader.Text = "Sales & Inventory Management of Rhenwas Poultry Supply"
         ' 
         ' panelSidebar
         ' 
@@ -358,14 +358,15 @@ Partial Class MainDashboardForm
         ' 
         ' lblLogo
         ' 
-        lblLogo.AutoSize = True
-        lblLogo.Font = New Font("Segoe UI", 14.0F, FontStyle.Bold)
+        lblLogo.AutoSize = False
+        lblLogo.Font = New Font("Segoe UI", 11.0F, FontStyle.Bold)
         lblLogo.ForeColor = Color.White
-        lblLogo.Location = New Point(60, 32)
+        lblLogo.Location = New Point(10, 18)
         lblLogo.Name = "lblLogo"
-        lblLogo.Size = New Size(126, 30)
+        lblLogo.Size = New Size(230, 55)
         lblLogo.TabIndex = 0
-        lblLogo.Text = "SAIMS v1.0"
+        lblLogo.Text = "Rhenwas Poultry Supply" & vbCrLf & "Sales & Inventory"
+        lblLogo.TextAlign = ContentAlignment.MiddleCenter
         ' 
         ' panelContent
         ' 
@@ -386,7 +387,7 @@ Partial Class MainDashboardForm
         Controls.Add(panelSidebar)
         Name = "MainDashboardForm"
         StartPosition = FormStartPosition.CenterScreen
-        Text = "SAIMS - Main Dashboard"
+        Text = "Sales & Inventory Management of Rhenwas Poultry Supply - Main Dashboard"
         WindowState = FormWindowState.Maximized
         panelHeader.ResumeLayout(False)
         panelHeader.PerformLayout()

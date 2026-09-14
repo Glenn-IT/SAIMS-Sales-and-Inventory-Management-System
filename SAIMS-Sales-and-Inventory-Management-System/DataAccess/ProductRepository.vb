@@ -182,4 +182,48 @@ Public Module ProductRepository
         End Using
     End Sub
 
+    Public Function SearchActiveProducts(keyword As String) As List(Of ProductSearchResult)
+        Dim list As New List(Of ProductSearchResult)()
+        If String.IsNullOrWhiteSpace(keyword) Then Return list
+
+        Using con As New SqlConnection(dbconstring.Connection)
+            con.Open()
+            Dim cmd As New SqlCommand(
+                "SELECT TOP 20 p.ProductID, p.Barcode, p.ProductName, p.Unit,
+                        p.Price, p.Stock
+                 FROM tbl_Products p
+                 WHERE (p.ProductName LIKE @kw OR p.Barcode LIKE @kw)
+                   AND p.Status = @status
+                 ORDER BY p.ProductName ASC", con)
+            cmd.Parameters.AddWithValue("@kw", "%" & keyword.Trim() & "%")
+            cmd.Parameters.AddWithValue("@status", Constants.STATUS_ACTIVE)
+            Using reader As SqlDataReader = cmd.ExecuteReader()
+                While reader.Read()
+                    list.Add(New ProductSearchResult() With {
+                        .ProductID   = reader.GetInt32(0),
+                        .Barcode     = reader.GetString(1),
+                        .ProductName = reader.GetString(2),
+                        .Unit        = If(reader.IsDBNull(3), "pcs", reader.GetString(3)),
+                        .Price       = reader.GetDecimal(4),
+                        .Stock       = reader.GetInt32(5)
+                    })
+                End While
+            End Using
+        End Using
+        Return list
+    End Function
+
 End Module
+
+Public Class ProductSearchResult
+    Public Property ProductID As Integer
+    Public Property Barcode As String
+    Public Property ProductName As String
+    Public Property Price As Decimal
+    Public Property Stock As Integer
+    Public Property Unit As String
+
+    Public Overrides Function ToString() As String
+        Return $"{ProductName}  —  ₱{Price:N2}  [Stock: {Stock} {Unit}]  (Barcode: {Barcode})"
+    End Function
+End Class

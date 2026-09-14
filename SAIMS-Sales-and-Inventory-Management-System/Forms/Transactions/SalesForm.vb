@@ -1,18 +1,30 @@
 Public Class SalesForm
 
-    ' Tracks ProductID and unit price for each barcode added to the cart
-    Private _cartItems As New Dictionary(Of String, (ProductID As Integer, UnitPrice As Decimal))
+    ' Tracks ProductID, unit price, and available stock for each barcode added to the cart
+    Private _cartItems As New Dictionary(Of String, (ProductID As Integer, UnitPrice As Decimal, Stock As Integer))
+
+    ' Real-time product search debounce timer (150ms)
+    Private WithEvents _searchDebounceTimer As New Timer() With {.Interval = 150}
 
     Private Sub SalesForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Me.KeyPreview = True
         cmbPaymentMethod.SelectedIndex = 0
         txtBarcodeScanner.Focus()
         UpdateTransactionSummary()
+        UpdateSelectedCartItemDisplay()
     End Sub
 
-    ' Hands-free scanner auto-focus: intercepts keypresses outside of payment/discount textboxes
+    Private Sub SalesForm_Resize(sender As Object, e As EventArgs) Handles MyBase.Resize
+        If lstSearchResults IsNot Nothing AndAlso lstSearchResults.Visible Then
+            PositionSearchResultsDropdown()
+        End If
+    End Sub
+
+    ' Hands-free scanner auto-focus: intercepts keypresses outside of payment/discount/quantity/search textboxes
     Private Sub SalesForm_KeyDown(sender As Object, e As KeyEventArgs) Handles MyBase.KeyDown
-        If Not txtDiscount.Focused AndAlso Not txtAmountTendered.Focused AndAlso Not txtBarcodeScanner.Focused Then
+        If Not txtDiscount.Focused AndAlso Not txtAmountTendered.Focused AndAlso
+           Not txtBarcodeScanner.Focused AndAlso Not txtItemQty.Focused AndAlso
+           Not lstSearchResults.Focused Then
             If (e.KeyCode >= Keys.A AndAlso e.KeyCode <= Keys.Z) OrElse
                (e.KeyCode >= Keys.D0 AndAlso e.KeyCode <= Keys.D9) OrElse
                (e.KeyCode >= Keys.NumPad0 AndAlso e.KeyCode <= Keys.NumPad9) OrElse
@@ -22,20 +34,181 @@ Public Class SalesForm
         End If
     End Sub
 
-    ' ─── Barcode scanning ───────────────────────────────────────────────────────
+    ' ─── Barcode scanning & real-time product search ────────────────────────────
 
-    Private Sub txtBarcodeScanner_KeyPress(sender As Object, e As KeyPressEventArgs) Handles txtBarcodeScanner.KeyPress
-        If e.KeyChar = ChrW(Keys.Enter) Then
-            e.Handled = True
-            ProcessBarcodeInput()
+    Private Sub PositionSearchResultsDropdown()
+        If lstSearchResults Is Nothing OrElse txtBarcodeScanner Is Nothing Then Return
+        Dim screenPt As Point = txtBarcodeScanner.Parent.PointToScreen(New Point(txtBarcodeScanner.Left, txtBarcodeScanner.Bottom + 1))
+        Dim clientPt As Point = Me.PointToClient(screenPt)
+        lstSearchResults.Location = clientPt
+        lstSearchResults.Width = Math.Max(txtBarcodeScanner.Width, 520)
+        lstSearchResults.BringToFront()
+    End Sub
+
+    Private Sub txtBarcodeScanner_TextChanged(sender As Object, e As EventArgs) Handles txtBarcodeScanner.TextChanged
+        Dim kw As String = txtBarcodeScanner.Text.Trim()
+        If kw.Length >= 1 Then
+            _searchDebounceTimer.Stop()
+            _searchDebounceTimer.Start()
+        Else
+            _searchDebounceTimer.Stop()
+            lstSearchResults.Visible = False
+            lstSearchResults.Items.Clear()
         End If
     End Sub
 
-    Private Sub ProcessBarcodeInput()
-        Dim barcode As String = InputHelper.SanitizeInput(txtBarcodeScanner.Text).ToUpper()
-        If String.IsNullOrWhiteSpace(barcode) Then Return
-        LookupAndAddProduct(barcode)
+    Private Sub _searchDebounceTimer_Tick(sender As Object, e As EventArgs) Handles _searchDebounceTimer.Tick
+        _searchDebounceTimer.Stop()
+        Dim kw As String = txtBarcodeScanner.Text.Trim()
+        If kw.Length >= 1 Then
+            Dim matches = ProductRepository.SearchActiveProducts(kw)
+            DisplaySearchResults(matches)
+        Else
+            lstSearchResults.Visible = False
+        End If
+    End Sub
+
+    Private Sub DisplaySearchResults(matches As List(Of ProductSearchResult))
+        lstSearchResults.BeginUpdate()
+        lstSearchResults.Items.Clear()
+        For Each p In matches
+            lstSearchResults.Items.Add(p)
+        Next
+        lstSearchResults.EndUpdate()
+
+        If matches.Count > 0 Then
+            PositionSearchResultsDropdown()
+            lstSearchResults.Visible = True
+            lstSearchResults.BringToFront()
+        Else
+            lstSearchResults.Visible = False
+        End If
+    End Sub
+
+    Private Sub txtBarcodeScanner_KeyDown(sender As Object, e As KeyEventArgs) Handles txtBarcodeScanner.KeyDown
+        If e.KeyCode = Keys.Down Then
+            If lstSearchResults.Visible AndAlso lstSearchResults.Items.Count > 0 Then
+                e.Handled = True
+                lstSearchResults.Focus()
+                If lstSearchResults.SelectedIndex < 0 Then
+                    lstSearchResults.SelectedIndex = 0
+                End If
+            End If
+        ElseIf e.KeyCode = Keys.Escape Then
+            lstSearchResults.Visible = False
+            e.Handled = True
+        ElseIf e.KeyCode = Keys.Enter Then
+            e.Handled = True
+            e.SuppressKeyPress = True
+            ProcessSearchOrBarcodeInput()
+        End If
+    End Sub
+
+    Private Sub txtBarcodeScanner_Leave(sender As Object, e As EventArgs) Handles txtBarcodeScanner.Leave
+        Me.BeginInvoke(Sub()
+                           If Not lstSearchResults.Focused Then
+                               lstSearchResults.Visible = False
+                           End If
+                       End Sub)
+    End Sub
+
+    Private Sub lstSearchResults_Click(sender As Object, e As EventArgs) Handles lstSearchResults.Click
+        SelectCurrentSearchResult()
+    End Sub
+
+    Private Sub lstSearchResults_KeyDown(sender As Object, e As KeyEventArgs) Handles lstSearchResults.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            e.Handled = True
+            e.SuppressKeyPress = True
+            SelectCurrentSearchResult()
+        ElseIf e.KeyCode = Keys.Escape Then
+            lstSearchResults.Visible = False
+            txtBarcodeScanner.Focus()
+            e.Handled = True
+        ElseIf e.KeyCode = Keys.Up AndAlso lstSearchResults.SelectedIndex = 0 Then
+            e.Handled = True
+            txtBarcodeScanner.Focus()
+            txtBarcodeScanner.SelectionStart = txtBarcodeScanner.Text.Length
+        ElseIf (e.KeyCode >= Keys.A AndAlso e.KeyCode <= Keys.Z) OrElse
+               (e.KeyCode >= Keys.D0 AndAlso e.KeyCode <= Keys.D9) OrElse
+               (e.KeyCode >= Keys.NumPad0 AndAlso e.KeyCode <= Keys.NumPad9) OrElse
+               e.KeyCode = Keys.Back Then
+            txtBarcodeScanner.Focus()
+        End If
+    End Sub
+
+    Private Sub lstSearchResults_Leave(sender As Object, e As EventArgs) Handles lstSearchResults.Leave
+        Me.BeginInvoke(Sub()
+                           If Not txtBarcodeScanner.Focused Then
+                               lstSearchResults.Visible = False
+                           End If
+                       End Sub)
+    End Sub
+
+    Private Sub SelectCurrentSearchResult()
+        If lstSearchResults.SelectedIndex >= 0 Then
+            Dim selected = TryCast(lstSearchResults.SelectedItem, ProductSearchResult)
+            If selected IsNot Nothing Then
+                AddProductAndReset(selected.Barcode)
+            End If
+        End If
+    End Sub
+
+    Private Sub ProcessSearchOrBarcodeInput()
+        _searchDebounceTimer.Stop()
+        Dim input As String = InputHelper.SanitizeInput(txtBarcodeScanner.Text).Trim()
+        If String.IsNullOrWhiteSpace(input) Then Return
+
+        ' 1. If an item in dropdown is explicitly highlighted, use it
+        If lstSearchResults.Visible AndAlso lstSearchResults.SelectedIndex >= 0 Then
+            Dim selected = TryCast(lstSearchResults.SelectedItem, ProductSearchResult)
+            If selected IsNot Nothing Then
+                AddProductAndReset(selected.Barcode)
+                Return
+            End If
+        End If
+
+        ' 2. Try exact barcode match first
+        Dim dt As DataTable = ProductRepository.GetByBarcode(input)
+        If dt.Rows.Count > 0 Then
+            AddProductAndReset(input)
+            Return
+        End If
+
+        ' 3. If dropdown has search results, pick top match
+        If lstSearchResults.Visible AndAlso lstSearchResults.Items.Count > 0 Then
+            Dim topResult = TryCast(lstSearchResults.Items(0), ProductSearchResult)
+            If topResult IsNot Nothing Then
+                AddProductAndReset(topResult.Barcode)
+                Return
+            End If
+        End If
+
+        ' 4. Direct search for matches
+        Dim matches = ProductRepository.SearchActiveProducts(input)
+        If matches.Count = 1 Then
+            AddProductAndReset(matches(0).Barcode)
+            Return
+        ElseIf matches.Count > 1 Then
+            DisplaySearchResults(matches)
+            lstSearchResults.Focus()
+            lstSearchResults.SelectedIndex = 0
+            Return
+        End If
+
+        ' 5. Not found
+        lstSearchResults.Visible = False
+        System.Media.SystemSounds.Hand.Play()
+        MessageBox.Show($"No active product found matching '{input}'.",
+                        "Product Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+        txtBarcodeScanner.SelectAll()
+        txtBarcodeScanner.Focus()
+    End Sub
+
+    Private Sub AddProductAndReset(barcode As String)
+        lstSearchResults.Visible = False
         txtBarcodeScanner.Clear()
+        LookupAndAddProduct(barcode)
         txtBarcodeScanner.Focus()
     End Sub
 
@@ -82,7 +255,7 @@ Public Class SalesForm
                 Return
             End If
 
-            AddItemToCart(barcode, productID, productName, price, quantityToAdd)
+            AddItemToCart(barcode, productID, productName, price, stock, quantityToAdd)
             System.Media.SystemSounds.Asterisk.Play()
 
         Catch ex As Exception
@@ -95,9 +268,10 @@ Public Class SalesForm
 
     Private Sub AddItemToCart(barcode As String, productID As Integer,
                                productName As String, price As Decimal,
+                               stock As Integer,
                                Optional quantityToAdd As Integer = 1)
         If Not _cartItems.ContainsKey(barcode) Then
-            _cartItems(barcode) = (productID, price)
+            _cartItems(barcode) = (productID, price, stock)
         End If
 
         For Each row As DataGridViewRow In dgvCart.Rows
@@ -106,13 +280,19 @@ Public Class SalesForm
                 Dim newQty As Integer = CInt(row.Cells("colQuantity").Value) + quantityToAdd
                 row.Cells("colQuantity").Value = newQty
                 row.Cells("colTotal").Value    = FormatCurrency(newQty * price)
+                dgvCart.ClearSelection()
+                row.Selected = True
                 UpdateTransactionSummary()
+                UpdateSelectedCartItemDisplay()
                 Return
             End If
         Next
 
-        dgvCart.Rows.Add(barcode, productName, FormatCurrency(price), quantityToAdd, FormatCurrency(quantityToAdd * price))
+        Dim newRowIndex As Integer = dgvCart.Rows.Add(barcode, productName, FormatCurrency(price), quantityToAdd, FormatCurrency(quantityToAdd * price))
+        dgvCart.ClearSelection()
+        dgvCart.Rows(newRowIndex).Selected = True
         UpdateTransactionSummary()
+        UpdateSelectedCartItemDisplay()
     End Sub
 
     ' ─── Cart management ────────────────────────────────────────────────────────
@@ -128,6 +308,7 @@ Public Class SalesForm
         dgvCart.Rows.Remove(dgvCart.SelectedRows(0))
         _cartItems.Remove(barcode)
         UpdateTransactionSummary()
+        UpdateSelectedCartItemDisplay()
     End Sub
 
     Private Sub btnClearAll_Click(sender As Object, e As EventArgs) Handles btnClearAll.Click
@@ -149,6 +330,7 @@ Public Class SalesForm
         txtDiscount.Text       = "0"
         txtAmountTendered.Text = "0"
         UpdateTransactionSummary()
+        UpdateSelectedCartItemDisplay()
         txtBarcodeScanner.Focus()
     End Sub
 
@@ -216,7 +398,134 @@ Public Class SalesForm
         Return "₱" & amount.ToString("N2")
     End Function
 
-    ' ─── Inline quantity editing ─────────────────────────────────────────────────
+    ' ─── Inline & manual summary quantity editing ───────────────────────────────
+
+    Private Sub dgvCart_SelectionChanged(sender As Object, e As EventArgs) Handles dgvCart.SelectionChanged
+        UpdateSelectedCartItemDisplay()
+    End Sub
+
+    Private _updatingQtyBox As Boolean = False
+
+    Private Sub UpdateSelectedCartItemDisplay()
+        If dgvCart.SelectedRows.Count = 0 Then
+            lblSelectedItemName.Text = "(Scan barcode or select item)"
+            lblStockInfo.Text = "Stock: --"
+            _updatingQtyBox = True
+            txtItemQty.Text = "0"
+            _updatingQtyBox = False
+            btnQtyMinus.Enabled = False
+            btnQtyPlus.Enabled = False
+            btnQtyAdd5.Enabled = False
+            btnQtyAdd10.Enabled = False
+            txtItemQty.Enabled = False
+            Return
+        End If
+
+        Dim row As DataGridViewRow = dgvCart.SelectedRows(0)
+        Dim barcode As String = row.Cells("colBarcode").Value.ToString()
+        Dim prodName As String = row.Cells("colProductName").Value.ToString()
+        Dim qty As Integer = CInt(row.Cells("colQuantity").Value)
+        Dim price As Decimal = If(_cartItems.ContainsKey(barcode), _cartItems(barcode).UnitPrice, 0D)
+        Dim stock As Integer = If(_cartItems.ContainsKey(barcode), _cartItems(barcode).Stock, 0)
+
+        lblSelectedItemName.Text = $"{prodName} (₱{price:N2})"
+        lblStockInfo.Text = $"Stock: {stock}"
+
+        _updatingQtyBox = True
+        txtItemQty.Text = qty.ToString()
+        _updatingQtyBox = False
+
+        btnQtyMinus.Enabled = True
+        btnQtyPlus.Enabled = True
+        btnQtyAdd5.Enabled = True
+        btnQtyAdd10.Enabled = True
+        txtItemQty.Enabled = True
+    End Sub
+
+    Public Sub AdjustSelectedItemQuantity(delta As Integer)
+        If dgvCart.SelectedRows.Count = 0 Then
+            MessageBox.Show("Please select or scan an item in the cart to adjust its quantity.",
+                            "No Item Selected", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Return
+        End If
+
+        Dim row As DataGridViewRow = dgvCart.SelectedRows(0)
+        Dim barcode As String = row.Cells("colBarcode").Value.ToString()
+        Dim currentQty As Integer = CInt(row.Cells("colQuantity").Value)
+        Dim newQty As Integer = currentQty + delta
+
+        SetSelectedItemQuantity(row, barcode, newQty)
+    End Sub
+
+    Private Sub SetSelectedItemQuantity(row As DataGridViewRow, barcode As String, newQty As Integer)
+        If newQty <= 0 Then
+            Dim result = MessageBox.Show("Quantity is 0 or less. Do you want to remove this item from the cart?",
+                                         "Remove Item", MessageBoxButtons.YesNo, MessageBoxIcon.Question)
+            If result = DialogResult.Yes Then
+                dgvCart.Rows.Remove(row)
+                _cartItems.Remove(barcode)
+                UpdateTransactionSummary()
+                UpdateSelectedCartItemDisplay()
+            End If
+            Return
+        End If
+
+        Dim availableStock As Integer = If(_cartItems.ContainsKey(barcode), _cartItems(barcode).Stock, Integer.MaxValue)
+        If newQty > availableStock Then
+            System.Media.SystemSounds.Hand.Play()
+            Dim prodName As String = row.Cells("colProductName").Value.ToString()
+            MessageBox.Show($"Cannot set quantity to {newQty}. Available stock for '{prodName}' is {availableStock}.",
+                            "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            newQty = availableStock
+        End If
+
+        Dim price As Decimal = If(_cartItems.ContainsKey(barcode), _cartItems(barcode).UnitPrice, 0D)
+        row.Cells("colQuantity").Value = newQty
+        row.Cells("colTotal").Value = FormatCurrency(newQty * price)
+
+        UpdateTransactionSummary()
+        UpdateSelectedCartItemDisplay()
+    End Sub
+
+    Private Sub btnQtyMinus_Click(sender As Object, e As EventArgs) Handles btnQtyMinus.Click
+        AdjustSelectedItemQuantity(-1)
+    End Sub
+
+    Private Sub btnQtyPlus_Click(sender As Object, e As EventArgs) Handles btnQtyPlus.Click
+        AdjustSelectedItemQuantity(1)
+    End Sub
+
+    Private Sub btnQtyAdd5_Click(sender As Object, e As EventArgs) Handles btnQtyAdd5.Click
+        AdjustSelectedItemQuantity(5)
+    End Sub
+
+    Private Sub btnQtyAdd10_Click(sender As Object, e As EventArgs) Handles btnQtyAdd10.Click
+        AdjustSelectedItemQuantity(10)
+    End Sub
+
+    Private Sub txtItemQty_KeyDown(sender As Object, e As KeyEventArgs) Handles txtItemQty.KeyDown
+        If e.KeyCode = Keys.Enter Then
+            e.Handled = True
+            e.SuppressKeyPress = True
+            ApplyManualQtyFromBox()
+        End If
+    End Sub
+
+    Private Sub txtItemQty_Leave(sender As Object, e As EventArgs) Handles txtItemQty.Leave
+        ApplyManualQtyFromBox()
+    End Sub
+
+    Private Sub ApplyManualQtyFromBox()
+        If _updatingQtyBox OrElse dgvCart.SelectedRows.Count = 0 Then Return
+        Dim enteredQty As Integer
+        If Integer.TryParse(txtItemQty.Text, enteredQty) AndAlso enteredQty > 0 Then
+            Dim row As DataGridViewRow = dgvCart.SelectedRows(0)
+            Dim barcode As String = row.Cells("colBarcode").Value.ToString()
+            SetSelectedItemQuantity(row, barcode, enteredQty)
+        Else
+            UpdateSelectedCartItemDisplay()
+        End If
+    End Sub
 
     Private Sub dgvCart_CellEndEdit(sender As Object, e As DataGridViewCellEventArgs) Handles dgvCart.CellEndEdit
         If e.ColumnIndex <> dgvCart.Columns("colQuantity").Index Then Return
@@ -234,6 +543,7 @@ Public Class SalesForm
         Dim price   As Decimal = If(_cartItems.ContainsKey(barcode), _cartItems(barcode).UnitPrice, 0D)
         row.Cells("colTotal").Value = FormatCurrency(qty * price)
         UpdateTransactionSummary()
+        UpdateSelectedCartItemDisplay()
     End Sub
 
     ' ─── Save & complete transaction ─────────────────────────────────────────────

@@ -3,6 +3,11 @@ Public Class InventoryReportForm
     Private Sub InventoryReportForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         cmbReportType.Items.AddRange(New String() {"Daily", "Weekly", "Monthly", "Yearly"})
         cmbReportType.SelectedIndex = 2
+
+        If Not String.IsNullOrWhiteSpace(SessionManager.FullName) Then
+            txtSignatory.Text = SessionManager.FullName
+        End If
+
         RefreshAll()
     End Sub
 
@@ -76,103 +81,61 @@ Public Class InventoryReportForm
         End Try
     End Sub
 
-    Private Sub btnGenerateReport_Click(sender As Object, e As EventArgs) Handles btnGenerateReport.Click
-        RefreshAll()
-
-        Try
-            Dim range    As (DateFrom As DateTime, DateTo As DateTime) = GetReportDateRange()
-            Dim summary  As DataTable = SalesRepository.GetSalesSummary(range.DateFrom, range.DateTo)
-            Dim topItems As DataTable = SalesRepository.GetTopSelling(range.DateFrom, range.DateTo, 5)
-
-            Dim sb As New System.Text.StringBuilder()
-            sb.AppendLine($"  {cmbReportType.Text} Report  —  {range.DateFrom:MMM dd} to {range.DateTo:MMM dd, yyyy}")
-            sb.AppendLine()
-            sb.AppendLine("── INVENTORY ──────────────────────")
-            sb.AppendLine($"  Total Products : {txtTotalItems.Text}")
-            sb.AppendLine($"  Total Stock    : {txtTotalStock.Text} units")
-            sb.AppendLine($"  Low Stock      : {txtLowStock.Text}")
-            sb.AppendLine($"  Out of Stock   : {txtOutOfStock.Text}")
-
-            If summary.Rows.Count > 0 Then
-                Dim row As DataRow = summary.Rows(0)
-                sb.AppendLine()
-                sb.AppendLine("── SALES ──────────────────────────")
-                sb.AppendLine($"  Transactions   : {row("TotalTransactions")}")
-                sb.AppendLine($"  Total Revenue  : ₱{CDec(row("TotalRevenue")):N2}")
-                sb.AppendLine($"  Average Sale   : ₱{CDec(row("AverageSale")):N2}")
-            End If
-
-            If topItems.Rows.Count > 0 Then
-                sb.AppendLine()
-                sb.AppendLine("── TOP SELLING PRODUCTS ───────────")
-                Dim rank As Integer = 1
-                For Each item As DataRow In topItems.Rows
-                    sb.AppendLine($"  {rank}. {item("ProductName")} — {item("TotalSold")} units  (₱{CDec(item("TotalRevenue")):N2})")
-                    rank += 1
-                Next
-            End If
-
-            MessageBox.Show(sb.ToString(), "Report Summary", MessageBoxButtons.OK, MessageBoxIcon.Information)
-
-        Catch ex As Exception
-            MessageBox.Show("Failed to generate sales summary." & Environment.NewLine & ex.Message,
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
-    End Sub
-
-    Private Sub btnExportPDF_Click(sender As Object, e As EventArgs) Handles btnExportPDF.Click
-        MessageBox.Show("PDF export is not yet implemented.", "Export PDF",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information)
-    End Sub
-
-    Private Sub btnExportExcel_Click(sender As Object, e As EventArgs) Handles btnExportExcel.Click
-        Try
-            Using dlg As New SaveFileDialog()
-                dlg.Title            = "Export Inventory Report"
-                dlg.Filter           = "Excel Workbook (*.xlsx)|*.xlsx"
-                dlg.FileName         = $"InventoryReport_{DateTime.Today:yyyyMMdd}.xlsx"
-                If dlg.ShowDialog() <> DialogResult.OK Then Return
-
-                Using wb As New ClosedXML.Excel.XLWorkbook()
-                    Dim ws = wb.Worksheets.Add("Inventory")
-
-                    ' Header row
-                    Dim headers As String() = {"Product Name", "Category", "Price", "Stock", "Status"}
-                    For i As Integer = 0 To headers.Length - 1
-                        ws.Cell(1, i + 1).Value = headers(i)
-                        ws.Cell(1, i + 1).Style.Font.Bold = True
-                        ws.Cell(1, i + 1).Style.Fill.BackgroundColor =
-                            ClosedXML.Excel.XLColor.FromArgb(52, 73, 94)
-                        ws.Cell(1, i + 1).Style.Font.FontColor = ClosedXML.Excel.XLColor.White
-                    Next
-
-                    ' Data rows
-                    Dim rowNum As Integer = 2
-                    For Each gridRow As DataGridViewRow In dgvInventory.Rows
-                        If gridRow.IsNewRow Then Continue For
-                        For col As Integer = 0 To 4
-                            ws.Cell(rowNum, col + 1).Value =
-                                gridRow.Cells(col).Value?.ToString()
-                        Next
-                        rowNum += 1
-                    Next
-
-                    ws.Columns().AdjustToContents()
-                    wb.SaveAs(dlg.FileName)
-                End Using
-
-                MessageBox.Show($"Report exported to:{Environment.NewLine}{dlg.FileName}",
-                                "Export Complete", MessageBoxButtons.OK, MessageBoxIcon.Information)
-            End Using
-        Catch ex As Exception
-            MessageBox.Show("Failed to export Excel file." & Environment.NewLine & ex.Message,
-                            "Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
-        End Try
-    End Sub
-
     Private Sub btnPrint_Click(sender As Object, e As EventArgs) Handles btnPrint.Click
-        MessageBox.Show("Print report is not yet implemented.", "Print Report",
-                        MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Try
+            Dim signatoryName As String = txtSignatory.Text.Trim()
+
+            ' If user didn't enter a signatory name, prompt with a dialog before printing
+            If String.IsNullOrWhiteSpace(signatoryName) Then
+                Dim defaultName As String = If(Not String.IsNullOrWhiteSpace(SessionManager.FullName), SessionManager.FullName, "")
+                signatoryName = InputBox("Please enter the name of the signatory for the report:", "Report Signatory Required", defaultName).Trim()
+
+                If String.IsNullOrWhiteSpace(signatoryName) Then
+                    MessageBox.Show("Signatory name is required to print the report.",
+                                    "Signatory Required", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+                    txtSignatory.Focus()
+                    Return
+                End If
+
+                txtSignatory.Text = signatoryName
+            End If
+
+            ' Retrieve data for the report
+            Dim range As (DateFrom As DateTime, DateTo As DateTime) = GetReportDateRange()
+            Dim products As DataTable = ProductRepository.GetAll()
+            Dim salesSummary As DataTable = SalesRepository.GetSalesSummary(range.DateFrom, range.DateTo)
+
+            Dim totalItems As Integer = 0
+            Dim totalStock As Integer = 0
+            Dim lowStockCount As Integer = 0
+            Dim outOfStockCnt As Integer = 0
+
+            Integer.TryParse(txtTotalItems.Text, totalItems)
+            Integer.TryParse(txtTotalStock.Text, totalStock)
+            Integer.TryParse(txtLowStock.Text, lowStockCount)
+            Integer.TryParse(txtOutOfStock.Text, outOfStockCnt)
+
+            ' Generate printable HTML and redirect to Chrome print/PDF preview
+            ReportPrinter.PrintInventoryReport(
+                cmbReportType.Text,
+                range.DateFrom,
+                range.DateTo,
+                signatoryName,
+                totalItems,
+                totalStock,
+                lowStockCount,
+                outOfStockCnt,
+                products,
+                salesSummary)
+
+            Dim user As String = If(String.IsNullOrEmpty(SessionManager.Username), "SYSTEM", SessionManager.Username)
+            ActivityLogger.Log(user, Constants.LOG_SUCCESS,
+                               $"Printed {cmbReportType.Text} inventory report signed by '{signatoryName}'.")
+
+        Catch ex As Exception
+            MessageBox.Show("An error occurred while printing the report." & Environment.NewLine & ex.Message,
+                            "Print Error", MessageBoxButtons.OK, MessageBoxIcon.Error)
+        End Try
     End Sub
 
     Private Sub btnRefresh_Click(sender As Object, e As EventArgs) Handles btnRefresh.Click

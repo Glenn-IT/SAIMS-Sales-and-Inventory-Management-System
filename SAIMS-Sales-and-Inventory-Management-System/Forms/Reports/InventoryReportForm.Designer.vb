@@ -20,9 +20,8 @@ Partial Class InventoryReportForm
         Me.panelTop = New System.Windows.Forms.Panel()
         Me.btnRefresh = New System.Windows.Forms.Button()
         Me.btnPrint = New System.Windows.Forms.Button()
-        Me.btnExportExcel = New System.Windows.Forms.Button()
-        Me.btnExportPDF = New System.Windows.Forms.Button()
-        Me.btnGenerateReport = New System.Windows.Forms.Button()
+        Me.lblSignatory = New System.Windows.Forms.Label()
+        Me.txtSignatory = New System.Windows.Forms.TextBox()
         Me.cmbReportType = New System.Windows.Forms.ComboBox()
         Me.lblReportType = New System.Windows.Forms.Label()
         Me.lblTitle = New System.Windows.Forms.Label()
@@ -55,9 +54,8 @@ Partial Class InventoryReportForm
         Me.panelTop.BackColor = System.Drawing.Color.White
         Me.panelTop.Controls.Add(Me.btnRefresh)
         Me.panelTop.Controls.Add(Me.btnPrint)
-        Me.panelTop.Controls.Add(Me.btnExportExcel)
-        Me.panelTop.Controls.Add(Me.btnExportPDF)
-        Me.panelTop.Controls.Add(Me.btnGenerateReport)
+        Me.panelTop.Controls.Add(Me.lblSignatory)
+        Me.panelTop.Controls.Add(Me.txtSignatory)
         Me.panelTop.Controls.Add(Me.cmbReportType)
         Me.panelTop.Controls.Add(Me.lblReportType)
         Me.panelTop.Controls.Add(Me.lblTitle)
@@ -74,83 +72,62 @@ Partial Class InventoryReportForm
         Me.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnRefresh.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.btnRefresh.ForeColor = System.Drawing.Color.White
-        Me.btnRefresh.Location = New System.Drawing.Point(865, 50)
+        Me.btnRefresh.Location = New System.Drawing.Point(715, 47)
         Me.btnRefresh.Name = "btnRefresh"
         Me.btnRefresh.Size = New System.Drawing.Size(100, 35)
-        Me.btnRefresh.TabIndex = 7
+        Me.btnRefresh.TabIndex = 5
         Me.btnRefresh.Text = "Refresh"
         Me.btnRefresh.UseVisualStyleBackColor = False
         '
         'btnPrint
         '
-        Me.btnPrint.BackColor = System.Drawing.Color.FromArgb(CType(CType(149, Byte), Integer), CType(CType(165, Byte), Integer), CType(CType(166, Byte), Integer))
+        Me.btnPrint.BackColor = System.Drawing.Color.FromArgb(CType(CType(46, Byte), Integer), CType(CType(204, Byte), Integer), CType(CType(113, Byte), Integer))
         Me.btnPrint.FlatStyle = System.Windows.Forms.FlatStyle.Flat
         Me.btnPrint.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.btnPrint.ForeColor = System.Drawing.Color.White
-        Me.btnPrint.Location = New System.Drawing.Point(755, 50)
+        Me.btnPrint.Location = New System.Drawing.Point(595, 47)
         Me.btnPrint.Name = "btnPrint"
-        Me.btnPrint.Size = New System.Drawing.Size(100, 35)
-        Me.btnPrint.TabIndex = 6
+        Me.btnPrint.Size = New System.Drawing.Size(110, 35)
+        Me.btnPrint.TabIndex = 4
         Me.btnPrint.Text = "Print"
         Me.btnPrint.UseVisualStyleBackColor = False
         '
-        'btnExportExcel
+        'lblSignatory
         '
-        Me.btnExportExcel.BackColor = System.Drawing.Color.FromArgb(CType(CType(39, Byte), Integer), CType(CType(174, Byte), Integer), CType(CType(96, Byte), Integer))
-        Me.btnExportExcel.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnExportExcel.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.btnExportExcel.ForeColor = System.Drawing.Color.White
-        Me.btnExportExcel.Location = New System.Drawing.Point(615, 50)
-        Me.btnExportExcel.Name = "btnExportExcel"
-        Me.btnExportExcel.Size = New System.Drawing.Size(130, 35)
-        Me.btnExportExcel.TabIndex = 5
-        Me.btnExportExcel.Text = "Export Excel"
-        Me.btnExportExcel.UseVisualStyleBackColor = False
+        Me.lblSignatory.AutoSize = True
+        Me.lblSignatory.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.lblSignatory.Location = New System.Drawing.Point(340, 26)
+        Me.lblSignatory.Name = "lblSignatory"
+        Me.lblSignatory.Size = New System.Drawing.Size(104, 17)
+        Me.lblSignatory.TabIndex = 2
+        Me.lblSignatory.Text = "Signatory Name:"
         '
-        'btnExportPDF
+        'txtSignatory
         '
-        Me.btnExportPDF.BackColor = System.Drawing.Color.FromArgb(CType(CType(231, Byte), Integer), CType(CType(76, Byte), Integer), CType(CType(60, Byte), Integer))
-        Me.btnExportPDF.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnExportPDF.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.btnExportPDF.ForeColor = System.Drawing.Color.White
-        Me.btnExportPDF.Location = New System.Drawing.Point(485, 50)
-        Me.btnExportPDF.Name = "btnExportPDF"
-        Me.btnExportPDF.Size = New System.Drawing.Size(120, 35)
-        Me.btnExportPDF.TabIndex = 4
-        Me.btnExportPDF.Text = "Export PDF"
-        Me.btnExportPDF.UseVisualStyleBackColor = False
-        '
-        'btnGenerateReport
-        '
-        Me.btnGenerateReport.BackColor = System.Drawing.Color.FromArgb(CType(CType(46, Byte), Integer), CType(CType(204, Byte), Integer), CType(CType(113, Byte), Integer))
-        Me.btnGenerateReport.FlatStyle = System.Windows.Forms.FlatStyle.Flat
-        Me.btnGenerateReport.Font = New System.Drawing.Font("Segoe UI", 9.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
-        Me.btnGenerateReport.ForeColor = System.Drawing.Color.White
-        Me.btnGenerateReport.Location = New System.Drawing.Point(335, 50)
-        Me.btnGenerateReport.Name = "btnGenerateReport"
-        Me.btnGenerateReport.Size = New System.Drawing.Size(140, 35)
-        Me.btnGenerateReport.TabIndex = 3
-        Me.btnGenerateReport.Text = "Generate Report"
-        Me.btnGenerateReport.UseVisualStyleBackColor = False
+        Me.txtSignatory.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.txtSignatory.Location = New System.Drawing.Point(340, 52)
+        Me.txtSignatory.Name = "txtSignatory"
+        Me.txtSignatory.Size = New System.Drawing.Size(235, 25)
+        Me.txtSignatory.TabIndex = 3
         '
         'cmbReportType
         '
         Me.cmbReportType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList
         Me.cmbReportType.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
         Me.cmbReportType.FormattingEnabled = True
-        Me.cmbReportType.Location = New System.Drawing.Point(195, 55)
+        Me.cmbReportType.Location = New System.Drawing.Point(180, 52)
         Me.cmbReportType.Name = "cmbReportType"
-        Me.cmbReportType.Size = New System.Drawing.Size(130, 25)
-        Me.cmbReportType.TabIndex = 2
+        Me.cmbReportType.Size = New System.Drawing.Size(140, 25)
+        Me.cmbReportType.TabIndex = 1
         '
         'lblReportType
         '
         Me.lblReportType.AutoSize = True
-        Me.lblReportType.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.lblReportType.Location = New System.Drawing.Point(195, 30)
+        Me.lblReportType.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.lblReportType.Location = New System.Drawing.Point(180, 26)
         Me.lblReportType.Name = "lblReportType"
-        Me.lblReportType.Size = New System.Drawing.Size(87, 19)
-        Me.lblReportType.TabIndex = 1
+        Me.lblReportType.Size = New System.Drawing.Size(82, 17)
+        Me.lblReportType.TabIndex = 0
         Me.lblReportType.Text = "Report Type:"
         '
         'lblTitle
@@ -160,7 +137,7 @@ Partial Class InventoryReportForm
         Me.lblTitle.ForeColor = System.Drawing.Color.FromArgb(CType(CType(52, Byte), Integer), CType(CType(73, Byte), Integer), CType(CType(94, Byte), Integer))
         Me.lblTitle.Location = New System.Drawing.Point(15, 40)
         Me.lblTitle.Name = "lblTitle"
-        Me.lblTitle.Size = New System.Drawing.Size(134, 30)
+        Me.lblTitle.Size = New System.Drawing.Size(95, 30)
         Me.lblTitle.TabIndex = 0
         Me.lblTitle.Text = "Reports"
         '
@@ -381,9 +358,8 @@ Partial Class InventoryReportForm
     Friend WithEvents lblTitle As Label
     Friend WithEvents cmbReportType As ComboBox
     Friend WithEvents lblReportType As Label
-    Friend WithEvents btnGenerateReport As Button
-    Friend WithEvents btnExportPDF As Button
-    Friend WithEvents btnExportExcel As Button
+    Friend WithEvents lblSignatory As Label
+    Friend WithEvents txtSignatory As TextBox
     Friend WithEvents btnPrint As Button
     Friend WithEvents btnRefresh As Button
     Friend WithEvents panelSummary As Panel

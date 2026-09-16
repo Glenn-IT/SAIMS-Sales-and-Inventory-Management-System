@@ -129,6 +129,7 @@ Public Module ReportPrinter
         sb.AppendLine("      align-items: flex-start;")
         sb.AppendLine("    }")
         sb.AppendLine("    .brand-title { font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; margin: 0 0 4px 0; }")
+        sb.AppendLine("    .brand-address { font-size: 13px; color: #475569; margin: 0 0 3px 0; font-weight: 500; }")
         sb.AppendLine("    .brand-subtitle { font-size: 13px; color: #64748b; margin: 0; }")
         sb.AppendLine("    .report-badge-container { text-align: right; }")
         sb.AppendLine("    .report-badge {")
@@ -305,7 +306,8 @@ Public Module ReportPrinter
         ' Top Header
         sb.AppendLine("    <div class='report-header'>")
         sb.AppendLine("      <div>")
-        sb.AppendLine("        <h1 class='brand-title'>RHENWAS POULTRY SUPPLY</h1>")
+        sb.AppendLine($"        <h1 class='brand-title'>{STORE_NAME.ToUpper()}</h1>")
+        sb.AppendLine($"        <p class='brand-address'>{STORE_ADDRESS}</p>")
         sb.AppendLine("        <p class='brand-subtitle'>Sales & Inventory Management</p>")
         sb.AppendLine("      </div>")
         sb.AppendLine("      <div class='report-badge-container'>")
@@ -440,7 +442,7 @@ Public Module ReportPrinter
 
         ' Footer
         sb.AppendLine("    <div class='report-footer'>")
-        sb.AppendLine("      <span>Rhenwas Poultry Supply &copy; " & DateTime.Now.Year.ToString() & " - Sales & Inventory Management</span>")
+        sb.AppendLine($"      <span>{STORE_NAME} &bull; {STORE_ADDRESS} &copy; " & DateTime.Now.Year.ToString() & " - Sales & Inventory Management</span>")
         sb.AppendLine($"      <span>Confidential Business Document &bull; Generated: {generatedOn}</span>")
         sb.AppendLine("    </div>")
 

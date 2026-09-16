@@ -82,6 +82,7 @@ Public Class ReceiptsForm
             Dim sb As New System.Text.StringBuilder()
             sb.AppendLine("══════════════════════════════")
             sb.AppendLine("    RHENWAS POULTRY SUPPLY")
+            sb.AppendLine("  Poblacion 1, Piat, Cagayan")
             sb.AppendLine("  Sales & Inventory Management")
             sb.AppendLine("══════════════════════════════")
             sb.AppendLine($"Receipt No : {saleRow("ReceiptNo")}")

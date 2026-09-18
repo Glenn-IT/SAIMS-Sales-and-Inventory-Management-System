@@ -115,7 +115,7 @@ Partial Class DevelopersInfoForm
         Me.lblDev2Notes.Name = "lblDev2Notes"
         Me.lblDev2Notes.Size = New System.Drawing.Size(390, 45)
         Me.lblDev2Notes.TabIndex = 6
-        Me.lblDev2Notes.Text = "📝 Note: Frontend UI Layout, Custom Styling & Workflow Modules"
+        Me.lblDev2Notes.Text = "Frontend UI Layout, Custom Styling & Workflow Integration"
         '
         'lblDev2Github
         '
@@ -126,7 +126,7 @@ Partial Class DevelopersInfoForm
         Me.lblDev2Github.Name = "lblDev2Github"
         Me.lblDev2Github.Size = New System.Drawing.Size(184, 19)
         Me.lblDev2Github.TabIndex = 5
-        Me.lblDev2Github.Text = "🌐 GitHub: github.com/dev2"
+        Me.lblDev2Github.Text = "School: Cagayan State University Piat Campus"
         '
         'lblDev2Phone
         '
@@ -137,7 +137,7 @@ Partial Class DevelopersInfoForm
         Me.lblDev2Phone.Name = "lblDev2Phone"
         Me.lblDev2Phone.Size = New System.Drawing.Size(193, 19)
         Me.lblDev2Phone.TabIndex = 4
-        Me.lblDev2Phone.Text = "📱 Contact: +63 998 765 4321"
+        Me.lblDev2Phone.Text = "Contact Number: 09647646159"
         '
         'lblDev2Email
         '
@@ -148,7 +148,7 @@ Partial Class DevelopersInfoForm
         Me.lblDev2Email.Name = "lblDev2Email"
         Me.lblDev2Email.Size = New System.Drawing.Size(191, 19)
         Me.lblDev2Email.TabIndex = 3
-        Me.lblDev2Email.Text = "📧 Email: dev2@example.com"
+        Me.lblDev2Email.Text = "Gmail: peejaytaliping49@gmail.com"
         '
         'lblDev2Role
         '
@@ -158,18 +158,18 @@ Partial Class DevelopersInfoForm
         Me.lblDev2Role.Name = "lblDev2Role"
         Me.lblDev2Role.Size = New System.Drawing.Size(390, 25)
         Me.lblDev2Role.TabIndex = 2
-        Me.lblDev2Role.Text = "UI/UX Specialist & Full Stack Developer"
+        Me.lblDev2Role.Text = "Year: 4th Year BSIT"
         Me.lblDev2Role.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'lblDev2Name
         '
-        Me.lblDev2Name.Font = New System.Drawing.Font("Segoe UI", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
+        Me.lblDev2Name.Font = New System.Drawing.Font("Segoe UI", 13.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.lblDev2Name.ForeColor = System.Drawing.Color.FromArgb(CType(CType(44, Byte), Integer), CType(CType(62, Byte), Integer), CType(CType(80, Byte), Integer))
         Me.lblDev2Name.Location = New System.Drawing.Point(20, 160)
         Me.lblDev2Name.Name = "lblDev2Name"
         Me.lblDev2Name.Size = New System.Drawing.Size(390, 30)
         Me.lblDev2Name.TabIndex = 1
-        Me.lblDev2Name.Text = "Developer 2 Name"
+        Me.lblDev2Name.Text = "Peejay Arravez Taliping"
         Me.lblDev2Name.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'picDev2
@@ -205,7 +205,7 @@ Partial Class DevelopersInfoForm
         Me.lblDev1Notes.Name = "lblDev1Notes"
         Me.lblDev1Notes.Size = New System.Drawing.Size(390, 45)
         Me.lblDev1Notes.TabIndex = 6
-        Me.lblDev1Notes.Text = "📝 Note: Core Database Design, POS Engine & Print Integration"
+        Me.lblDev1Notes.Text = "Lead Developer, Database Architecture & Core Logic"
         '
         'lblDev1Github
         '
@@ -216,7 +216,7 @@ Partial Class DevelopersInfoForm
         Me.lblDev1Github.Name = "lblDev1Github"
         Me.lblDev1Github.Size = New System.Drawing.Size(184, 19)
         Me.lblDev1Github.TabIndex = 5
-        Me.lblDev1Github.Text = "🌐 GitHub: github.com/dev1"
+        Me.lblDev1Github.Text = "School: Cagayan State University Piat Campus"
         '
         'lblDev1Phone
         '
@@ -227,7 +227,7 @@ Partial Class DevelopersInfoForm
         Me.lblDev1Phone.Name = "lblDev1Phone"
         Me.lblDev1Phone.Size = New System.Drawing.Size(193, 19)
         Me.lblDev1Phone.TabIndex = 4
-        Me.lblDev1Phone.Text = "📱 Contact: +63 912 345 6789"
+        Me.lblDev1Phone.Text = "Contact Number: 09605837638"
         '
         'lblDev1Email
         '
@@ -238,7 +238,7 @@ Partial Class DevelopersInfoForm
         Me.lblDev1Email.Name = "lblDev1Email"
         Me.lblDev1Email.Size = New System.Drawing.Size(191, 19)
         Me.lblDev1Email.TabIndex = 3
-        Me.lblDev1Email.Text = "📧 Email: dev1@example.com"
+        Me.lblDev1Email.Text = "Gmail: aja378824@gmail.com"
         '
         'lblDev1Role
         '
@@ -248,18 +248,18 @@ Partial Class DevelopersInfoForm
         Me.lblDev1Role.Name = "lblDev1Role"
         Me.lblDev1Role.Size = New System.Drawing.Size(390, 25)
         Me.lblDev1Role.TabIndex = 2
-        Me.lblDev1Role.Text = "Lead Developer & System Architect"
+        Me.lblDev1Role.Text = "Year: 4th Year BSIT"
         Me.lblDev1Role.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'lblDev1Name
         '
-        Me.lblDev1Name.Font = New System.Drawing.Font("Segoe UI", 14.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
+        Me.lblDev1Name.Font = New System.Drawing.Font("Segoe UI", 13.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point)
         Me.lblDev1Name.ForeColor = System.Drawing.Color.FromArgb(CType(CType(44, Byte), Integer), CType(CType(62, Byte), Integer), CType(CType(80, Byte), Integer))
         Me.lblDev1Name.Location = New System.Drawing.Point(20, 160)
         Me.lblDev1Name.Name = "lblDev1Name"
         Me.lblDev1Name.Size = New System.Drawing.Size(390, 30)
         Me.lblDev1Name.TabIndex = 1
-        Me.lblDev1Name.Text = "Developer 1 Name"
+        Me.lblDev1Name.Text = "Aaron Jake Narag Asuncion"
         Me.lblDev1Name.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'picDev1

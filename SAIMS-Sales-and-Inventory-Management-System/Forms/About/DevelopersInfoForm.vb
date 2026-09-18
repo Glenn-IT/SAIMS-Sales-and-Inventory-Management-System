@@ -3,8 +3,8 @@ Imports System.Drawing
 Public Class DevelopersInfoForm
 
     Private Sub DevelopersInfoForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        SetDefaultAvatar(picDev1, "D1", Color.FromArgb(46, 204, 113))
-        SetDefaultAvatar(picDev2, "D2", Color.FromArgb(52, 152, 219))
+        SetDefaultAvatar(picDev1, "AJ", Color.FromArgb(46, 204, 113))
+        SetDefaultAvatar(picDev2, "PT", Color.FromArgb(52, 152, 219))
     End Sub
 
     ''' <summary>

@@ -21,7 +21,7 @@ Partial Class SystemManualForm
         Me.lblSubtitle = New System.Windows.Forms.Label()
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.panelMain = New System.Windows.Forms.Panel()
-        Me.txtManualContent = New System.Windows.Forms.RichTextBox()
+        Me.tabManual = New System.Windows.Forms.TabControl()
         Me.panelTop.SuspendLayout()
         Me.panelMain.SuspendLayout()
         Me.SuspendLayout()
@@ -45,9 +45,9 @@ Partial Class SystemManualForm
         Me.lblSubtitle.ForeColor = System.Drawing.Color.FromArgb(CType(CType(127, Byte), Integer), CType(CType(140, Byte), Integer), CType(CType(141, Byte), Integer))
         Me.lblSubtitle.Location = New System.Drawing.Point(18, 43)
         Me.lblSubtitle.Name = "lblSubtitle"
-        Me.lblSubtitle.Size = New System.Drawing.Size(325, 15)
+        Me.lblSubtitle.Size = New System.Drawing.Size(370, 15)
         Me.lblSubtitle.TabIndex = 1
-        Me.lblSubtitle.Text = "Comprehensive System Documentation & User Operating Guide"
+        Me.lblSubtitle.Text = "Comprehensive Operating Manual & Visual Guide per System Function"
         '
         'lblTitle
         '
@@ -63,26 +63,24 @@ Partial Class SystemManualForm
         'panelMain
         '
         Me.panelMain.BackColor = System.Drawing.Color.FromArgb(CType(CType(236, Byte), Integer), CType(CType(240, Byte), Integer), CType(CType(241, Byte), Integer))
-        Me.panelMain.Controls.Add(Me.txtManualContent)
+        Me.panelMain.Controls.Add(Me.tabManual)
         Me.panelMain.Dock = System.Windows.Forms.DockStyle.Fill
         Me.panelMain.Location = New System.Drawing.Point(0, 70)
         Me.panelMain.Name = "panelMain"
-        Me.panelMain.Padding = New System.Windows.Forms.Padding(20)
+        Me.panelMain.Padding = New System.Windows.Forms.Padding(12)
         Me.panelMain.Size = New System.Drawing.Size(1000, 530)
         Me.panelMain.TabIndex = 1
         '
-        'txtManualContent
+        'tabManual
         '
-        Me.txtManualContent.BackColor = System.Drawing.Color.White
-        Me.txtManualContent.BorderStyle = System.Windows.Forms.BorderStyle.None
-        Me.txtManualContent.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.txtManualContent.Font = New System.Drawing.Font("Segoe UI", 10.0!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.txtManualContent.Location = New System.Drawing.Point(20, 20)
-        Me.txtManualContent.Name = "txtManualContent"
-        Me.txtManualContent.ReadOnly = True
-        Me.txtManualContent.Size = New System.Drawing.Size(960, 490)
-        Me.txtManualContent.TabIndex = 0
-        Me.txtManualContent.Text = ""
+        Me.tabManual.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.tabManual.Font = New System.Drawing.Font("Segoe UI", 9.75!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
+        Me.tabManual.Location = New System.Drawing.Point(12, 12)
+        Me.tabManual.Name = "tabManual"
+        Me.tabManual.Padding = New System.Drawing.Point(14, 6)
+        Me.tabManual.SelectedIndex = 0
+        Me.tabManual.Size = New System.Drawing.Size(976, 506)
+        Me.tabManual.TabIndex = 0
         '
         'SystemManualForm
         '
@@ -105,5 +103,5 @@ Partial Class SystemManualForm
     Friend WithEvents lblTitle As Label
     Friend WithEvents lblSubtitle As Label
     Friend WithEvents panelMain As Panel
-    Friend WithEvents txtManualContent As RichTextBox
+    Friend WithEvents tabManual As TabControl
 End Class

@@ -213,6 +213,113 @@ Public Module ProductRepository
         Return list
     End Function
 
+    ''' <summary>
+    ''' Retrieves products filtered by a date range based on product creation date or inventory movement activity.
+    ''' </summary>
+    Public Function GetByDateRange(dateFrom As DateTime, dateTo As DateTime) As DataTable
+        Dim dt As New DataTable()
+        Using con As New SqlConnection(dbconstring.Connection)
+            con.Open()
+            Dim cmd As New SqlCommand(
+                "SELECT p.ProductID, p.Barcode, p.ProductName,
+                        p.CategoryID, ISNULL(c.CategoryName, 'General') AS CategoryName,
+                        p.Unit, p.Price, p.Stock, p.LowStockQty, p.Status, p.CreatedAt,
+                        CASE
+                            WHEN p.Stock = 0              THEN 'Out of Stock'
+                            WHEN p.Stock <= p.LowStockQty THEN 'Low Stock'
+                            ELSE 'Available'
+                        END AS StockStatus
+                 FROM tbl_Products p
+                 LEFT JOIN tbl_Categories c ON p.CategoryID = c.CategoryID
+                 WHERE CAST(p.CreatedAt AS DATE) BETWEEN @from AND @to
+                    OR p.ProductID IN (
+                        SELECT sm.ProductID
+                        FROM tbl_StockMovements sm
+                        WHERE CAST(sm.MovementDate AS DATE) BETWEEN @from AND @to
+                    )
+                 ORDER BY p.ProductName ASC", con)
+            cmd.Parameters.AddWithValue("@from", dateFrom.Date)
+            cmd.Parameters.AddWithValue("@to", dateTo.Date)
+            Dim adapter As New SqlDataAdapter(cmd)
+            adapter.Fill(dt)
+        End Using
+        Return dt
+    End Function
+
+    ''' <summary>
+    ''' Returns inventory records enriched with period movements (Stock In, Units Sold, and Sales Revenue).
+    ''' </summary>
+    Public Function GetInventoryReport(dateFrom As DateTime, dateTo As DateTime) As DataTable
+        Dim dt As New DataTable()
+        Using con As New SqlConnection(dbconstring.Connection)
+            con.Open()
+            Dim query As String =
+                "SELECT p.ProductID, p.Barcode, p.ProductName,
+                        ISNULL(c.CategoryName, 'General') AS CategoryName,
+                        p.Unit, p.Price, p.Stock, p.Stock AS CurrentStock, p.LowStockQty,
+                        ISNULL(m_in.StockInQty, 0) AS StockInQty,
+                        ISNULL(m_sold.SoldQty, 0) AS SoldQty,
+                        ISNULL(m_sold.SalesRevenue, 0) AS SalesRevenue,
+                        CASE
+                            WHEN p.Stock = 0 THEN 'Out of Stock'
+                            WHEN p.Stock <= p.LowStockQty THEN 'Low Stock'
+                            ELSE 'Available'
+                        END AS StockStatus
+                 FROM tbl_Products p
+                 LEFT JOIN tbl_Categories c ON p.CategoryID = c.CategoryID
+                 LEFT JOIN (
+                     SELECT ProductID, SUM(Quantity) AS StockInQty
+                     FROM tbl_StockMovements
+                     WHERE MovementType = 'StockIn' AND CAST(MovementDate AS DATE) BETWEEN @from AND @to
+                     GROUP BY ProductID
+                 ) m_in ON p.ProductID = m_in.ProductID
+                 LEFT JOIN (
+                     SELECT si.ProductID, SUM(si.Quantity) AS SoldQty, SUM(si.LineTotal) AS SalesRevenue
+                     FROM tbl_SaleItems si
+                     INNER JOIN tbl_Sales s ON si.SaleID = s.SaleID
+                     WHERE s.Status = 'Completed' AND CAST(s.SaleDate AS DATE) BETWEEN @from AND @to
+                     GROUP BY si.ProductID
+                 ) m_sold ON p.ProductID = m_sold.ProductID
+                 ORDER BY (ISNULL(m_sold.SoldQty, 0) + ISNULL(m_in.StockInQty, 0)) DESC, p.ProductName ASC"
+
+            Using cmd As New SqlCommand(query, con)
+                cmd.Parameters.AddWithValue("@from", dateFrom.Date)
+                cmd.Parameters.AddWithValue("@to", dateTo.Date)
+                Dim adapter As New SqlDataAdapter(cmd)
+                adapter.Fill(dt)
+            End Using
+        End Using
+        Return dt
+    End Function
+
+    ''' <summary>
+    ''' Returns aggregated summary metrics for a specific report period (Revenue, Transactions, Units Sold, Stock In, and Current Inventory).
+    ''' </summary>
+    Public Function GetPeriodSummaryMetrics(dateFrom As DateTime, dateTo As DateTime) As DataTable
+        Dim dt As New DataTable()
+        Using con As New SqlConnection(dbconstring.Connection)
+            con.Open()
+            Dim query As String =
+                "SELECT 
+                    (SELECT ISNULL(SUM(TotalAmount), 0) FROM tbl_Sales WHERE Status = 'Completed' AND CAST(SaleDate AS DATE) BETWEEN @from AND @to) AS TotalRevenue,
+                    (SELECT COUNT(*) FROM tbl_Sales WHERE Status = 'Completed' AND CAST(SaleDate AS DATE) BETWEEN @from AND @to) AS TotalTransactions,
+                    (SELECT ISNULL(SUM(si.Quantity), 0) FROM tbl_SaleItems si INNER JOIN tbl_Sales s ON si.SaleID = s.SaleID WHERE s.Status = 'Completed' AND CAST(s.SaleDate AS DATE) BETWEEN @from AND @to) AS UnitsSold,
+                    (SELECT ISNULL(SUM(Quantity), 0) FROM tbl_StockMovements WHERE MovementType = 'StockIn' AND CAST(MovementDate AS DATE) BETWEEN @from AND @to) AS StockInQty,
+                    (SELECT ISNULL(SUM(Stock), 0) FROM tbl_Products) AS TotalCurrentStock,
+                    (SELECT COUNT(*) FROM tbl_Products WHERE Stock <= LowStockQty AND Stock > 0) AS LowStockCount,
+                    (SELECT COUNT(*) FROM tbl_Products WHERE Stock = 0) AS OutOfStockCount,
+                    (SELECT COUNT(*) FROM tbl_Products) AS TotalProducts"
+
+            Using cmd As New SqlCommand(query, con)
+                cmd.Parameters.AddWithValue("@from", dateFrom.Date)
+                cmd.Parameters.AddWithValue("@to", dateTo.Date)
+                Dim adapter As New SqlDataAdapter(cmd)
+                adapter.Fill(dt)
+            End Using
+        End Using
+        Return dt
+    End Function
+
 End Module
 
 Public Class ProductSearchResult

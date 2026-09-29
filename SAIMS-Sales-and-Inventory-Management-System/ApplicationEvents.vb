@@ -20,6 +20,17 @@ Namespace My
                 .CreateLogger()
 
             Serilog.Log.Information("Sales & Inventory Management of Rhenwas Poultry Supply application started.")
+
+            Try
+                Dim culture As System.Globalization.CultureInfo = CType(System.Globalization.CultureInfo.CurrentCulture.Clone(), System.Globalization.CultureInfo)
+                culture.NumberFormat.CurrencySymbol = "₱"
+                System.Globalization.CultureInfo.CurrentCulture = culture
+                System.Globalization.CultureInfo.CurrentUICulture = culture
+                System.Globalization.CultureInfo.DefaultThreadCurrentCulture = culture
+                System.Globalization.CultureInfo.DefaultThreadCurrentUICulture = culture
+            Catch
+                ' Fallback silently if culture cloning fails
+            End Try
         End Sub
 
         Private Sub MyApplication_Shutdown(sender As Object,

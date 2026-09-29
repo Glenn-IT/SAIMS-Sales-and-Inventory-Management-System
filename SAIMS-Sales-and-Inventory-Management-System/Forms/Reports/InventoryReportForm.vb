@@ -1,8 +1,9 @@
 Public Class InventoryReportForm
 
     Private Sub InventoryReportForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+        cmbReportType.Items.Clear()
         cmbReportType.Items.AddRange(New String() {"Daily", "Weekly", "Monthly", "Yearly"})
-        cmbReportType.SelectedIndex = 2
+        cmbReportType.SelectedIndex = 2 ' Default to Monthly
 
         If Not String.IsNullOrWhiteSpace(SessionManager.FullName) Then
             txtSignatory.Text = SessionManager.FullName
@@ -12,8 +13,11 @@ Public Class InventoryReportForm
     End Sub
 
     Private Sub RefreshAll()
-        LoadInventorySummary()
-        LoadProductList()
+        Dim range = GetReportDateRange()
+        Dim products As DataTable = ProductRepository.GetByDateRange(range.DateFrom, range.DateTo)
+
+        LoadInventorySummary(products, range)
+        LoadProductList(products)
     End Sub
 
     Private Function GetReportDateRange() As (DateFrom As DateTime, DateTo As DateTime)
@@ -28,31 +32,29 @@ Public Class InventoryReportForm
         Return (dateFrom, dateTo)
     End Function
 
-    Private Sub LoadInventorySummary()
+    Private Sub LoadInventorySummary(products As DataTable, range As (DateFrom As DateTime, DateTo As DateTime))
         Try
-            ' Current stock stats are always live (not date-filtered)
-            Dim products As DataTable = ProductRepository.GetAll()
-
             Dim totalItems    As Integer = 0
             Dim totalStock    As Integer = 0
             Dim lowStockCount As Integer = 0
             Dim outOfStockCnt As Integer = 0
 
-            For Each row As DataRow In products.Rows
-                totalItems += 1
-                Dim stock  As Integer = CInt(row("Stock"))
-                Dim status As String  = row("StockStatus").ToString()
-                totalStock += stock
-                If status = "Low Stock"    Then lowStockCount += 1
-                If status = "Out of Stock" Then outOfStockCnt += 1
-            Next
+            If products IsNot Nothing Then
+                For Each row As DataRow In products.Rows
+                    totalItems += 1
+                    Dim stock  As Integer = CInt(row("Stock"))
+                    Dim status As String  = row("StockStatus").ToString()
+                    totalStock += stock
+                    If status = "Low Stock"    Then lowStockCount += 1
+                    If status = "Out of Stock" Then outOfStockCnt += 1
+                Next
+            End If
 
             txtTotalItems.Text = totalItems.ToString()
             txtTotalStock.Text = totalStock.ToString()
             txtLowStock.Text   = lowStockCount.ToString()
             txtOutOfStock.Text = outOfStockCnt.ToString()
 
-            Dim range As (DateFrom As DateTime, DateTo As DateTime) = GetReportDateRange()
             lblReportPeriod.Text = $"Period: {range.DateFrom:MMM dd, yyyy}  —  {range.DateTo:MMM dd, yyyy}"
 
         Catch ex As Exception
@@ -61,19 +63,20 @@ Public Class InventoryReportForm
         End Try
     End Sub
 
-    Private Sub LoadProductList()
+    Private Sub LoadProductList(products As DataTable)
         Try
-            Dim dt As DataTable = ProductRepository.GetAll()
             dgvInventory.Rows.Clear()
 
-            For Each row As DataRow In dt.Rows
-                dgvInventory.Rows.Add(
-                    row("ProductName").ToString(),
-                    row("CategoryName").ToString(),
-                    "₱" & CDec(row("Price")).ToString("N2"),
-                    row("Stock").ToString(),
-                    row("StockStatus").ToString())
-            Next
+            If products IsNot Nothing Then
+                For Each row As DataRow In products.Rows
+                    dgvInventory.Rows.Add(
+                        row("ProductName").ToString(),
+                        row("CategoryName").ToString(),
+                        "₱" & CDec(row("Price")).ToString("N2"),
+                        row("Stock").ToString(),
+                        row("StockStatus").ToString())
+                Next
+            End If
 
         Catch ex As Exception
             MessageBox.Show("Failed to load product list." & Environment.NewLine & ex.Message,
@@ -102,7 +105,7 @@ Public Class InventoryReportForm
 
             ' Retrieve data for the report
             Dim range As (DateFrom As DateTime, DateTo As DateTime) = GetReportDateRange()
-            Dim products As DataTable = ProductRepository.GetAll()
+            Dim products As DataTable = ProductRepository.GetByDateRange(range.DateFrom, range.DateTo)
             Dim salesSummary As DataTable = SalesRepository.GetSalesSummary(range.DateFrom, range.DateTo)
 
             Dim totalItems As Integer = 0

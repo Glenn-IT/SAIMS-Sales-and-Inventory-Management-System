@@ -1,6 +1,6 @@
-# ?? Sales and Inventory Management System (SAIMS) � UI Prototype
+# ?? Sales and Inventory Management System (SAIMS) � UI Prototype
 
-> **Technology:** VB.NET WinForms � Visual Studio 2022 � .NET 8.0  
+> **Technology:** VB.NET WinForms � Visual Studio 2022 � .NET 8.0  
 > **Purpose:** Frontend UI Prototype for Presentation Only
 
 ---
@@ -183,16 +183,16 @@ SAIMS-Sales-and-Inventory-Management-System/
 - Shows error if product not found
 
 **Supported Barcodes (Sample):**
-- **P001** - Coca Cola 1.5L (?55.00)
-- **P002** - Lucky Me Pancit Canton (?12.50)
-- **P003** - Argentina Corned Beef (?45.00)
-- **P004** - Red Horse Beer (?50.00)
-- **P005** - Payless White Sugar 1kg (?65.00)
-- **P006** - Champion Detergent (?8.50)
-- **P007** - San Miguel Pale Pilsen (?45.00)
-- **P008** - Del Monte Tomato Sauce (?18.00)
-- **P009** - Alaska Condensed Milk (?35.00) - OUT OF STOCK
-- **P010** - Jack n Jill Piattos (?25.00)
+- **P001** - Coca Cola 1.5L (₱55.00)
+- **P002** - Lucky Me Pancit Canton (₱12.50)
+- **P003** - Argentina Corned Beef (₱45.00)
+- **P004** - Red Horse Beer (₱50.00)
+- **P005** - Payless White Sugar 1kg (₱65.00)
+- **P006** - Champion Detergent (₱8.50)
+- **P007** - San Miguel Pale Pilsen (₱45.00)
+- **P008** - Del Monte Tomato Sauce (₱18.00)
+- **P009** - Alaska Condensed Milk (₱35.00) - OUT OF STOCK
+- **P010** - Jack n Jill Piattos (₱25.00)
 
 **Features:**
 - ?? **Barcode Scanner Input** - Primary input method

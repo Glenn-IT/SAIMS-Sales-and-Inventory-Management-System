@@ -21,7 +21,7 @@ Public Class ProductsForm
                     row("ProductName").ToString(),
                     row("CategoryName").ToString(),
                     unitVal,
-                    FormatCurrency(CDec(row("Price"))),
+                    FormatPeso(CDec(row("Price"))),
                     row("Stock").ToString(),
                     stockStatus,
                     dateAddedStr)

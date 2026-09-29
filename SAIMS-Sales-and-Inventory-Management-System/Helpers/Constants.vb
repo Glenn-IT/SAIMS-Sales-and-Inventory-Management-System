@@ -5,6 +5,21 @@ Public Module Constants
     Public Const STORE_NAME   As String = "Rhenwas Poultry Supply"
     Public Const STORE_ADDRESS As String = "Poblacion 1, Piat, Cagayan"
     Public Const SYSTEM_TITLE As String = "Sales & Inventory Management"
+    Public Const CURRENCY_SYMBOL As String = "₱"
+
+    ''' <summary>
+    ''' Formats a numeric amount with the Philippine Peso symbol (₱) and standard 2 decimal places.
+    ''' </summary>
+    Public Function FormatPeso(amount As Decimal) As String
+        Return "₱" & amount.ToString("N2")
+    End Function
+
+    ''' <summary>
+    ''' Formats currency with the Philippine Peso symbol (₱).
+    ''' </summary>
+    Public Function FormatCurrency(amount As Decimal) As String
+        Return "₱" & amount.ToString("N2")
+    End Function
 
     ' User types
     Public Const USERTYPE_ADMIN   As String = "Admin"

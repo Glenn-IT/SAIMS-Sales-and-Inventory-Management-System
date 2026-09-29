@@ -348,7 +348,7 @@ Public Class SalesForm
         For Each row As DataGridViewRow In dgvCart.Rows
             If row.IsNewRow Then Continue For
             Dim lineText As String = row.Cells("colTotal").Value?.ToString() _
-                                        .Replace("₱", "").Replace(",", "")
+                                        .Replace("₱", "").Replace("$", "").Replace("?", "").Replace(",", "")
             Dim lineAmt As Decimal
             If Decimal.TryParse(lineText, lineAmt) Then subTotal += lineAmt
             itemCount += 1
@@ -387,7 +387,7 @@ Public Class SalesForm
         Decimal.TryParse(txtAmountTendered.Text, tendered)
 
         Dim total As Decimal = 0
-        Decimal.TryParse(txtTotalAmount.Text.Replace("₱", "").Replace(",", ""), total)
+        Decimal.TryParse(txtTotalAmount.Text.Replace("₱", "").Replace("$", "").Replace("?", "").Replace(",", ""), total)
 
         Dim change As Decimal = tendered - total
         txtChange.Text      = FormatCurrency(change)
@@ -558,14 +558,14 @@ Public Class SalesForm
         End If
 
         Dim subTotal As Decimal = 0
-        Decimal.TryParse(txtSubtotal.Text.Replace("₱", "").Replace(",", ""), subTotal)
+        Decimal.TryParse(txtSubtotal.Text.Replace("₱", "").Replace("$", "").Replace("?", "").Replace(",", ""), subTotal)
 
         Dim discount As Decimal = 0
         Decimal.TryParse(txtDiscount.Text, discount)
         If discount < 0 Then discount = 0
 
         Dim totalAmount As Decimal = 0
-        Decimal.TryParse(txtTotalAmount.Text.Replace("₱", "").Replace(",", ""), totalAmount)
+        Decimal.TryParse(txtTotalAmount.Text.Replace("₱", "").Replace("$", "").Replace("?", "").Replace(",", ""), totalAmount)
 
         Dim tendered As Decimal = 0
         Decimal.TryParse(txtAmountTendered.Text, tendered)

@@ -32,6 +32,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\ManualScreenshots\*.png" />
+    <None Update="img\*.*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="img\*.*" />
   </ItemGroup>
 
   <ItemGroup>

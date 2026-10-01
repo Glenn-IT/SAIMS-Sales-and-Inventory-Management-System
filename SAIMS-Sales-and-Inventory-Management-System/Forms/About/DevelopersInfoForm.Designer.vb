@@ -22,7 +22,6 @@ Partial Class DevelopersInfoForm
         Me.lblTitle = New System.Windows.Forms.Label()
         Me.panelMain = New System.Windows.Forms.Panel()
         Me.panelDev2 = New System.Windows.Forms.Panel()
-        Me.lblDev2Notes = New System.Windows.Forms.Label()
         Me.lblDev2Github = New System.Windows.Forms.Label()
         Me.lblDev2Phone = New System.Windows.Forms.Label()
         Me.lblDev2Email = New System.Windows.Forms.Label()
@@ -30,7 +29,6 @@ Partial Class DevelopersInfoForm
         Me.lblDev2Name = New System.Windows.Forms.Label()
         Me.picDev2 = New System.Windows.Forms.PictureBox()
         Me.panelDev1 = New System.Windows.Forms.Panel()
-        Me.lblDev1Notes = New System.Windows.Forms.Label()
         Me.lblDev1Github = New System.Windows.Forms.Label()
         Me.lblDev1Phone = New System.Windows.Forms.Label()
         Me.lblDev1Email = New System.Windows.Forms.Label()
@@ -95,7 +93,6 @@ Partial Class DevelopersInfoForm
         'panelDev2
         '
         Me.panelDev2.BackColor = System.Drawing.Color.White
-        Me.panelDev2.Controls.Add(Me.lblDev2Notes)
         Me.panelDev2.Controls.Add(Me.lblDev2Github)
         Me.panelDev2.Controls.Add(Me.lblDev2Phone)
         Me.panelDev2.Controls.Add(Me.lblDev2Email)
@@ -104,18 +101,8 @@ Partial Class DevelopersInfoForm
         Me.panelDev2.Controls.Add(Me.picDev2)
         Me.panelDev2.Location = New System.Drawing.Point(480, 25)
         Me.panelDev2.Name = "panelDev2"
-        Me.panelDev2.Size = New System.Drawing.Size(430, 430)
+        Me.panelDev2.Size = New System.Drawing.Size(430, 370)
         Me.panelDev2.TabIndex = 1
-        '
-        'lblDev2Notes
-        '
-        Me.lblDev2Notes.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.lblDev2Notes.ForeColor = System.Drawing.Color.FromArgb(CType(CType(127, Byte), Integer), CType(CType(140, Byte), Integer), CType(CType(141, Byte), Integer))
-        Me.lblDev2Notes.Location = New System.Drawing.Point(20, 360)
-        Me.lblDev2Notes.Name = "lblDev2Notes"
-        Me.lblDev2Notes.Size = New System.Drawing.Size(390, 45)
-        Me.lblDev2Notes.TabIndex = 6
-        Me.lblDev2Notes.Text = "Frontend UI Layout, Custom Styling & Workflow Integration"
         '
         'lblDev2Github
         '
@@ -174,7 +161,7 @@ Partial Class DevelopersInfoForm
         '
         'picDev2
         '
-        Me.picDev2.BackColor = System.Drawing.Color.FromArgb(CType(CType(236, Byte), Integer), CType(CType(240, Byte), Integer), CType(CType(241, Byte), Integer))
+        Me.picDev2.BackColor = System.Drawing.Color.White
         Me.picDev2.Location = New System.Drawing.Point(155, 25)
         Me.picDev2.Name = "picDev2"
         Me.picDev2.Size = New System.Drawing.Size(120, 120)
@@ -185,7 +172,6 @@ Partial Class DevelopersInfoForm
         'panelDev1
         '
         Me.panelDev1.BackColor = System.Drawing.Color.White
-        Me.panelDev1.Controls.Add(Me.lblDev1Notes)
         Me.panelDev1.Controls.Add(Me.lblDev1Github)
         Me.panelDev1.Controls.Add(Me.lblDev1Phone)
         Me.panelDev1.Controls.Add(Me.lblDev1Email)
@@ -194,18 +180,8 @@ Partial Class DevelopersInfoForm
         Me.panelDev1.Controls.Add(Me.picDev1)
         Me.panelDev1.Location = New System.Drawing.Point(25, 25)
         Me.panelDev1.Name = "panelDev1"
-        Me.panelDev1.Size = New System.Drawing.Size(430, 430)
+        Me.panelDev1.Size = New System.Drawing.Size(430, 370)
         Me.panelDev1.TabIndex = 0
-        '
-        'lblDev1Notes
-        '
-        Me.lblDev1Notes.Font = New System.Drawing.Font("Segoe UI", 9.5!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point)
-        Me.lblDev1Notes.ForeColor = System.Drawing.Color.FromArgb(CType(CType(127, Byte), Integer), CType(CType(140, Byte), Integer), CType(CType(141, Byte), Integer))
-        Me.lblDev1Notes.Location = New System.Drawing.Point(20, 360)
-        Me.lblDev1Notes.Name = "lblDev1Notes"
-        Me.lblDev1Notes.Size = New System.Drawing.Size(390, 45)
-        Me.lblDev1Notes.TabIndex = 6
-        Me.lblDev1Notes.Text = "Lead Developer, Database Architecture & Core Logic"
         '
         'lblDev1Github
         '
@@ -264,7 +240,7 @@ Partial Class DevelopersInfoForm
         '
         'picDev1
         '
-        Me.picDev1.BackColor = System.Drawing.Color.FromArgb(CType(CType(236, Byte), Integer), CType(CType(240, Byte), Integer), CType(CType(241, Byte), Integer))
+        Me.picDev1.BackColor = System.Drawing.Color.White
         Me.picDev1.Location = New System.Drawing.Point(155, 25)
         Me.picDev1.Name = "picDev1"
         Me.picDev1.Size = New System.Drawing.Size(120, 120)
@@ -306,7 +282,6 @@ Partial Class DevelopersInfoForm
     Friend WithEvents lblDev1Email As Label
     Friend WithEvents lblDev1Phone As Label
     Friend WithEvents lblDev1Github As Label
-    Friend WithEvents lblDev1Notes As Label
     Friend WithEvents panelDev2 As Panel
     Friend WithEvents picDev2 As PictureBox
     Friend WithEvents lblDev2Name As Label
@@ -314,5 +289,4 @@ Partial Class DevelopersInfoForm
     Friend WithEvents lblDev2Email As Label
     Friend WithEvents lblDev2Phone As Label
     Friend WithEvents lblDev2Github As Label
-    Friend WithEvents lblDev2Notes As Label
 End Class

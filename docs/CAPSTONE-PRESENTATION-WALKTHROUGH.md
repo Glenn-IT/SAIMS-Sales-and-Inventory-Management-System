@@ -2,7 +2,7 @@
 <!-- System: Sales and Inventory Management System (SAIMS) -->
 <!-- Enterprise Client: Rhenwas Poultry Supply (Poblacion 1, Piat, Cagayan) -->
 <!-- Institution: Cagayan State University - Piat Campus (CSU-Piat) -->
-<!-- Lead Developer: Aaron Jake Narag Asuncion | Co-Developer: Peejay Arravez Taliping -->
+<!-- Developers: Aaron Jake Narag Asuncion | Peejay Arravez Taliping -->
 <!-- Technology Stack: VB.NET WinForms (.NET 8.0), Microsoft SQL Server, BCrypt, MSTest -->
 <!-- Target Audience: Capstone Defense Panelists, Advisers, Deans, and Evaluators -->
 
@@ -442,13 +442,13 @@ Before starting the defense presentation, prepare your demonstration workstation
 * **Screen Action:**
   1. Navigate to **About Us -> Developers Info**.
   2. Present the software engineering team credentials:
-     * **Aaron Jake Narag Asuncion:** Lead Developer, Database Architecture & Core Logic (4th Year BSIT, CSU-Piat).
-     * **Peejay Arravez Taliping:** Co-Developer, UI Design & Frontend Systems (4th Year BSIT, CSU-Piat).
+     * **Aaron Jake Narag Asuncion:** 4th Year BSIT, CSU-Piat.
+     * **Peejay Arravez Taliping:** 4th Year BSIT, CSU-Piat.
   3. Highlight the institutional affiliation: *Cagayan State University - Piat Campus*.
 * **🗣️ Verbal Script:**
   > *"The Developers Information module highlights the engineering team behind SAIMS.
   >
-  > *Developed by Aaron Jake Narag Asuncion as Lead Developer and Database Architect, and Peejay Arravez Taliping as Co-Developer and UI Engineer, both 4th Year BSIT students at Cagayan State University - Piat Campus, this application represents our commitment to solving real-world enterprise challenges in our local community."*
+  > *Developed by Aaron Jake Narag Asuncion and Peejay Arravez Taliping, both 4th Year BSIT students at Cagayan State University - Piat Campus, this application represents our commitment to solving real-world enterprise challenges in our local community."*
 
 ---
 

@@ -59,7 +59,7 @@ Partial Class UserDialogForm
         lblHeaderTitle.ForeColor = Color.White
         lblHeaderTitle.Location = New Point(20, 14)
         lblHeaderTitle.Name = "lblHeaderTitle"
-        lblHeaderTitle.Size = New Size(100, 21)
+        lblHeaderTitle.Size = New Size(126, 25)
         lblHeaderTitle.TabIndex = 0
         lblHeaderTitle.Text = "User Account"
         ' 
@@ -69,7 +69,7 @@ Partial Class UserDialogForm
         lblUsername.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
         lblUsername.Location = New Point(25, 68)
         lblUsername.Name = "lblUsername"
-        lblUsername.Size = New Size(73, 17)
+        lblUsername.Size = New Size(80, 19)
         lblUsername.TabIndex = 1
         lblUsername.Text = "Username:"
         ' 
@@ -78,7 +78,7 @@ Partial Class UserDialogForm
         txtUsername.Font = New Font("Segoe UI", 10F)
         txtUsername.Location = New Point(25, 88)
         txtUsername.Name = "txtUsername"
-        txtUsername.Size = New Size(200, 25)
+        txtUsername.Size = New Size(200, 27)
         txtUsername.TabIndex = 2
         ' 
         ' lblFullName
@@ -87,7 +87,7 @@ Partial Class UserDialogForm
         lblFullName.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
         lblFullName.Location = New Point(255, 68)
         lblFullName.Name = "lblFullName"
-        lblFullName.Size = New Size(75, 17)
+        lblFullName.Size = New Size(80, 19)
         lblFullName.TabIndex = 3
         lblFullName.Text = "Full Name:"
         ' 
@@ -96,7 +96,7 @@ Partial Class UserDialogForm
         txtFullName.Font = New Font("Segoe UI", 10F)
         txtFullName.Location = New Point(255, 88)
         txtFullName.Name = "txtFullName"
-        txtFullName.Size = New Size(200, 25)
+        txtFullName.Size = New Size(200, 27)
         txtFullName.TabIndex = 4
         ' 
         ' lblRole
@@ -105,7 +105,7 @@ Partial Class UserDialogForm
         lblRole.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
         lblRole.Location = New Point(25, 123)
         lblRole.Name = "lblRole"
-        lblRole.Size = New Size(39, 17)
+        lblRole.Size = New Size(43, 19)
         lblRole.TabIndex = 5
         lblRole.Text = "Role:"
         ' 
@@ -117,8 +117,103 @@ Partial Class UserDialogForm
         cboRole.Items.AddRange(New Object() {"Admin", "Cashier", "Manager", "Staff"})
         cboRole.Location = New Point(25, 143)
         cboRole.Name = "cboRole"
-        cboRole.Size = New Size(200, 25)
+        cboRole.Size = New Size(200, 28)
         cboRole.TabIndex = 6
+        ' 
+        ' lblPassword
+        ' 
+        lblPassword.AutoSize = True
+        lblPassword.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
+        lblPassword.Location = New Point(25, 178)
+        lblPassword.Name = "lblPassword"
+        lblPassword.Size = New Size(77, 19)
+        lblPassword.TabIndex = 9
+        lblPassword.Text = "Password:"
+        ' 
+        ' txtPassword
+        ' 
+        txtPassword.Font = New Font("Segoe UI", 10F)
+        txtPassword.Location = New Point(25, 198)
+        txtPassword.Name = "txtPassword"
+        txtPassword.Size = New Size(200, 27)
+        txtPassword.TabIndex = 10
+        txtPassword.UseSystemPasswordChar = True
+        ' 
+        ' lblConfirmPassword
+        ' 
+        lblConfirmPassword.AutoSize = True
+        lblConfirmPassword.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
+        lblConfirmPassword.Location = New Point(255, 178)
+        lblConfirmPassword.Name = "lblConfirmPassword"
+        lblConfirmPassword.Size = New Size(135, 19)
+        lblConfirmPassword.TabIndex = 11
+        lblConfirmPassword.Text = "Confirm Password:"
+        ' 
+        ' txtConfirmPassword
+        ' 
+        txtConfirmPassword.Font = New Font("Segoe UI", 10F)
+        txtConfirmPassword.Location = New Point(255, 198)
+        txtConfirmPassword.Name = "txtConfirmPassword"
+        txtConfirmPassword.Size = New Size(200, 27)
+        txtConfirmPassword.TabIndex = 12
+        txtConfirmPassword.UseSystemPasswordChar = True
+        ' 
+        ' lblSecurityQuestion
+        ' 
+        lblSecurityQuestion.AutoSize = True
+        lblSecurityQuestion.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
+        lblSecurityQuestion.Location = New Point(25, 233)
+        lblSecurityQuestion.Name = "lblSecurityQuestion"
+        lblSecurityQuestion.Size = New Size(130, 19)
+        lblSecurityQuestion.TabIndex = 13
+        lblSecurityQuestion.Text = "Security Question:"
+        ' 
+        ' cboSecurityQuestion
+        ' 
+        cboSecurityQuestion.DropDownStyle = ComboBoxStyle.DropDownList
+        cboSecurityQuestion.Font = New Font("Segoe UI", 10F)
+        cboSecurityQuestion.FormattingEnabled = True
+        cboSecurityQuestion.Location = New Point(25, 253)
+        cboSecurityQuestion.Name = "cboSecurityQuestion"
+        cboSecurityQuestion.Size = New Size(430, 28)
+        cboSecurityQuestion.TabIndex = 14
+        ' 
+        ' lblNewSecurityQuestion
+        ' 
+        lblNewSecurityQuestion.AutoSize = True
+        lblNewSecurityQuestion.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
+        lblNewSecurityQuestion.Location = New Point(25, 288)
+        lblNewSecurityQuestion.Name = "lblNewSecurityQuestion"
+        lblNewSecurityQuestion.Size = New Size(0, 19)
+        lblNewSecurityQuestion.TabIndex = 19
+        lblNewSecurityQuestion.Visible = False
+        ' 
+        ' txtNewSecurityQuestion
+        ' 
+        txtNewSecurityQuestion.Font = New Font("Segoe UI", 10F)
+        txtNewSecurityQuestion.Location = New Point(25, 308)
+        txtNewSecurityQuestion.Name = "txtNewSecurityQuestion"
+        txtNewSecurityQuestion.Size = New Size(430, 27)
+        txtNewSecurityQuestion.TabIndex = 20
+        txtNewSecurityQuestion.Visible = False
+        ' 
+        ' lblSecurityAnswer
+        ' 
+        lblSecurityAnswer.AutoSize = True
+        lblSecurityAnswer.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
+        lblSecurityAnswer.Location = New Point(25, 288)
+        lblSecurityAnswer.Name = "lblSecurityAnswer"
+        lblSecurityAnswer.Size = New Size(121, 19)
+        lblSecurityAnswer.TabIndex = 15
+        lblSecurityAnswer.Text = "Security Answer:"
+        ' 
+        ' txtSecurityAnswer
+        ' 
+        txtSecurityAnswer.Font = New Font("Segoe UI", 10F)
+        txtSecurityAnswer.Location = New Point(25, 308)
+        txtSecurityAnswer.Name = "txtSecurityAnswer"
+        txtSecurityAnswer.Size = New Size(430, 27)
+        txtSecurityAnswer.TabIndex = 16
         ' 
         ' lblStatus
         ' 
@@ -126,7 +221,7 @@ Partial Class UserDialogForm
         lblStatus.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
         lblStatus.Location = New Point(255, 123)
         lblStatus.Name = "lblStatus"
-        lblStatus.Size = New Size(50, 17)
+        lblStatus.Size = New Size(53, 19)
         lblStatus.TabIndex = 7
         lblStatus.Text = "Status:"
         ' 
@@ -138,104 +233,8 @@ Partial Class UserDialogForm
         cboStatus.Items.AddRange(New Object() {"Active", "Inactive"})
         cboStatus.Location = New Point(255, 143)
         cboStatus.Name = "cboStatus"
-        cboStatus.Size = New Size(200, 25)
+        cboStatus.Size = New Size(200, 28)
         cboStatus.TabIndex = 8
-        ' 
-        ' lblPassword
-        ' 
-        lblPassword.AutoSize = True
-        lblPassword.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
-        lblPassword.Location = New Point(25, 178)
-        lblPassword.Name = "lblPassword"
-        lblPassword.Size = New Size(70, 17)
-        lblPassword.TabIndex = 9
-        lblPassword.Text = "Password:"
-        ' 
-        ' txtPassword
-        ' 
-        txtPassword.Font = New Font("Segoe UI", 10F)
-        txtPassword.Location = New Point(25, 198)
-        txtPassword.Name = "txtPassword"
-        txtPassword.UseSystemPasswordChar = True
-        txtPassword.Size = New Size(200, 25)
-        txtPassword.TabIndex = 10
-        ' 
-        ' lblConfirmPassword
-        ' 
-        lblConfirmPassword.AutoSize = True
-        lblConfirmPassword.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
-        lblConfirmPassword.Location = New Point(255, 178)
-        lblConfirmPassword.Name = "lblConfirmPassword"
-        lblConfirmPassword.Size = New Size(124, 17)
-        lblConfirmPassword.TabIndex = 11
-        lblConfirmPassword.Text = "Confirm Password:"
-        ' 
-        ' txtConfirmPassword
-        ' 
-        txtConfirmPassword.Font = New Font("Segoe UI", 10F)
-        txtConfirmPassword.Location = New Point(255, 198)
-        txtConfirmPassword.Name = "txtConfirmPassword"
-        txtConfirmPassword.UseSystemPasswordChar = True
-        txtConfirmPassword.Size = New Size(200, 25)
-        txtConfirmPassword.TabIndex = 12
-        ' 
-        ' lblSecurityQuestion
-        ' 
-        lblSecurityQuestion.AutoSize = True
-        lblSecurityQuestion.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
-        lblSecurityQuestion.Location = New Point(25, 233)
-        lblSecurityQuestion.Name = "lblSecurityQuestion"
-        lblSecurityQuestion.Size = New Size(122, 17)
-        lblSecurityQuestion.TabIndex = 13
-        lblSecurityQuestion.Text = "Security Question:"
-        ' 
-        ' cboSecurityQuestion
-        ' 
-        cboSecurityQuestion.DropDownStyle = ComboBoxStyle.DropDownList
-        cboSecurityQuestion.Font = New Font("Segoe UI", 10F)
-        cboSecurityQuestion.FormattingEnabled = True
-        cboSecurityQuestion.Location = New Point(25, 253)
-        cboSecurityQuestion.Name = "cboSecurityQuestion"
-        cboSecurityQuestion.Size = New Size(430, 25)
-        cboSecurityQuestion.TabIndex = 14
-        ' 
-        ' lblNewSecurityQuestion
-        ' 
-        lblNewSecurityQuestion.AutoSize = True
-        lblNewSecurityQuestion.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
-        lblNewSecurityQuestion.Location = New Point(25, 288)
-        lblNewSecurityQuestion.Name = "lblNewSecurityQuestion"
-        lblNewSecurityQuestion.Size = New Size(155, 17)
-        lblNewSecurityQuestion.TabIndex = 19
-        lblNewSecurityQuestion.Text = "New Security Question:"
-        lblNewSecurityQuestion.Visible = False
-        ' 
-        ' txtNewSecurityQuestion
-        ' 
-        txtNewSecurityQuestion.Font = New Font("Segoe UI", 10F)
-        txtNewSecurityQuestion.Location = New Point(25, 308)
-        txtNewSecurityQuestion.Name = "txtNewSecurityQuestion"
-        txtNewSecurityQuestion.Size = New Size(430, 25)
-        txtNewSecurityQuestion.TabIndex = 20
-        txtNewSecurityQuestion.Visible = False
-        ' 
-        ' lblSecurityAnswer
-        ' 
-        lblSecurityAnswer.AutoSize = True
-        lblSecurityAnswer.Font = New Font("Segoe UI", 9.5F, FontStyle.Bold)
-        lblSecurityAnswer.Location = New Point(25, 288)
-        lblSecurityAnswer.Name = "lblSecurityAnswer"
-        lblSecurityAnswer.Size = New Size(109, 17)
-        lblSecurityAnswer.TabIndex = 15
-        lblSecurityAnswer.Text = "Security Answer:"
-        ' 
-        ' txtSecurityAnswer
-        ' 
-        txtSecurityAnswer.Font = New Font("Segoe UI", 10F)
-        txtSecurityAnswer.Location = New Point(25, 308)
-        txtSecurityAnswer.Name = "txtSecurityAnswer"
-        txtSecurityAnswer.Size = New Size(430, 25)
-        txtSecurityAnswer.TabIndex = 16
         ' 
         ' btnSave
         ' 
